@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "949988504662",
+    "project_id": "food-bridge-4b216",
+    "storage_bucket": "food-bridge-4b216.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:949988504662:android:d97fe89271cd3e0bd2f7f7",
+        "android_client_info": {
+          "package_name": "com.example.food_bridge"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "949988504662-h6a2ot2loglltic1qgg0ski8mncn8h80.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsMkcCb61CevxuTKee09quBOI0qbo6BFA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "949988504662-ddpbqctho5hjkolnbqjimt538kvg0d8h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
