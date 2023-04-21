@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:food_bridge/controller/firebasecontroller.dart';
 import 'package:food_bridge/view/login.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeFirebase();
   runApp(const MyApp());
 }
 

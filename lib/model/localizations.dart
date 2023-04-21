@@ -47,6 +47,26 @@ Map<String, dynamic> appLocalizations = {
     "en": "or",
     "vi": "hoặc",
   },
+  "loading-text": {
+    "en": "Loading...",
+    "vi": "Đang load...",
+  },
+  "register-success-text": {
+    "en": "Register success",
+    "vi": "Đăng ký hoàn tất",
+  },
+  "register-success-description": {
+    "en": "Press OK to return to login screen",
+    "vi": "Nhấn OK để trở về màn hình đăng nhập",
+  },
+  "cancel-text": {
+    "en": "Cancel",
+    "vi": "Huỷ",
+  },
+  "error-text": {
+    "en": "Error",
+    "vi": "Lỗi",
+  },
   "forgot-password-title": {
     "en": "Forgot password?",
     "vi": "Quên mật khẩu?",
