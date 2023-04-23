@@ -21,4 +21,6 @@ class AuthController {
       return {"success": false, "err": err};
     }
   }
+
+  chooseRole(Map<String, String> map) {}
 }
