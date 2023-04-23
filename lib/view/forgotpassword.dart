@@ -84,8 +84,8 @@ class ForgotPasswordPage extends StatelessWidget {
                                       localeController.getTranslate(
                                           'forgot-password-description'),
                                       textAlign: TextAlign.center,
-                                      style:
-                                          StyleManagement.descriptionTextStyle,
+                                      style: StyleManagement
+                                          .descriptionTextStyleDark,
                                     ),
                                     const SizedBox(
                                       height: 10,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
-import 'package:food_bridge/view/login.dart';
+import 'package:food_bridge/view/chooserole.dart';
+// import 'package:food_bridge/view/login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
           secondary: const Color(0xff489FB5),
         ),
       ),
-      home: LoginPage(),
+      home: ChooseRoleScreen(),
     );
   }
 }

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 
 class ColorManagement {
-  static final titleColor = Colors.black.withOpacity(0.71);
-  static final descriptionColor = Colors.black.withOpacity(0.55);
+  static final titleColorDark = Colors.black.withOpacity(0.71);
+  static final descriptionColorDark = Colors.black.withOpacity(0.55);
+  static final descriptionColorLight = Colors.white.withOpacity(0.55);
+  static const selectedColor = Color(0xffFFA62B);
   static const materialStateWhite = MaterialStatePropertyAll(Colors.white);
   static final materialStateWhiteInactive =
       MaterialStatePropertyAll(Colors.white.withOpacity(0.2));
@@ -11,13 +13,18 @@ class ColorManagement {
 
 class StyleManagement {
   static final titleTextStyle = TextStyle(
-    color: ColorManagement.titleColor,
+    color: ColorManagement.titleColorDark,
     fontSize: 28,
     fontWeight: FontWeight.bold,
   );
-  static final descriptionTextStyle = TextStyle(
-    color: ColorManagement.descriptionColor,
+  static final descriptionTextStyleDark = TextStyle(
+    color: ColorManagement.descriptionColorDark,
     fontSize: 18,
+    fontWeight: FontWeight.w500,
+  );
+  static final descriptionTextStyleLight = TextStyle(
+    color: ColorManagement.descriptionColorLight,
+    fontSize: 12,
     fontWeight: FontWeight.w500,
   );
   static final textButtonStyle = TextButton.styleFrom(

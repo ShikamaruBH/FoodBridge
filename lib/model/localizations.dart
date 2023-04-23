@@ -67,6 +67,34 @@ Map<String, dynamic> appLocalizations = {
     "en": "Error",
     "vi": "Lỗi",
   },
+  "choose-role-title": {
+    "en": "Tell us about you",
+    "vi": "Cho chúng tôi biết về bạn",
+  },
+  "choose-role-description": {
+    "en": "Choose one",
+    "vi": "Chọn một trong hai",
+  },
+  "next-button-title": {
+    "en": "Next",
+    "vi": "Tiếp tục",
+  },
+  "donor-text": {
+    "en": "Donor",
+    "vi": "Người cho",
+  },
+  "donor-description": {
+    "en": "Donate your food for needy",
+    "vi": "Quyên góp thực phẩm của bạn cho người cần",
+  },
+  "recipient-text": {
+    "en": "Recipient",
+    "vi": "Người nhận",
+  },
+  "recipient-description": {
+    "en": "Receive food from Donor",
+    "vi": "Nhận thức ăn từ người cho",
+  },
   "forgot-password-title": {
     "en": "Forgot password?",
     "vi": "Quên mật khẩu?",
