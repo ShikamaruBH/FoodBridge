@@ -29,7 +29,11 @@ class LoadingDialog extends StatelessWidget {
 }
 
 class SuccessDialog extends StatelessWidget {
-  const SuccessDialog({
+  final String title;
+  final String content;
+  const SuccessDialog(
+    this.title,
+    this.content, {
     Key? key,
   }) : super(key: key);
 
@@ -45,10 +49,8 @@ class SuccessDialog extends StatelessWidget {
           size: 40,
         ),
       ),
-      title:
-          Text(LocalizationController().getTranslate('register-success-text')),
-      content: Text(LocalizationController()
-          .getTranslate('register-success-description')),
+      title: Text(LocalizationController().getTranslate(title)),
+      content: Text(LocalizationController().getTranslate(content)),
       actions: [
         TextButton(
           onPressed: () {
@@ -61,7 +63,7 @@ class SuccessDialog extends StatelessWidget {
             Navigator.pop(context);
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => LoginPage(),
+                builder: (context) => LoginScreen(),
               ),
             );
           },
@@ -75,14 +77,24 @@ class SuccessDialog extends StatelessWidget {
 class ErrorDialog extends StatelessWidget {
   // ignore: prefer_typing_uninitialized_variables
   final err;
+  final localeController = LocalizationController();
 
-  const ErrorDialog(
+  ErrorDialog(
     this.err, {
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    String title, content;
+    if (localeController.getTranslate(err.code).isNotEmpty) {
+      title = localeController.getTranslate(err.code);
+      content = localeController.getTranslate("${err.code}-description");
+    } else {
+      title = localeController.getTranslate('error-text');
+      content = "${err.code} - ${err.message}";
+    }
+
     return AlertDialog(
       icon: const CircleAvatar(
         radius: 30,
@@ -93,8 +105,8 @@ class ErrorDialog extends StatelessWidget {
           size: 40,
         ),
       ),
-      title: Text(LocalizationController().getTranslate('error-text')),
-      content: Text("${err.code} - ${err.message}"),
+      title: Text(title),
+      content: Text(content),
       actions: [
         ElevatedButton(
           onPressed: () {

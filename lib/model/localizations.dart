@@ -99,6 +99,14 @@ Map<String, dynamic> appLocalizations = {
     "en": "Forgot password?",
     "vi": "Quên mật khẩu?",
   },
+  "send-email-success-text": {
+    "en": "Email sent",
+    "vi": "Đã gửi email",
+  },
+  "send-email-success-description": {
+    "en": "Please check your inbox and follow instruction",
+    "vi": "Vui lòng kiểm tra hộp thư của bạn và làm theo hướng dẫn",
+  },
   "login-with-facebook-button-title": {
     "en": "Continue with Facebook",
     "vi": "Tiếp tục với Facebook",
@@ -118,5 +126,47 @@ Map<String, dynamic> appLocalizations = {
   "min-length-error-text": {
     "en": "Minimum length is ",
     "vi": "Độ dài tối thiểu là ",
+  },
+  "wrong-password": {
+    "en": "Wrong password",
+    "vi": "Mật khẩu sai",
+  },
+  "wrong-password-description": {
+    "en": "The password is invalid or the user does not have a password.",
+    "vi": "Mật khẩu không đúng hoặc người dùng không có mật khẩu.",
+  },
+  "email-already-in-use": {
+    "en": "Email already in use",
+    "vi": "Email đã được sử dụng",
+  },
+  "email-already-in-use-description": {
+    "en": "The email address is already in use by another account.",
+    "vi": "Địa chỉ email đã được sử dụng bởi tài khoản khác.",
+  },
+  "user-not-found": {
+    "en": "User not found",
+    "vi": "Người dùng không tồn tại",
+  },
+  "user-not-found-description": {
+    "en":
+        "There is no user record corresponding to this identifier. The user may have been deleted.",
+    "vi":
+        "Không có bản ghi người dùng nào tương ứng với số nhận dạng này. Người dùng có thể đã bị xóa.",
+  },
+  "home-title": {
+    "en": "Home",
+    "vi": "Trang chủ",
+  },
+  "account-title": {
+    "en": "Profile",
+    "vi": "Tài khoản",
+  },
+  "setting-title": {
+    "en": "Setting",
+    "vi": "Cài đặt",
+  },
+  "logout-title": {
+    "en": "Logout",
+    "vi": "Đăng xuất",
   },
 };

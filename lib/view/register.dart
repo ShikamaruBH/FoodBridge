@@ -12,9 +12,9 @@ import 'package:food_bridge/view/languageswitch.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
 
-class RegisterPage extends StatelessWidget {
+class RegisterScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormBuilderState>();
-  RegisterPage({super.key});
+  RegisterScreen({super.key});
 
   void register(context) {
     _formKey.currentState!.save();
@@ -35,7 +35,8 @@ class RegisterPage extends StatelessWidget {
           showDialog(
             barrierDismissible: false,
             context: context,
-            builder: (context) => const SuccessDialog(),
+            builder: (context) => const SuccessDialog(
+                'register-success-text', 'register-success-description'),
           );
         } else {
           showDialog(

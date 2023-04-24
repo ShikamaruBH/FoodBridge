@@ -2,27 +2,93 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:food_bridge/controller/authcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/passwordtextfieldcontroller.dart';
+import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
+import 'package:food_bridge/view/chooserole.dart';
+import 'package:food_bridge/view/dialogs.dart';
 import 'package:food_bridge/view/forgotpassword.dart';
+import 'package:food_bridge/view/home.dart';
 import 'package:food_bridge/view/languageswitch.dart';
 import 'package:food_bridge/view/register.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormBuilderState>();
-  LoginPage({super.key});
+  LoginScreen({super.key});
 
-  void login(context) {
-    _formKey.currentState?.validate();
+  void login(context) async {
+    _formKey.currentState!.save();
+    if (_formKey.currentState!.validate()) {
+      Map<String, dynamic> data = _formKey.currentState!.value;
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => const LoadingDialog(),
+      );
+      await AuthController().signOut();
+      await AuthController().login({
+        "email": data["email"].trim(),
+        "password": data["password"],
+      }).then((result) {
+        Navigator.pop(context);
+        if (result['success']) {
+          navigate();
+        } else {
+          showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (context) => ErrorDialog(result['err']),
+          );
+        }
+      }).catchError((err) {
+        Navigator.pop(context);
+        showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) => ErrorDialog(err),
+        );
+      });
+    }
   }
 
-  void loginGoogle(context) {}
+  void loginGoogle(context) async {
+    await AuthController().signOut();
+    await AuthController().loginGoogle().then((result) {
+      if (result['success']) {
+        navigate();
+      } else {
+        showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) => ErrorDialog(result['err']),
+        );
+      }
+    }).catchError((err) {
+      Navigator.pop(context);
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => ErrorDialog(err),
+      );
+    });
+  }
 
-  void loginFacebook(context) {}
+  void navigate() {
+    if (AuthController().currentUserRole.isNotEmpty) {
+      Navigator.of(navigatorKey.currentState!.context).push(
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else {
+      Navigator.of(navigatorKey.currentState!.context).push(
+        MaterialPageRoute(builder: (context) => const ChooseRoleScreen()),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +232,7 @@ class LoginPage extends StatelessWidget {
                                               Navigator.of(context).push(
                                             MaterialPageRoute(
                                               builder: (context) =>
-                                                  RegisterPage(),
+                                                  RegisterScreen(),
                                             ),
                                           ),
                                           child: Text(
@@ -187,7 +253,7 @@ class LoginPage extends StatelessWidget {
                                                 Navigator.of(context).push(
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    ForgotPasswordPage(),
+                                                    ForgotPasswordScreen(),
                                               ),
                                             ),
                                             child: Text(
@@ -244,25 +310,6 @@ class LoginPage extends StatelessWidget {
                                         style:
                                             TextStyle(color: Colors.blue[800]),
                                       ),
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    ElevatedButton.icon(
-                                      icon: Image.asset(
-                                        "assets/images/facebook.png",
-                                        width: 30,
-                                        height: 30,
-                                      ),
-                                      onPressed: () => loginFacebook(context),
-                                      style: StyleManagement.elevatedButtonStyle
-                                          .copyWith(
-                                        backgroundColor:
-                                            MaterialStatePropertyAll(
-                                                Colors.blue.shade600),
-                                      ),
-                                      label: Text(localeController.getTranslate(
-                                          'login-with-facebook-button-title')),
                                     ),
                                   ],
                                 ),

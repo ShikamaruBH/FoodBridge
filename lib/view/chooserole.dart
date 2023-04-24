@@ -6,6 +6,7 @@ import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/rolebuttoncontroller.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/view/dialogs.dart';
+import 'package:food_bridge/view/home.dart';
 import 'package:food_bridge/view/languageswitch.dart';
 import 'package:food_bridge/view/roleselectcolumn.dart';
 import 'package:provider/provider.dart';
@@ -23,10 +24,10 @@ class ChooseRoleScreen extends StatelessWidget {
         {"role": RoleButtonController().currentRole}).then((result) {
       Navigator.pop(context);
       if (result['success']) {
-        showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (context) => const SuccessDialog(),
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(),
+          ),
         );
       } else {
         showDialog(

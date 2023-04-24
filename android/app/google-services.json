@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "949988504662-jrpparqlkv345aq4d8391v2j3culu4rh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.food_bridge",
+            "certificate_hash": "de0ccb1acd1f43630d062acedd7b21bcb530ebf4"
+          }
+        },
+        {
           "client_id": "949988504662-h6a2ot2loglltic1qgg0ski8mncn8h80.apps.googleusercontent.com",
           "client_type": 3
         }

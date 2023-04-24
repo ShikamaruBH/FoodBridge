@@ -3,6 +3,7 @@ import 'package:food_bridge/controller/localizationcontroller.dart';
 
 class ColorManagement {
   static final titleColorDark = Colors.black.withOpacity(0.71);
+  static final iconColor = Colors.black.withOpacity(0.85);
   static final descriptionColorDark = Colors.black.withOpacity(0.55);
   static final descriptionColorLight = Colors.white.withOpacity(0.55);
   static const selectedColor = Color(0xffFFA62B);
@@ -16,6 +17,16 @@ class StyleManagement {
     color: ColorManagement.titleColorDark,
     fontSize: 28,
     fontWeight: FontWeight.bold,
+  );
+  static final menuTextStyle = TextStyle(
+    color: Colors.black.withOpacity(.81),
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+  );
+  static const usernameTextStyle = TextStyle(
+    color: Colors.white,
+    fontSize: 20,
+    fontWeight: FontWeight.w500,
   );
   static final descriptionTextStyleDark = TextStyle(
     color: ColorManagement.descriptionColorDark,
@@ -64,4 +75,10 @@ class StyleManagement {
       LocalizationController().locale == locale
           ? textButtonLanguageStyle
           : textButtonLanguageInactiveStyle;
+
+  static getIcon(IconData icon) => Icon(
+        icon,
+        size: 32,
+        color: ColorManagement.iconColor,
+      );
 }

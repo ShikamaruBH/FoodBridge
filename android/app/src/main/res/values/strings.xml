@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Food Bridge</string>
+    <string name="facebook_app_id">1313399149238517</string>
+    <string name="fb_login_protocol_scheme">fb1313399149238517</string>
+    <string name="facebook_client_token">305f45fbaab3b327952e723b6e29ff6e</string>
+</resources>

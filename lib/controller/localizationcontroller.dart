@@ -21,6 +21,9 @@ class LocalizationController extends ChangeNotifier {
   }
 
   String getTranslate(String text) {
+    if (!appLocalizations.containsKey(text)) {
+      return '';
+    }
     return appLocalizations[text][locale];
   }
 

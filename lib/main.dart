@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
-import 'package:food_bridge/view/chooserole.dart';
-// import 'package:food_bridge/view/login.dart';
+import 'package:food_bridge/view/login.dart';
+
+final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: 'Food Bridge',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSwatch().copyWith(
@@ -22,7 +24,8 @@ class MyApp extends StatelessWidget {
           secondary: const Color(0xff489FB5),
         ),
       ),
-      home: ChooseRoleScreen(),
+      home: LoginScreen(),
+      // home: const HomeScreen(),
     );
   }
 }
