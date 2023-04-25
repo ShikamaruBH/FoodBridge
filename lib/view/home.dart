@@ -43,7 +43,6 @@ class HomeScreen extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 children: [
                   const AccountHeaderWidget(),
-                  MenuListTile(Icons.home, 'home-title', () {}),
                   MenuListTile(
                       Icons.account_box_rounded, 'account-title', () {}),
                   MenuListTile(Icons.settings, 'setting-title', () {}),
