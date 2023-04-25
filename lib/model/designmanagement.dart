@@ -24,6 +24,11 @@ class StyleManagement {
     fontSize: 20,
     fontWeight: FontWeight.w500,
   );
+  static final settingsLabelTextStyle = TextStyle(
+    color: Colors.black.withOpacity(.9),
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+  );
   static final descriptionTextStyleDark = TextStyle(
     color: ColorManagement.descriptionColorDark,
     fontSize: 18,
@@ -33,6 +38,11 @@ class StyleManagement {
     color: Colors.black.withOpacity(.81),
     fontSize: 16,
     fontWeight: FontWeight.w600,
+  );
+  static final settingsItemTextStyle = TextStyle(
+    color: Colors.black.withOpacity(.85),
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
   );
   static final notificationTitleMedium = TextStyle(
     color: Colors.black.withOpacity(.78),

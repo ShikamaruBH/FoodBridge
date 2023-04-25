@@ -4,6 +4,7 @@ import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/view/login.dart';
+import 'package:food_bridge/view/settings.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -37,15 +38,21 @@ class HomeScreen extends StatelessWidget {
               ),
             ],
           ),
-          drawer: Drawer(
-            child: SafeArea(
+          drawer: SafeArea(
+            child: Drawer(
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
                   const AccountHeaderWidget(),
                   MenuListTile(
                       Icons.account_box_rounded, 'account-title', () {}),
-                  MenuListTile(Icons.settings, 'setting-title', () {}),
+                  MenuListTile(
+                    Icons.settings,
+                    'setting-title',
+                    () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => SettingsScreen(),
+                    )),
+                  ),
                   MenuListTile(Icons.logout, 'logout-title', logout),
                 ],
               ),

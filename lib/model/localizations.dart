@@ -162,16 +162,24 @@ Map<String, dynamic> appLocalizations = {
     "vi": "Tài khoản",
   },
   "setting-title": {
-    "en": "Setting",
+    "en": "Settings",
     "vi": "Cài đặt",
   },
   "logout-title": {
     "en": "Logout",
     "vi": "Đăng xuất",
   },
+  "general-setting-label": {
+    "en": "General",
+    "vi": "Chung",
+  },
   "notifications-text": {
     "en": "Notifications",
     "vi": "Thông báo",
+  },
+  "language-setting-text": {
+    "en": "Language",
+    "vi": "Ngôn ngữ",
   },
   "donor-notification-title-part-1": {
     "en": "Your donation",

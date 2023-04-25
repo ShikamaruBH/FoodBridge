@@ -77,7 +77,7 @@ class ForgotPasswordScreen extends StatelessWidget {
               Positioned(
                 left: 10,
                 top: 80,
-                child: LaguageSwitchWidget(localeController),
+                child: LaguageSwitchWidget(),
               ),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 480),

@@ -3,9 +3,8 @@ import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 
 class LaguageSwitchWidget extends StatelessWidget {
-  final LocalizationController localeController;
-  const LaguageSwitchWidget(
-    this.localeController, {
+  final localeController = LocalizationController();
+  LaguageSwitchWidget({
     super.key,
   });
 
