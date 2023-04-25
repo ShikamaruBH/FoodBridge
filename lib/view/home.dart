@@ -10,7 +10,6 @@ class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   void logout() async {
-    print('Logging out ...');
     await AuthController().signOut();
     Navigator.of(navigatorKey.currentState!.context).pushAndRemoveUntil(
         MaterialPageRoute(
@@ -39,45 +38,35 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
           drawer: Drawer(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                Container(
-                  height: 175,
-                  color: Theme.of(context).colorScheme.primary,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: CircleAvatar(
-                          radius: 57,
-                          child: Icon(
-                            Icons.person,
-                            size: 60,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: Text(
-                          AuthController().currentUsername,
-                          style: StyleManagement.usernameTextStyle,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                MenuListTile(Icons.home, 'home-title', () {}),
-                MenuListTile(Icons.account_box_rounded, 'account-title', () {}),
-                MenuListTile(Icons.settings, 'setting-title', () {}),
-                MenuListTile(Icons.logout, 'logout-title', logout),
-              ],
+            child: SafeArea(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  const AccountHeaderWidget(),
+                  MenuListTile(Icons.home, 'home-title', () {}),
+                  MenuListTile(
+                      Icons.account_box_rounded, 'account-title', () {}),
+                  MenuListTile(Icons.settings, 'setting-title', () {}),
+                  MenuListTile(Icons.logout, 'logout-title', logout),
+                ],
+              ),
             ),
           ),
-          endDrawer: Container(
-            width: 300,
-            color: Colors.blue,
+          endDrawer: SafeArea(
+            child: Drawer(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  NotificationBarWidget(0),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: 2,
+                      itemBuilder: (context, index) => NotificationCardWidget(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
           floatingActionButton: FloatingActionButton(
             child: const Icon(Icons.add),
@@ -85,6 +74,149 @@ class HomeScreen extends StatelessWidget {
           ),
           body: Container(color: Theme.of(context).colorScheme.primary),
         ),
+      ),
+    );
+  }
+}
+
+class NotificationCardWidget extends StatelessWidget {
+  final localeController = LocalizationController();
+  NotificationCardWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: ColorManagement.notificationUnread,
+      child: ListTile(
+        onTap: () {},
+        trailing: Column(
+          children: [
+            Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ],
+        ),
+        subtitle: const Padding(
+          padding: EdgeInsets.only(top: 5),
+          child: Text(
+            'Just now',
+            style: TextStyle(fontSize: 12),
+          ),
+        ),
+        title: RichText(
+            textAlign: TextAlign.start,
+            text: TextSpan(children: [
+              TextSpan(
+                text: localeController
+                    .getTranslate('donor-notification-title-part-1'),
+                style: StyleManagement.notificationTitleMedium,
+              ),
+              const TextSpan(
+                text: " Rice and Beans ",
+                style: StyleManagement.notificationTitleBold,
+              ),
+              TextSpan(
+                text: localeController
+                    .getTranslate('donor-notification-title-part-2'),
+                style: StyleManagement.notificationTitleMedium,
+              ),
+              const TextSpan(
+                text: " Nadia Kim",
+                style: StyleManagement.notificationTitleBold,
+              )
+            ])),
+      ),
+    );
+  }
+}
+
+class NotificationBarWidget extends StatelessWidget {
+  final LocalizationController localeController = LocalizationController();
+  final num total;
+  NotificationBarWidget(
+    this.total, {
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: RichText(
+              textAlign: TextAlign.start,
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: localeController.getTranslate('notifications-text'),
+                    style: StyleManagement.usernameTextStyle.copyWith(
+                      color: ColorManagement.titleColorDark,
+                    ),
+                  ),
+                  TextSpan(
+                    text: " ($total)",
+                    style: StyleManagement.usernameTextStyle.copyWith(
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        IconButton(
+          splashRadius: 20,
+          onPressed: () {},
+          icon: const Icon(
+            Icons.clear_all_rounded,
+            size: 34,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class AccountHeaderWidget extends StatelessWidget {
+  const AccountHeaderWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 175,
+      color: Theme.of(context).colorScheme.primary,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 15, top: 15, bottom: 10),
+            child: CircleAvatar(
+              radius: 57,
+              child: Icon(
+                Icons.person,
+                size: 60,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: Text(
+              AuthController().currentUsername,
+              style: StyleManagement.usernameTextStyle,
+            ),
+          ),
+        ],
       ),
     );
   }

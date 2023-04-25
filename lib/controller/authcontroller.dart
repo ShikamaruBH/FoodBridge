@@ -4,7 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthController {
   static final AuthController _instance = AuthController._internal();
-  String currentUsername = 'SBH';
+  String currentUsername = 'No username';
   String currentUserRole = '';
 
   AuthController._internal();
@@ -56,7 +56,6 @@ class AuthController {
       IdTokenResult idTokenResult =
           await userCredential.user!.getIdTokenResult();
       currentUserRole = idTokenResult.claims?['role'] ?? '';
-      print('Current user role: $currentUserRole');
       return {"success": true};
     } on FirebaseFunctionsException catch (err) {
       return {"success": false, "err": err};

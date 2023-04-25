@@ -7,6 +7,7 @@ class ColorManagement {
   static final descriptionColorDark = Colors.black.withOpacity(0.55);
   static final descriptionColorLight = Colors.white.withOpacity(0.55);
   static const selectedColor = Color(0xffFFA62B);
+  static const notificationUnread = Color(0xffEAEAEA);
   static const materialStateWhite = MaterialStatePropertyAll(Colors.white);
   static final materialStateWhiteInactive =
       MaterialStatePropertyAll(Colors.white.withOpacity(0.2));
@@ -18,11 +19,6 @@ class StyleManagement {
     fontSize: 28,
     fontWeight: FontWeight.bold,
   );
-  static final menuTextStyle = TextStyle(
-    color: Colors.black.withOpacity(.81),
-    fontSize: 16,
-    fontWeight: FontWeight.w600,
-  );
   static const usernameTextStyle = TextStyle(
     color: Colors.white,
     fontSize: 20,
@@ -31,6 +27,21 @@ class StyleManagement {
   static final descriptionTextStyleDark = TextStyle(
     color: ColorManagement.descriptionColorDark,
     fontSize: 18,
+    fontWeight: FontWeight.w500,
+  );
+  static final menuTextStyle = TextStyle(
+    color: Colors.black.withOpacity(.81),
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+  );
+  static final notificationTitleMedium = TextStyle(
+    color: Colors.black.withOpacity(.78),
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+  );
+  static const notificationTitleBold = TextStyle(
+    color: Color(0xff489FB5),
+    fontSize: 14,
     fontWeight: FontWeight.w500,
   );
   static final descriptionTextStyleLight = TextStyle(

@@ -169,4 +169,16 @@ Map<String, dynamic> appLocalizations = {
     "en": "Logout",
     "vi": "Đăng xuất",
   },
+  "notifications-text": {
+    "en": "Notifications",
+    "vi": "Thông báo",
+  },
+  "donor-notification-title-part-1": {
+    "en": "Your donation",
+    "vi": "Đóng góp",
+  },
+  "donor-notification-title-part-2": {
+    "en": "has new recipient",
+    "vi": "của bạn có người nhận mới",
+  },
 };
