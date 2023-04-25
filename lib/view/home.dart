@@ -7,6 +7,8 @@ import 'package:food_bridge/view/login.dart';
 import 'package:food_bridge/view/settings.dart';
 import 'package:provider/provider.dart';
 
+final localeController = LocalizationController();
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -24,70 +26,184 @@ class HomeScreen extends StatelessWidget {
     return ChangeNotifierProvider.value(
       value: LocalizationController(),
       child: Consumer<LocalizationController>(
-        builder: (_, localeController, __) => Scaffold(
-          appBar: AppBar(
-            elevation: 0,
-            actions: [
-              Builder(
-                builder: (context) => IconButton(
-                  icon: const Icon(Icons.notifications),
-                  onPressed: () => Scaffold.of(context).openEndDrawer(),
-                  tooltip:
-                      MaterialLocalizations.of(context).openAppDrawerTooltip,
+        builder: (_, localeController, __) => LayoutBuilder(
+          builder: (context, constraints) => Scaffold(
+            appBar: AppBar(
+              elevation: 0,
+              actions: [
+                Builder(
+                  builder: (context) => IconButton(
+                    icon: const Icon(Icons.notifications),
+                    onPressed: () => Scaffold.of(context).openEndDrawer(),
+                    tooltip:
+                        MaterialLocalizations.of(context).openAppDrawerTooltip,
+                  ),
+                ),
+              ],
+            ),
+            drawer: SafeArea(
+              child: Drawer(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    const AccountHeaderWidget(),
+                    MenuListTile(
+                        Icons.account_box_rounded, 'account-title', () {}),
+                    MenuListTile(
+                      Icons.settings,
+                      'setting-title',
+                      () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const SettingsScreen(),
+                      )),
+                    ),
+                    MenuListTile(Icons.logout, 'logout-title', logout),
+                  ],
                 ),
               ),
-            ],
-          ),
-          drawer: SafeArea(
-            child: Drawer(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  const AccountHeaderWidget(),
-                  MenuListTile(
-                      Icons.account_box_rounded, 'account-title', () {}),
-                  MenuListTile(
-                    Icons.settings,
-                    'setting-title',
-                    () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => SettingsScreen(),
-                    )),
-                  ),
-                  MenuListTile(Icons.logout, 'logout-title', logout),
-                ],
+            ),
+            endDrawer: SafeArea(
+              child: Drawer(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const NotificationBarWidget(0),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: 2,
+                        itemBuilder: (context, index) =>
+                            const NotificationCardWidget(),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          endDrawer: SafeArea(
-            child: Drawer(
+            floatingActionButton: FloatingActionButton(
+              child: const Icon(Icons.add),
+              onPressed: () {},
+            ),
+            body: Container(
+              width: constraints.maxWidth,
+              height: constraints.maxHeight,
+              color: Theme.of(context).colorScheme.primary,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  NotificationBarWidget(0),
+                  const CircleAvatar(
+                    radius: 57,
+                    child: Icon(
+                      Icons.person,
+                      size: 60,
+                    ),
+                  ),
+                  const CustomSpacerWidget(),
+                  Text(
+                    AuthController().currentUsername,
+                    style: StyleManagement.usernameTextStyle,
+                  ),
+                  const CustomSpacerWidget(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10),
+                        child: Text(
+                          localeController.getTranslate('welcome-back-text'),
+                          style: StyleManagement.regularTextStyle,
+                        ),
+                      )
+                    ],
+                  ),
+                  const CustomSpacerWidget(),
+                  MonthlyDescriptionTextWidget(5),
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: 2,
-                      itemBuilder: (context, index) => NotificationCardWidget(),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Card(
+                        margin: EdgeInsets.zero,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(13),
+                            topRight: Radius.circular(13),
+                          ),
+                        ),
+                        child: ListView(
+                          children: const [
+                            Text('1'),
+                            Text('1'),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          floatingActionButton: FloatingActionButton(
-            child: const Icon(Icons.add),
-            onPressed: () {},
-          ),
-          body: Container(color: Theme.of(context).colorScheme.primary),
         ),
       ),
     );
   }
 }
 
+class MonthlyDescriptionTextWidget extends StatelessWidget {
+  final num total;
+  // ignore: prefer_const_constructors_in_immutables
+  MonthlyDescriptionTextWidget(
+    this.total, {
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) => Padding(
+        padding: const EdgeInsets.only(left: 10),
+        child: SizedBox(
+          width: constraints.maxWidth,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Flexible(
+                child: RichText(
+                    text: TextSpan(
+                        style: StyleManagement.monthlyDescriptionTextStyle,
+                        children: [
+                      TextSpan(
+                        text: localeController
+                            .getTranslate('monthly-donation-text-part-1'),
+                      ),
+                      TextSpan(
+                        text: ' $total ',
+                      ),
+                      TextSpan(
+                        text: localeController
+                            .getTranslate('monthly-donation-text-part-2'),
+                      ),
+                    ])),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CustomSpacerWidget extends StatelessWidget {
+  const CustomSpacerWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      height: 10,
+    );
+  }
+}
+
 class NotificationCardWidget extends StatelessWidget {
-  final localeController = LocalizationController();
-  NotificationCardWidget({
+  const NotificationCardWidget({
     super.key,
   });
 
@@ -118,35 +234,34 @@ class NotificationCardWidget extends StatelessWidget {
         ),
         title: RichText(
             textAlign: TextAlign.start,
-            text: TextSpan(children: [
-              TextSpan(
-                text: localeController
-                    .getTranslate('donor-notification-title-part-1'),
+            text: TextSpan(
                 style: StyleManagement.notificationTitleMedium,
-              ),
-              const TextSpan(
-                text: " Rice and Beans ",
-                style: StyleManagement.notificationTitleBold,
-              ),
-              TextSpan(
-                text: localeController
-                    .getTranslate('donor-notification-title-part-2'),
-                style: StyleManagement.notificationTitleMedium,
-              ),
-              const TextSpan(
-                text: " Nadia Kim",
-                style: StyleManagement.notificationTitleBold,
-              )
-            ])),
+                children: [
+                  TextSpan(
+                    text: localeController
+                        .getTranslate('donor-notification-title-part-1'),
+                  ),
+                  const TextSpan(
+                    text: " Rice and Beans ",
+                    style: StyleManagement.notificationTitleBold,
+                  ),
+                  TextSpan(
+                    text: localeController
+                        .getTranslate('donor-notification-title-part-2'),
+                  ),
+                  const TextSpan(
+                    text: " Nadia Kim",
+                    style: StyleManagement.notificationTitleBold,
+                  )
+                ])),
       ),
     );
   }
 }
 
 class NotificationBarWidget extends StatelessWidget {
-  final LocalizationController localeController = LocalizationController();
   final num total;
-  NotificationBarWidget(
+  const NotificationBarWidget(
     this.total, {
     super.key,
   });
@@ -229,11 +344,10 @@ class AccountHeaderWidget extends StatelessWidget {
 }
 
 class MenuListTile extends StatelessWidget {
-  final localeController = LocalizationController();
   final IconData icon;
   final String title;
   final Function callback;
-  MenuListTile(
+  const MenuListTile(
     this.icon,
     this.title,
     this.callback, {

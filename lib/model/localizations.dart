@@ -177,6 +177,18 @@ Map<String, dynamic> appLocalizations = {
     "en": "Notifications",
     "vi": "Thông báo",
   },
+  "welcome-back-text": {
+    "en": "Welcome back !",
+    "vi": "Chào mừng quay lại !",
+  },
+  "monthly-donation-text-part-1": {
+    "en": "You've created",
+    "vi": "Bạn đã tạo",
+  },
+  "monthly-donation-text-part-2": {
+    "en": "donations this month.",
+    "vi": "quyên góp trong tháng này.",
+  },
   "language-setting-text": {
     "en": "Language",
     "vi": "Ngôn ngữ",

@@ -19,6 +19,11 @@ class StyleManagement {
     fontSize: 28,
     fontWeight: FontWeight.bold,
   );
+  static const monthlyDescriptionTextStyle = TextStyle(
+    color: Colors.white,
+    fontSize: 24,
+    fontWeight: FontWeight.w500,
+  );
   static const usernameTextStyle = TextStyle(
     color: Colors.white,
     fontSize: 20,
@@ -33,6 +38,11 @@ class StyleManagement {
     color: ColorManagement.descriptionColorDark,
     fontSize: 18,
     fontWeight: FontWeight.w500,
+  );
+  static const regularTextStyle = TextStyle(
+    color: Colors.white,
+    fontSize: 17,
+    fontWeight: FontWeight.w400,
   );
   static final menuTextStyle = TextStyle(
     color: Colors.black.withOpacity(.81),
