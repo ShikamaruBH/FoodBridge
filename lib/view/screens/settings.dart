@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/model/designmanagement.dart';
-import 'package:food_bridge/view/languageswitch.dart';
+import 'package:food_bridge/view/widgets/languageswitch.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatelessWidget {

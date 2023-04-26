@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
-import 'package:food_bridge/view/login.dart';
+import 'package:food_bridge/view/screens/login.dart';
 
 class LoadingDialog extends StatelessWidget {
   const LoadingDialog({

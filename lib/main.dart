@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
-import 'package:food_bridge/view/home.dart';
+import 'package:food_bridge/view/screens/home.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 

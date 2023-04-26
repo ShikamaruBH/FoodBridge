@@ -3,8 +3,8 @@ import 'package:food_bridge/controller/authcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
-import 'package:food_bridge/view/login.dart';
-import 'package:food_bridge/view/settings.dart';
+import 'package:food_bridge/view/screens/login.dart';
+import 'package:food_bridge/view/screens/settings.dart';
 import 'package:provider/provider.dart';
 
 final localeController = LocalizationController();
@@ -115,28 +115,147 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const CustomSpacerWidget(),
                   MonthlyDescriptionTextWidget(5),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Card(
-                        margin: EdgeInsets.zero,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(13),
-                            topRight: Radius.circular(13),
+                  DonationHistoryWidget(),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DonationHistoryWidget extends StatelessWidget {
+  // ignore: prefer_const_constructors_in_immutables
+  DonationHistoryWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: Card(
+          margin: EdgeInsets.zero,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(13),
+              topRight: Radius.circular(13),
+            ),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                          style: StyleManagement.usernameTextStyle
+                              .copyWith(color: Colors.black),
+                          children: [
+                            TextSpan(
+                              text: localeController
+                                  .getTranslate('donation-history-text'),
+                            ),
+                            TextSpan(
+                              text: ' (2)',
+                              style: StyleManagement.notificationTitleBold
+                                  .copyWith(fontSize: 20),
+                            )
+                          ]),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: 2,
+                  itemBuilder: (context, index) => const DonationTileWidget(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DonationTileWidget extends StatelessWidget {
+  const DonationTileWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Card(
+        color: ColorManagement.donationTileColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(9),
+        ),
+        child: InkWell(
+          onTap: () {},
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Container(
+                  width: 71,
+                  height: 85,
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade700,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 10, top: 2, bottom: 2, right: 0),
+                    child: SizedBox(
+                      height: 85,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: const [
+                              Expanded(
+                                child: Text(
+                                  "Mixed Vegetables and a b c d e f g h i j k",
+                                  overflow: TextOverflow.ellipsis,
+                                  style:
+                                      StyleManagement.historyItemTitleTextStyle,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        child: ListView(
-                          children: const [
-                            Text('1'),
-                            Text('1'),
-                          ],
-                        ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  "Category: Grocery, Cooked, Beverage, Fruits",
+                                  style: StyleManagement
+                                      .historyItemCategoryTextStyle,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: const [Text("Apr 15, 2023")],
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

@@ -7,6 +7,7 @@ class ColorManagement {
   static final descriptionColorDark = Colors.black.withOpacity(0.55);
   static final descriptionColorLight = Colors.white.withOpacity(0.55);
   static const selectedColor = Color(0xffFFA62B);
+  static const donationTileColor = Color(0xffF5F5F5);
   static const notificationUnread = Color(0xffEAEAEA);
   static const materialStateWhite = MaterialStatePropertyAll(Colors.white);
   static final materialStateWhiteInactive =
@@ -39,6 +40,11 @@ class StyleManagement {
     fontSize: 18,
     fontWeight: FontWeight.w500,
   );
+  static const historyItemTitleTextStyle = TextStyle(
+    color: Colors.black,
+    fontSize: 17,
+    fontWeight: FontWeight.w500,
+  );
   static const regularTextStyle = TextStyle(
     color: Colors.white,
     fontSize: 17,
@@ -54,6 +60,11 @@ class StyleManagement {
     fontSize: 16,
     fontWeight: FontWeight.w500,
   );
+  static final historyItemCategoryTextStyle = TextStyle(
+    color: Colors.black.withOpacity(.46),
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+  );
   static final notificationTitleMedium = TextStyle(
     color: Colors.black.withOpacity(.78),
     fontSize: 14,
@@ -62,7 +73,7 @@ class StyleManagement {
   static const notificationTitleBold = TextStyle(
     color: Color(0xff489FB5),
     fontSize: 14,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.bold,
   );
   static final descriptionTextStyleLight = TextStyle(
     color: ColorManagement.descriptionColorLight,

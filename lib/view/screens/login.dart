@@ -8,12 +8,12 @@ import 'package:food_bridge/controller/passwordtextfieldcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
-import 'package:food_bridge/view/chooserole.dart';
-import 'package:food_bridge/view/dialogs.dart';
-import 'package:food_bridge/view/forgotpassword.dart';
-import 'package:food_bridge/view/home.dart';
-import 'package:food_bridge/view/languageswitch.dart';
-import 'package:food_bridge/view/register.dart';
+import 'package:food_bridge/view/screens/chooserole.dart';
+import 'package:food_bridge/view/widgets/dialogs.dart';
+import 'package:food_bridge/view/screens/forgotpassword.dart';
+import 'package:food_bridge/view/screens/home.dart';
+import 'package:food_bridge/view/widgets/languageswitch.dart';
+import 'package:food_bridge/view/screens/register.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
 

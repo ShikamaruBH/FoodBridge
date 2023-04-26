@@ -6,8 +6,8 @@ import 'package:food_bridge/controller/authcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
-import 'package:food_bridge/view/dialogs.dart';
-import 'package:food_bridge/view/languageswitch.dart';
+import 'package:food_bridge/view/widgets/dialogs.dart';
+import 'package:food_bridge/view/widgets/languageswitch.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
 

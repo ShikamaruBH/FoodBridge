@@ -5,10 +5,9 @@ import 'package:food_bridge/controller/authcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/rolebuttoncontroller.dart';
 import 'package:food_bridge/model/designmanagement.dart';
-import 'package:food_bridge/view/dialogs.dart';
-import 'package:food_bridge/view/home.dart';
-import 'package:food_bridge/view/languageswitch.dart';
-import 'package:food_bridge/view/roleselectcolumn.dart';
+import 'package:food_bridge/view/widgets/dialogs.dart';
+import 'package:food_bridge/view/screens/home.dart';
+import 'package:food_bridge/view/widgets/languageswitch.dart';
 import 'package:provider/provider.dart';
 
 class ChooseRoleScreen extends StatelessWidget {
@@ -172,6 +171,102 @@ class ChooseRoleScreen extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class RoleSelectButton extends StatelessWidget {
+  final String imagePath;
+  final String role;
+  final bool mirror;
+  const RoleSelectButton(
+    this.imagePath,
+    this.role,
+    this.mirror, {
+    super.key,
+  });
+
+  Color getColor(RoleButtonController controller, context) {
+    return controller.currentRole == role
+        ? ColorManagement.selectedColor
+        : Theme.of(context).colorScheme.secondary;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipOval(
+      child: ChangeNotifierProvider.value(
+        value: RoleButtonController(),
+        child: Consumer<RoleButtonController>(
+          builder: (_, controller, __) => Material(
+            color: getColor(controller, context), // Button color
+            child: InkWell(
+              splashColor: Colors.white.withOpacity(0.5), // Splash color
+              onTap: () {
+                controller.setRole(role);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: SizedBox(
+                    width: 56,
+                    height: 56,
+                    child: Transform.scale(
+                        scaleX: mirror ? -1 : 1,
+                        child: Image.asset(imagePath))),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SelectRoleColumn extends StatelessWidget {
+  final LocalizationController localeController;
+  final String imgPath;
+  final String title;
+  final String desc;
+  final String role;
+  final bool mirror;
+
+  const SelectRoleColumn(
+    this.imgPath,
+    this.role,
+    this.title,
+    this.desc,
+    this.localeController,
+    this.mirror, {
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 90,
+      height: 180,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          RoleSelectButton(imgPath, role, mirror),
+          const SizedBox(
+            height: 5,
+          ),
+          Text(
+            localeController.getTranslate(title),
+            style: const TextStyle(
+                fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          Text(
+            localeController.getTranslate(desc),
+            textAlign: TextAlign.center,
+            style: StyleManagement.descriptionTextStyleLight,
+          ),
+        ],
       ),
     );
   }

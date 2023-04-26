@@ -193,6 +193,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "Language",
     "vi": "Ngôn ngữ",
   },
+  "donation-history-text": {
+    "en": "Donation history",
+    "vi": "Lịch sử quyên góp",
+  },
   "donor-notification-title-part-1": {
     "en": "Your donation",
     "vi": "Đóng góp",
