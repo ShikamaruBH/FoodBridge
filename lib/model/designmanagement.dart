@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 
+final localeController = LocalizationController();
+
 class ColorManagement {
   static final titleColorDark = Colors.black.withOpacity(0.71);
   static final iconColor = Colors.black.withOpacity(0.85);
@@ -59,6 +61,11 @@ class StyleManagement {
     color: Colors.black.withOpacity(.85),
     fontSize: 16,
     fontWeight: FontWeight.w500,
+  );
+  static final addressTextStyle = TextStyle(
+    color: Colors.black.withOpacity(.85),
+    fontSize: 15,
+    fontWeight: FontWeight.w600,
   );
   static final historyItemCategoryTextStyle = TextStyle(
     color: Colors.black.withOpacity(.46),
@@ -122,5 +129,30 @@ class StyleManagement {
         icon,
         size: 32,
         color: ColorManagement.iconColor,
+      );
+}
+
+class DecoratorManagement {
+  static get addressTextFieldDecorator => InputDecoration(
+        isDense: true,
+        hintText: localeController.getTranslate('address-hint-text'),
+        contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: Colors.white.withOpacity(0),
+          ),
+        ),
+        prefixIcon: Icon(
+          Icons.location_on_sharp,
+          color: ColorManagement.descriptionColorDark,
+        ),
+        fillColor: Colors.white,
+        filled: true,
+        errorStyle: const TextStyle(color: Color(0xffFFA62B)),
+        errorBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Color(0xffFFA62B)),
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+        ),
       );
 }

@@ -5,6 +5,10 @@
         <provider android:authorities="com.facebook.orca.provider.PlatformProvider" />
     </queries>
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
    <application
         android:label="food_bridge"
         android:name="${applicationName}"
@@ -53,9 +57,9 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyBsMkcCb61CevxuTKee09quBOI0qbo6BFA"/>
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
    	    <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/facebook_client_token"/>
     </application>
-    
-    <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>

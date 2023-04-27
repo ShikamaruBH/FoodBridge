@@ -51,6 +51,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "Loading...",
     "vi": "Đang load...",
   },
+  "address-hint-text": {
+    "en": "Pick or seach for your location on the map",
+    "vi": "Chọn hoặc tìm địa chỉ của bạn trên bản đồ",
+  },
   "register-success-text": {
     "en": "Register success",
     "vi": "Đăng ký hoàn tất",
@@ -192,6 +196,14 @@ Map<String, dynamic> appLocalizations = {
   "language-setting-text": {
     "en": "Language",
     "vi": "Ngôn ngữ",
+  },
+  "choose-location-title": {
+    "en": "Choose location",
+    "vi": "Chọn vị trí",
+  },
+  "choose-your-location-title": {
+    "en": "Choose your location",
+    "vi": "Chọn vị trí của bạn",
   },
   "donation-history-text": {
     "en": "Donation history",

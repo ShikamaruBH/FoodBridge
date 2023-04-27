@@ -33,14 +33,19 @@ dependencies:
 
   intl: ^0.17.0
   provider: ^6.0.5
-  firebase_core: ^2.7.0
+  geocoding: ^2.1.0
   firebase_auth: ^4.2.9
+  firebase_core: ^2.7.0
   google_sign_in: ^6.1.0
   cloud_firestore: ^4.3.1
   cloud_functions: ^4.0.11
+  permission_handler: ^10.2.0
   shared_preferences: ^2.0.17
+  google_maps_flutter: ^2.2.5
   flutter_form_builder: ^7.7.0
   flutter_facebook_auth: ^5.0.8
+  flutter_google_places: ^0.3.0
+  google_maps_webservice: ^0.0.19
   form_builder_validators: ^8.4.0
 
 
