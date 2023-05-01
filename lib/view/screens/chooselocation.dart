@@ -22,7 +22,7 @@ class ChooseLocationScreen extends StatelessWidget {
     if (_formKey.currentState!.validate()) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => const NewDonationScreen(),
+          builder: (context) => NewDonationScreen(),
         ),
       );
     }
@@ -55,6 +55,7 @@ class ChooseLocationScreen extends StatelessWidget {
                       mode: Mode.overlay, // Mode.fullscreen
                       language: localeController.locale,
                       types: [],
+                      radius: 100000000,
                       strictbounds: false,
                       components: [],
                     );
@@ -129,7 +130,14 @@ class ChooseLocationScreen extends StatelessWidget {
                                             .addressTextFieldController,
                                         style: StyleManagement.addressTextStyle,
                                         decoration: DecoratorManagement
-                                            .addressTextFieldDecorator,
+                                            .addressTextFieldDecorator(
+                                          'address-hint-text',
+                                          Icon(
+                                            Icons.location_on_sharp,
+                                            color: ColorManagement
+                                                .descriptionColorDark,
+                                          ),
+                                        ),
                                         validator: CustomValidator.required,
                                       ),
                                     ),

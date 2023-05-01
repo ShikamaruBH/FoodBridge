@@ -6,6 +6,7 @@ import 'package:food_bridge/controller/authcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
+import 'package:food_bridge/view/screens/login.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/languageswitch.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -32,8 +33,14 @@ class ForgotPasswordScreen extends StatelessWidget {
           showDialog(
             barrierDismissible: false,
             context: context,
-            builder: (context) => const SuccessDialog(
-                'send-email-success-text', 'send-email-success-description'),
+            builder: (context) => SuccessDialog(
+                'send-email-success-text',
+                'send-email-success-description',
+                () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => LoginScreen(),
+                      ),
+                    )),
           );
         } else {
           showDialog(

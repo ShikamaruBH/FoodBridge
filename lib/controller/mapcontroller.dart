@@ -5,7 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapController extends ChangeNotifier {
   static final MapController _instance = MapController._internal();
-  static const String kGoogleApiKey = 'AIzaSyD1EtPAwr6YxPoMF-bGsB1XKlb-CKvaVb0';
+  static const String kGoogleApiKey = 'AIzaSyBsMkcCb61CevxuTKee09quBOI0qbo6BFA';
   Set<Marker> markers = {};
   LatLng currentLatLng = const LatLng(45.521563, -122.677433);
   late GoogleMapController controller;
@@ -66,5 +66,9 @@ class MapController extends ChangeNotifier {
       rs += ', ${placemark.postalCode}';
     }
     return rs;
+  }
+
+  List<num> getLatLng() {
+    return [currentLatLng.latitude, currentLatLng.longitude];
   }
 }

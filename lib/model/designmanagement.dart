@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
-
-final localeController = LocalizationController();
 
 class ColorManagement {
   static final titleColorDark = Colors.black.withOpacity(0.71);
   static final iconColor = Colors.black.withOpacity(0.85);
   static final descriptionColorDark = Colors.black.withOpacity(0.55);
   static final descriptionColorLight = Colors.white.withOpacity(0.55);
+  static final foodTypeCheckBoxCardBackgroundUncheck =
+      const Color(0xffD9D9D9).withOpacity(.6);
+  static const foodTypeCheckBoxCardBackgroundChecked = Color(0xff489FB5);
+  static final foodTypeCheckBoxCardIconUncheckColor =
+      Colors.black.withOpacity(.1);
   static const selectedColor = Color(0xffFFA62B);
   static const donationTileColor = Color(0xffF5F5F5);
   static const notificationUnread = Color(0xffEAEAEA);
@@ -82,10 +86,20 @@ class StyleManagement {
     fontSize: 14,
     fontWeight: FontWeight.bold,
   );
+  static final newDonationFieldTitleTextStyle = TextStyle(
+    color: Colors.black.withOpacity(.5),
+    fontSize: 13,
+    fontWeight: FontWeight.w600,
+  );
   static final descriptionTextStyleLight = TextStyle(
     color: ColorManagement.descriptionColorLight,
     fontSize: 12,
     fontWeight: FontWeight.w500,
+  );
+  static final textFieldTextStyle = TextStyle(
+    color: ColorManagement.titleColorDark,
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
   );
   static final textButtonStyle = TextButton.styleFrom(
       padding: const EdgeInsets.all(5),
@@ -133,20 +147,28 @@ class StyleManagement {
 }
 
 class DecoratorManagement {
-  static get addressTextFieldDecorator => InputDecoration(
+  static final defaultTextFieldDecorator = InputDecoration(
+    isDense: true,
+    contentPadding: const EdgeInsets.all(11),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(
+        width: 1,
+      ),
+    ),
+  );
+  static addressTextFieldDecorator(String hint, prefixIcon) => InputDecoration(
         isDense: true,
-        hintText: localeController.getTranslate('address-hint-text'),
-        contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+        hintText: localeController.getTranslate(hint),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(
             color: Colors.white.withOpacity(0),
           ),
         ),
-        prefixIcon: Icon(
-          Icons.location_on_sharp,
-          color: ColorManagement.descriptionColorDark,
-        ),
+        prefixIcon: prefixIcon,
         fillColor: Colors.white,
         filled: true,
         errorStyle: const TextStyle(color: Color(0xffFFA62B)),

@@ -1,5 +1,6 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:food_bridge/controller/firebasecontroller.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthController {
@@ -77,13 +78,6 @@ class AuthController {
   }
 
   Future<Map<String, dynamic>> chooseRole(Map<String, String> data) async {
-    try {
-      await FirebaseFunctions.instance
-          .httpsCallable("user-updateUserRole")
-          .call(data);
-      return {"success": true};
-    } on FirebaseFunctionsException catch (err) {
-      return {"success": false, "err": err};
-    }
+    return callCloudFunction(data, "user-updateUserRole");
   }
 }

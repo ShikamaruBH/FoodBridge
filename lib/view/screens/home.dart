@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/authcontroller.dart';
+import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
@@ -9,8 +10,6 @@ import 'package:food_bridge/view/screens/settings.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-
-final localeController = LocalizationController();
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
-import 'package:food_bridge/view/screens/login.dart';
 
 class LoadingDialog extends StatelessWidget {
   const LoadingDialog({
@@ -31,9 +30,11 @@ class LoadingDialog extends StatelessWidget {
 class SuccessDialog extends StatelessWidget {
   final String title;
   final String content;
+  final Function callback;
   const SuccessDialog(
     this.title,
-    this.content, {
+    this.content,
+    this.callback, {
     Key? key,
   }) : super(key: key);
 
@@ -61,11 +62,7 @@ class SuccessDialog extends StatelessWidget {
         TextButton(
           onPressed: () {
             Navigator.pop(context);
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => LoginScreen(),
-              ),
-            );
+            callback();
           },
           child: const Text("OK"),
         ),

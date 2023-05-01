@@ -51,6 +51,66 @@ Map<String, dynamic> appLocalizations = {
     "en": "Loading...",
     "vi": "Đang load...",
   },
+  "new-donation-title": {
+    "en": "New donation",
+    "vi": "Tạo quyên góp mới",
+  },
+  "food-type-title": {
+    "en": "Food category",
+    "vi": "Loại thực phẩm",
+  },
+  "food-title-title": {
+    "en": "Food title",
+    "vi": "Tiêu đề món ăn",
+  },
+  "food-quantity-title": {
+    "en": "Quantity",
+    "vi": "Số lượng",
+  },
+  "food-unit-title": {
+    "en": "Unit",
+    "vi": "Đơn vị",
+  },
+  "food-start-date-title": {
+    "en": "Start",
+    "vi": "Bắt đầu",
+  },
+  "food-end-date-title": {
+    "en": "End",
+    "vi": "Kết thúc",
+  },
+  "food-photo-title": {
+    "en": "Photo",
+    "vi": "Ảnh",
+  },
+  "food-type-grocery": {
+    "en": "Grocery",
+    "vi": "Tạp hoá",
+  },
+  "food-type-cooked": {
+    "en": "Cooked",
+    "vi": "Nấu sẵn",
+  },
+  "food-type-fruits": {
+    "en": "Fruits",
+    "vi": "Trái cây",
+  },
+  "food-type-beverage": {
+    "en": "Beverage",
+    "vi": "Đồ uống",
+  },
+  "pickup-instruction-text": {
+    "en": "Pickup instruction?",
+    "vi": "Hướng dẫn lấy hàng",
+  },
+  "numberic-error-text": {
+    "en": "This field must be number",
+    "vi": "Trường này phải là chữ số",
+  },
+  "confirm-button-title": {
+    "en": "Confirm",
+    "vi": "Xác nhận",
+  },
   "address-hint-text": {
     "en": "Pick or seach for your location on the map",
     "vi": "Chọn hoặc tìm địa chỉ của bạn trên bản đồ",
@@ -62,6 +122,18 @@ Map<String, dynamic> appLocalizations = {
   "register-success-description": {
     "en": "Press OK to return to login screen",
     "vi": "Nhấn OK để trở về màn hình đăng nhập",
+  },
+  "max-number-of-image-notification": {
+    "en": "Max number of image is",
+    "vi": "Giới hạn số ảnh là",
+  },
+  "new-donation-success-text": {
+    "en": "Donation created",
+    "vi": "Đã tạo quyên góp",
+  },
+  "new-donation-success-description": {
+    "en": "Press OK to return to home screen",
+    "vi": "Nhấn OK để trở về trang chủ",
   },
   "cancel-text": {
     "en": "Cancel",

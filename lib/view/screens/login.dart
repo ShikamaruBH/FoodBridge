@@ -80,6 +80,7 @@ class LoginScreen extends StatelessWidget {
 
   void navigate() {
     if (AuthController().currentUserRole.isNotEmpty) {
+      print('User role: ${AuthController().currentUserRole}');
       Navigator.of(navigatorKey.currentState!.context).push(
         MaterialPageRoute(builder: (context) => const HomeScreen()),
       );

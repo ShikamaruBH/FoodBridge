@@ -5,8 +5,10 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:food_bridge/controller/authcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/passwordtextfieldcontroller.dart';
+import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
+import 'package:food_bridge/view/screens/login.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/languageswitch.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -15,6 +17,14 @@ import 'package:provider/provider.dart';
 class RegisterScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormBuilderState>();
   RegisterScreen({super.key});
+
+  void toLoginScreen() {
+    Navigator.of(navigatorKey.currentState!.context).push(
+      MaterialPageRoute(
+        builder: (context) => LoginScreen(),
+      ),
+    );
+  }
 
   void register(context) {
     _formKey.currentState!.save();
@@ -35,8 +45,8 @@ class RegisterScreen extends StatelessWidget {
           showDialog(
             barrierDismissible: false,
             context: context,
-            builder: (context) => const SuccessDialog(
-                'register-success-text', 'register-success-description'),
+            builder: (context) => SuccessDialog('register-success-text',
+                'register-success-description', toLoginScreen),
           );
         } else {
           showDialog(
