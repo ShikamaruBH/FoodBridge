@@ -51,6 +51,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "Loading...",
     "vi": "Đang load...",
   },
+  "no-data-text": {
+    "en": "You haven't made any donation yet.",
+    "vi": "Bạn chưa có quyên góp nào.",
+  },
   "new-donation-title": {
     "en": "New donation",
     "vi": "Tạo quyên góp mới",

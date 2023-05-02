@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/authcontroller.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
+import 'package:food_bridge/controller/donationcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
@@ -8,6 +10,7 @@ import 'package:food_bridge/view/screens/chooselocation.dart';
 import 'package:food_bridge/view/screens/login.dart';
 import 'package:food_bridge/view/screens/settings.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -155,53 +158,75 @@ class DonationHistoryWidget extends StatelessWidget {
               topRight: Radius.circular(13),
             ),
           ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    RichText(
-                      text: TextSpan(
-                          style: StyleManagement.usernameTextStyle
-                              .copyWith(color: Colors.black),
-                          children: [
-                            TextSpan(
-                              text: localeController
-                                  .getTranslate('donation-history-text'),
-                            ),
-                            TextSpan(
-                              text: ' (2)',
-                              style: StyleManagement.notificationTitleBold
-                                  .copyWith(fontSize: 20),
-                            )
-                          ]),
+          child: ChangeNotifierProvider.value(
+            value: DonationController(),
+            child: Consumer<DonationController>(
+              builder: (_, donationController, __) => Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                              style: StyleManagement.usernameTextStyle
+                                  .copyWith(color: Colors.black),
+                              children: [
+                                TextSpan(
+                                  text: localeController
+                                      .getTranslate('donation-history-text'),
+                                ),
+                                TextSpan(
+                                  text:
+                                      ' (${donationController.isLoading ? 0 : donationController.donations.length})',
+                                  style: StyleManagement.notificationTitleBold
+                                      .copyWith(fontSize: 20),
+                                )
+                              ]),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  Expanded(
+                    child: getHistoryListView(),
+                  ),
+                ],
               ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: 2,
-                  itemBuilder: (context, index) => const DonationTileWidget(),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
+
+  getHistoryListView() {
+    if (donationController.donations.isEmpty) {
+      return Text(localeController.getTranslate('no-data-text'));
+    }
+    if (donationController.donations.isNotEmpty &&
+        !donationController.isLoading) {
+      return ListView.builder(
+        itemCount: donationController.donations.length,
+        itemBuilder: (context, index) => DonationTileWidget(index),
+      );
+    }
+    if (donationController.isLoading) {
+      return Text(localeController.getTranslate('loading-text'));
+    }
+  }
 }
 
 class DonationTileWidget extends StatelessWidget {
-  const DonationTileWidget({
+  final int index;
+  const DonationTileWidget(
+    this.index, {
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
+    final donation = donationController.donations[index];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Card(
@@ -215,12 +240,12 @@ class DonationTileWidget extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                Container(
-                  width: 71,
-                  height: 85,
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade700,
-                    borderRadius: BorderRadius.circular(5),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(7),
+                  child: SizedBox(
+                    width: 71,
+                    height: 85,
+                    child: getImage(donation),
                   ),
                 ),
                 Expanded(
@@ -235,10 +260,10 @@ class DonationTileWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            children: const [
+                            children: [
                               Expanded(
                                 child: Text(
-                                  "Mixed Vegetables and a b c d e f g h i j k",
+                                  donation.title,
                                   overflow: TextOverflow.ellipsis,
                                   style:
                                       StyleManagement.historyItemTitleTextStyle,
@@ -250,7 +275,7 @@ class DonationTileWidget extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: Text(
-                                  "Category: Grocery, Cooked, Beverage, Fruits",
+                                  "Category: ${donation.categories.map((e) => localeController.getTranslate(e)).join(", ")}",
                                   style: StyleManagement
                                       .historyItemCategoryTextStyle,
                                 ),
@@ -258,7 +283,10 @@ class DonationTileWidget extends StatelessWidget {
                             ],
                           ),
                           Row(
-                            children: const [Text("Apr 15, 2023")],
+                            children: [
+                              Text(DateFormat('dd/MM/yyyy')
+                                  .format(donation.created))
+                            ],
                           ),
                         ],
                       ),
@@ -270,6 +298,27 @@ class DonationTileWidget extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  getImage(donation) {
+    if (donation.imgs.isEmpty ||
+        !donationController.imgURLs.containsKey(donation.imgs.first)) {
+      return null;
+    }
+    return CachedNetworkImage(
+      imageUrl: donationController.imgURLs[donation.imgs.first]!,
+      placeholder: (context, url) => const Center(
+        child: SizedBox(
+          width: 30,
+          height: 30,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+          ),
+        ),
+      ),
+      errorWidget: (context, url, error) => const Icon(Icons.error),
+      fit: BoxFit.cover,
     );
   }
 }

@@ -46,6 +46,7 @@ dependencies:
   shared_preferences: ^2.0.17
   google_maps_flutter: ^2.2.5
   flutter_form_builder: ^7.7.0
+  cached_network_image: ^3.2.3
   flutter_facebook_auth: ^5.0.8
   flutter_google_places: ^0.3.0
   google_maps_webservice: ^0.0.19

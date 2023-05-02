@@ -36,12 +36,12 @@ class NewDonationScreen extends StatelessWidget {
       Map<String, dynamic> data = {
         "latlng": MapController().getLatLng(),
         'note': formData['note']?.trim() ?? "",
-        'foodCategory': List.from(FoodTypeCheckBoxController().checked.keys),
+        'categories': List.from(FoodTypeCheckBoxController().checked.keys),
         'title': formData['title'].trim(),
         'quantity': formData['quantity'].trim(),
         'unit': formData['unit'].trim(),
-        'start': formData['start'].toIso8601String(),
-        'end': formData['end'].toIso8601String(),
+        'start': formData['start'].toUtc().toIso8601String(),
+        'end': formData['end'].toUtc().toIso8601String(),
       };
       await DonationController().createDonation(data).then((result) {
         Navigator.pop(context);
@@ -159,7 +159,7 @@ class NewDonationScreen extends StatelessWidget {
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
-                                    children: [
+                                    children: const [
                                       FoodTypeCheckBoxWidget(
                                         'food-type-grocery',
                                         Icons.local_grocery_store_rounded,
@@ -264,7 +264,7 @@ class NewDonationScreen extends StatelessWidget {
                                             child: FormBuilderDateTimePicker(
                                               name: 'start',
                                               format: DateFormat(
-                                                  'MMM d, yyyy hh:mm a'),
+                                                  'dd/MM/yyyy hh:mm a'),
                                               style: StyleManagement
                                                   .textFieldTextStyle,
                                               currentDate: DateTime.now(),
@@ -291,7 +291,7 @@ class NewDonationScreen extends StatelessWidget {
                                             child: FormBuilderDateTimePicker(
                                               name: 'end',
                                               format: DateFormat(
-                                                  'MMM d, yyyy hh:mm a'),
+                                                  'dd/MM/yyyy hh:mm a'),
                                               style: StyleManagement
                                                   .textFieldTextStyle,
                                               currentDate: DateTime.now(),
@@ -381,8 +381,7 @@ class NewDonationScreen extends StatelessWidget {
 
 class ImageListTileWidget extends StatelessWidget {
   final int index;
-  final donationController = DonationController();
-  ImageListTileWidget(
+  const ImageListTileWidget(
     this.index, {
     super.key,
   });
@@ -427,7 +426,6 @@ class ImageListTileWidget extends StatelessWidget {
 
 class NewImageButton extends StatelessWidget {
   final ImagePicker picker = ImagePicker();
-  final donationController = DonationController();
   static const int maxImg = 5;
   NewImageButton({
     super.key,
@@ -469,9 +467,8 @@ class NewImageButton extends StatelessWidget {
 class FoodTypeCheckBoxWidget extends StatelessWidget {
   final String type;
   final IconData icon;
-  final localeController = LocalizationController();
 
-  FoodTypeCheckBoxWidget(
+  const FoodTypeCheckBoxWidget(
     this.type,
     this.icon, {
     super.key,

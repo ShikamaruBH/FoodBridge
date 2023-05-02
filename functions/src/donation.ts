@@ -8,6 +8,7 @@ exports.createDonation = functions.https.onCall(async (data, context) => {
   isAuthenticated(context);
   hasRole(context, Role.DONOR);
   data.donor = context.auth?.uid;
+  data.created = new Date();
   return donationRef
       .add(data)
       .then((documentRef) => ({"id": documentRef.id}))
