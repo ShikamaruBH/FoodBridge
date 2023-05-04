@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
+import 'package:food_bridge/model/designmanagement.dart';
 
 class LoadingDialog extends StatelessWidget {
   const LoadingDialog({
@@ -57,6 +58,7 @@ class SuccessDialog extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context);
           },
+          style: StyleManagement.textButtonStyle,
           child: Text(LocalizationController().getTranslate('cancel-text')),
         ),
         TextButton(
@@ -64,6 +66,7 @@ class SuccessDialog extends StatelessWidget {
             Navigator.pop(context);
             callback();
           },
+          style: StyleManagement.textButtonStyle,
           child: const Text("OK"),
         ),
       ],

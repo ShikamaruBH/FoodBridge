@@ -25,12 +25,13 @@ class ChooseLocationScreen extends StatelessWidget {
     }
     if (!newScreen) {
       Navigator.of(context).pop();
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => NewOrUpdateDonationScreen(null),
+        ),
+      );
     }
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => NewOrUpdateDonationScreen(null),
-      ),
-    );
   }
 
   void displayPrediction(Prediction? p) async {

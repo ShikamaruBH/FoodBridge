@@ -14,6 +14,10 @@ class SettingsScreen extends StatelessWidget {
       child: Consumer<LocalizationController>(
         builder: (_, localeController, __) => Scaffold(
           appBar: AppBar(
+            leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: const Icon(Icons.arrow_back_ios_new),
+            ),
             title: Text(localeController.getTranslate('setting-title')),
           ),
           body: ListView(

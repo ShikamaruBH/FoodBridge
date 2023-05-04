@@ -27,20 +27,19 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
   final Donation? donation;
   NewOrUpdateDonationScreen(this.donation, {super.key});
 
-  void newDonation(context) async {
+  void newDonation() async {
     _formKey.currentState!.save();
-
     if (_formKey.currentState!.validate()) {
       Map<String, dynamic> formData = _formKey.currentState!.value;
       showDialog(
         barrierDismissible: false,
-        context: context,
+        context: navigatorKey.currentState!.context,
         builder: (context) => const LoadingDialog(),
       );
       Map<String, dynamic> data = {
         "latlng": MapController().getLatLng(),
         'note': formData['note']?.trim() ?? "",
-        'categories': List.from(FoodCategoryCheckBoxController().checked.keys),
+        'categories': foodCategoryController.getChecked(),
         'title': formData['title'].trim(),
         'quantity': formData['quantity'].trim(),
         'unit': formData['unit'].trim(),
@@ -48,11 +47,11 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
         'end': formData['end'].toUtc().toIso8601String(),
       };
       await DonationController().createDonation(data).then((result) {
-        Navigator.pop(context);
+        Navigator.pop(navigatorKey.currentState!.context);
         if (result['success']) {
           showDialog(
             barrierDismissible: false,
-            context: context,
+            context: navigatorKey.currentState!.context,
             builder: (context) => SuccessDialog(
               'new-donation-success-text',
               'new-donation-success-description',
@@ -66,15 +65,69 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
         } else {
           showDialog(
             barrierDismissible: false,
-            context: context,
+            context: navigatorKey.currentState!.context,
             builder: (context) => ErrorDialog(result['err']),
           );
         }
       }).catchError((err) {
-        Navigator.pop(context);
+        Navigator.pop(navigatorKey.currentState!.context);
         showDialog(
           barrierDismissible: false,
-          context: context,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => ErrorDialog(err),
+        );
+      });
+    }
+  }
+
+  void updateDonation() async {
+    _formKey.currentState!.save();
+    if (_formKey.currentState!.validate()) {
+      Map<String, dynamic> formData = _formKey.currentState!.value;
+      showDialog(
+        barrierDismissible: false,
+        context: navigatorKey.currentState!.context,
+        builder: (context) => const LoadingDialog(),
+      );
+      Map<String, dynamic> data = {
+        'id': donation!.id,
+        "latlng": MapController().getLatLng(),
+        'note': formData['note']?.trim() ?? "",
+        'categories': foodCategoryController.getChecked(),
+        'title': formData['title'].trim(),
+        'quantity': formData['quantity'].trim(),
+        'unit': formData['unit'].trim(),
+        'start': formData['start'].toUtc().toIso8601String(),
+        'end': formData['end'].toUtc().toIso8601String(),
+      };
+      await DonationController().updateDonation(data).then((result) {
+        Navigator.pop(navigatorKey.currentState!.context);
+        if (result['success']) {
+          showDialog(
+            barrierDismissible: false,
+            context: navigatorKey.currentState!.context,
+            builder: (context) => SuccessDialog(
+              'update-donation-success-text',
+              'new-donation-success-description',
+              () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const HomeScreen(),
+                ),
+              ),
+            ),
+          );
+        } else {
+          showDialog(
+            barrierDismissible: false,
+            context: navigatorKey.currentState!.context,
+            builder: (context) => ErrorDialog(result['err']),
+          );
+        }
+      }).catchError((err) {
+        Navigator.pop(navigatorKey.currentState!.context);
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
           builder: (context) => ErrorDialog(err),
         );
       });
@@ -91,6 +144,10 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
             resizeToAvoidBottomInset: false,
             appBar: AppBar(
               elevation: 0,
+              leading: IconButton(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.arrow_back_ios_new),
+              ),
               title: Text(
                 localeController.getTranslate(
                   donation != null
@@ -442,7 +499,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
   getBottomBar(Donation? donation) {
     if (donation == null) {
       return ElevatedButton(
-        onPressed: () => newDonation(navigatorKey.currentState!.context),
+        onPressed: () => newDonation(),
         style: StyleManagement.elevatedButtonStyle.copyWith(
           backgroundColor: MaterialStatePropertyAll(
               Theme.of(navigatorKey.currentState!.context)
@@ -460,7 +517,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
       children: [
         Flexible(
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () => updateDonation(),
             style: StyleManagement.elevatedButtonStyle.copyWith(
                 backgroundColor: MaterialStatePropertyAll(
                     Theme.of(navigatorKey.currentState!.context)
@@ -552,7 +609,8 @@ class NewImageButton extends StatelessWidget {
   });
 
   void pickImage() async {
-    if (donationController.images.length >= maxImg) {
+    if (donationController.images.length + donationController.urls.length >=
+        maxImg) {
       Fluttertoast.showToast(
         msg:
             "${localeController.getTranslate('max-number-of-image-notification')} $maxImg",

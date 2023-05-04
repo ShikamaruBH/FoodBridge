@@ -19,6 +19,13 @@ class FoodCategoryCheckBoxController extends ChangeNotifier {
     notifyListeners();
   }
 
+  List<String> getChecked() {
+    return checked.entries
+        .where((entry) => entry.value == true)
+        .map((entry) => entry.key)
+        .toList();
+  }
+
   void update(List<String> categories) {
     checked.updateAll((key, value) => value = false);
     for (var category in categories) {

@@ -192,6 +192,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "Register success",
     "vi": "Đăng ký hoàn tất",
   },
+  "update-donation-success-text": {
+    "en": "Update donation success",
+    "vi": "Cập nhật thành công",
+  },
   "register-success-description": {
     "en": "Press OK to return to login screen",
     "vi": "Nhấn OK để trở về màn hình đăng nhập",

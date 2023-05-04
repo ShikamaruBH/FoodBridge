@@ -90,6 +90,22 @@ class DonationController extends ChangeNotifier {
     return callCloudFunction(data, "donation-createDonation");
   }
 
+  Future<Map<String, dynamic>> updateDonation(Map<String, dynamic> data) async {
+    List<String> imgs = [];
+    String imgName;
+    for (XFile img in images) {
+      imgName = "${DateTime.now().toString()}-${img.name}";
+      await FirebaseStorage.instance
+          .ref('${FirebaseAuth.instance.currentUser!.uid}/$imgName')
+          .putFile(File(img.path));
+      imgs.add(imgName);
+    }
+    imgs.addAll(urls);
+    data['imgs'] = imgs;
+    images.clear();
+    return callCloudFunction(data, "donation-updateDonation");
+  }
+
   void removeUrl(index) {
     urls.removeAt(index);
     notifyListeners();
