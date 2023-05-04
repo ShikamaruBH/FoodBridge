@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/mapcontroller.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
-import 'package:food_bridge/view/screens/newdonation.dart';
+import 'package:food_bridge/view/screens/neworupdatedonation.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -14,18 +15,22 @@ import 'package:provider/provider.dart';
 
 class ChooseLocationScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormBuilderState>();
-
+  final bool newScreen;
   // ignore: prefer_const_constructors_in_immutables
-  ChooseLocationScreen({super.key});
+  ChooseLocationScreen(this.newScreen, {super.key});
 
   void next(context) {
-    if (_formKey.currentState!.validate()) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => NewDonationScreen(),
-        ),
-      );
+    if (!_formKey.currentState!.validate()) {
+      return;
     }
+    if (!newScreen) {
+      Navigator.of(context).pop();
+    }
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => NewOrUpdateDonationScreen(null),
+      ),
+    );
   }
 
   void displayPrediction(Prediction? p) async {
@@ -46,6 +51,12 @@ class ChooseLocationScreen extends StatelessWidget {
             appBar: AppBar(
               title:
                   Text(localeController.getTranslate('choose-location-title')),
+              leading: IconButton(
+                  onPressed: () {
+                    mapController.controller?.dispose();
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.arrow_back_ios_new)),
               actions: [
                 IconButton(
                   onPressed: () async {

@@ -59,6 +59,14 @@ Map<String, dynamic> appLocalizations = {
     "en": "New donation",
     "vi": "Tạo quyên góp mới",
   },
+  "edit-donation-title": {
+    "en": "Edit donation",
+    "vi": "Chỉnh sửa quyên góp",
+  },
+  "donation-detail-title": {
+    "en": "Donation detail",
+    "vi": "Thông tin quyên góp",
+  },
   "food-type-title": {
     "en": "Food category",
     "vi": "Loại thực phẩm",
@@ -75,9 +83,70 @@ Map<String, dynamic> appLocalizations = {
     "en": "Unit",
     "vi": "Đơn vị",
   },
+  "edit-button-title": {
+    "en": "Edit",
+    "vi": "Chỉnh sửa",
+  },
+  "rate-button-title": {
+    "en": "Rating",
+    "vi": "Đánh giá",
+  },
+  "quantity-left-text": {
+    "en": (value, unit) => "$value $unit left",
+    "vi": (value, unit) => "còn $value $unit",
+  },
+  "time-remaining-title": {
+    "en": "Time remaning",
+    "vi": "Thời gian còn lại",
+  },
+  "time-remaining-text": {
+    "en": (days, hours, minutes, seconds) {
+      String rs = '';
+      String pad(time, unit) =>
+          '${rs.isEmpty ? "" : ", "}${time.toString().padLeft(2, '0')} $unit${time > 1 ? "s" : ""}';
+      if (days > 0) {
+        rs += '${days.toString().padLeft(2, '0')} day${days > 1 ? "s" : ""}';
+        return rs;
+      }
+      if (hours > 0) {
+        rs += pad(hours, 'hour');
+      }
+      if (minutes > 0) {
+        rs += pad(minutes, 'minute');
+      }
+      if (seconds > 0) {
+        rs += pad(seconds, 'second');
+      }
+      return rs;
+    },
+    "vi": (days, hours, minutes, seconds) {
+      String rs = '';
+      String pad(time, unit) =>
+          '${rs.isEmpty ? "" : ", "}${time.toString().padLeft(2, '0')} $unit';
+
+      if (days > 0) {
+        rs += '${days.toString().padLeft(2, '0')} ngày';
+        return rs;
+      }
+      if (hours > 0) {
+        rs += pad(hours, 'giờ');
+      }
+      if (minutes > 0) {
+        rs += pad(minutes, 'phút');
+      }
+      if (seconds > 0) {
+        rs += pad(seconds, 'giây');
+      }
+      return rs;
+    },
+  },
   "food-start-date-title": {
     "en": "Start",
     "vi": "Bắt đầu",
+  },
+  "address-title": {
+    "en": "Address",
+    "vi": "Địa chỉ",
   },
   "food-end-date-title": {
     "en": "End",
@@ -104,7 +173,7 @@ Map<String, dynamic> appLocalizations = {
     "vi": "Đồ uống",
   },
   "pickup-instruction-text": {
-    "en": "Pickup instruction?",
+    "en": "Pickup instruction",
     "vi": "Hướng dẫn lấy hàng",
   },
   "numberic-error-text": {
@@ -261,17 +330,18 @@ Map<String, dynamic> appLocalizations = {
     "en": "Welcome back !",
     "vi": "Chào mừng quay lại !",
   },
-  "monthly-donation-text-part-1": {
-    "en": "You've created",
-    "vi": "Bạn đã tạo",
-  },
-  "monthly-donation-text-part-2": {
-    "en": "donations this month.",
-    "vi": "quyên góp trong tháng này.",
+  "monthly-donation-text": {
+    "en": (total) =>
+        "You've created $total donation${total > 1 ? 's' : ''} this month.",
+    "vi": (total) => "Bạn đã tạo $total quyên góp trong tháng này.",
   },
   "language-setting-text": {
     "en": "Language",
     "vi": "Ngôn ngữ",
+  },
+  "donation-ended-text": {
+    "en": "Donation has ended",
+    "vi": "Đã quá thời gian nhận quyên góp",
   },
   "choose-location-title": {
     "en": "Choose location",

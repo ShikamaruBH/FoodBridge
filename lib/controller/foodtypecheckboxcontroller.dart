@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class FoodTypeCheckBoxController extends ChangeNotifier {
-  static final FoodTypeCheckBoxController _instance =
-      FoodTypeCheckBoxController._internal();
+class FoodCategoryCheckBoxController extends ChangeNotifier {
+  static final FoodCategoryCheckBoxController _instance =
+      FoodCategoryCheckBoxController._internal();
   Map<String, bool> checked = {};
-  FoodTypeCheckBoxController._internal();
+  FoodCategoryCheckBoxController._internal();
 
-  factory FoodTypeCheckBoxController() {
+  factory FoodCategoryCheckBoxController() {
     return _instance;
   }
 
@@ -17,5 +17,12 @@ class FoodTypeCheckBoxController extends ChangeNotifier {
   void check(String name) {
     checked[name] = !status(name);
     notifyListeners();
+  }
+
+  void update(List<String> categories) {
+    checked.updateAll((key, value) => value = false);
+    for (var category in categories) {
+      checked[category] = true;
+    }
   }
 }

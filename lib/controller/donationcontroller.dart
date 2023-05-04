@@ -15,6 +15,7 @@ class DonationController extends ChangeNotifier {
   Map<String, String> imgURLs = {};
   StreamSubscription? listener;
   List<XFile> images = [];
+  List<String> urls = [];
   bool isLoading = false;
 
   DonationController._internal() {
@@ -46,11 +47,6 @@ class DonationController extends ChangeNotifier {
         switch (element.type) {
           case DocumentChangeType.added:
             donations.add(donation);
-            for (var img in donation.imgs) {
-              imgURLs[img] = await FirebaseStorage.instance
-                  .ref("${FirebaseAuth.instance.currentUser!.uid}/$img")
-                  .getDownloadURL();
-            }
             break;
           case DocumentChangeType.modified:
             donations[donations.indexWhere((d) => d.id == donation.id)] =
@@ -90,6 +86,21 @@ class DonationController extends ChangeNotifier {
       imgs.add(imgName);
     }
     data['imgs'] = imgs;
+    images.clear();
     return callCloudFunction(data, "donation-createDonation");
+  }
+
+  void removeUrl(index) {
+    urls.removeAt(index);
+    notifyListeners();
+  }
+
+  Future<String> getUrl(String img) async {
+    if (!imgURLs.containsKey(img)) {
+      imgURLs[img] = await FirebaseStorage.instance
+          .ref("${FirebaseAuth.instance.currentUser!.uid}/$img")
+          .getDownloadURL();
+    }
+    return imgURLs[img]!;
   }
 }

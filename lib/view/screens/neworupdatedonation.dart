@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,8 +9,11 @@ import 'package:food_bridge/controller/donationcontroller.dart';
 import 'package:food_bridge/controller/foodtypecheckboxcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/mapcontroller.dart';
+import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
+import 'package:food_bridge/model/donation.dart';
+import 'package:food_bridge/view/screens/chooselocation.dart';
 import 'package:food_bridge/view/screens/home.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
@@ -18,10 +22,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class NewDonationScreen extends StatelessWidget {
+class NewOrUpdateDonationScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormBuilderState>();
-
-  NewDonationScreen({super.key});
+  final Donation? donation;
+  NewOrUpdateDonationScreen(this.donation, {super.key});
 
   void newDonation(context) async {
     _formKey.currentState!.save();
@@ -36,7 +40,7 @@ class NewDonationScreen extends StatelessWidget {
       Map<String, dynamic> data = {
         "latlng": MapController().getLatLng(),
         'note': formData['note']?.trim() ?? "",
-        'categories': List.from(FoodTypeCheckBoxController().checked.keys),
+        'categories': List.from(FoodCategoryCheckBoxController().checked.keys),
         'title': formData['title'].trim(),
         'quantity': formData['quantity'].trim(),
         'unit': formData['unit'].trim(),
@@ -87,11 +91,16 @@ class NewDonationScreen extends StatelessWidget {
             resizeToAvoidBottomInset: false,
             appBar: AppBar(
               elevation: 0,
-              title: Text(localeController.getTranslate('new-donation-title')),
+              title: Text(
+                localeController.getTranslate(
+                  donation != null
+                      ? 'edit-donation-title'
+                      : 'new-donation-title',
+                ),
+              ),
             ),
             body: Container(
               width: constraints.maxWidth,
-              // height: constraints.maxHeight,
               color: Theme.of(context).colorScheme.primary,
               child: FormBuilder(
                 key: _formKey,
@@ -104,6 +113,12 @@ class NewDonationScreen extends StatelessWidget {
                         child: Consumer<MapController>(
                           builder: (_, mapController, __) => TextFormField(
                             readOnly: true,
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ChooseLocationScreen(false),
+                              ),
+                            ),
                             controller:
                                 mapController.addressTextFieldController,
                             style: StyleManagement.addressTextStyle,
@@ -124,6 +139,7 @@ class NewDonationScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 28),
                       child: FormBuilderTextField(
                         name: 'note',
+                        initialValue: donation?.note ?? "",
                         style: StyleManagement.addressTextStyle,
                         decoration:
                             DecoratorManagement.addressTextFieldDecorator(
@@ -185,6 +201,7 @@ class NewDonationScreen extends StatelessWidget {
                                       const EdgeInsets.symmetric(vertical: 5),
                                   child: FormBuilderTextField(
                                     name: 'title',
+                                    initialValue: donation?.title ?? "",
                                     style: StyleManagement.textFieldTextStyle,
                                     decoration: DecoratorManagement
                                         .defaultTextFieldDecorator,
@@ -204,6 +221,9 @@ class NewDonationScreen extends StatelessWidget {
                                                 vertical: 5),
                                             child: FormBuilderTextField(
                                               name: 'quantity',
+                                              initialValue: donation?.quantity
+                                                      .toString() ??
+                                                  "",
                                               style: StyleManagement
                                                   .textFieldTextStyle,
                                               keyboardType:
@@ -237,6 +257,8 @@ class NewDonationScreen extends StatelessWidget {
                                                       vertical: 5),
                                               child: FormBuilderTextField(
                                                 name: 'unit',
+                                                initialValue:
+                                                    donation?.unit ?? "",
                                                 style: StyleManagement
                                                     .textFieldTextStyle,
                                                 decoration: DecoratorManagement
@@ -263,11 +285,14 @@ class NewDonationScreen extends StatelessWidget {
                                                 vertical: 5),
                                             child: FormBuilderDateTimePicker(
                                               name: 'start',
+                                              initialValue: donation?.start ??
+                                                  DateTime.now(),
                                               format: DateFormat(
                                                   'dd/MM/yyyy hh:mm a'),
                                               style: StyleManagement
                                                   .textFieldTextStyle,
                                               currentDate: DateTime.now(),
+                                              initialTime: TimeOfDay.now(),
                                               decoration: DecoratorManagement
                                                   .defaultTextFieldDecorator,
                                               validator:
@@ -290,11 +315,14 @@ class NewDonationScreen extends StatelessWidget {
                                                 vertical: 5),
                                             child: FormBuilderDateTimePicker(
                                               name: 'end',
+                                              initialValue: donation?.end ??
+                                                  DateTime.now(),
                                               format: DateFormat(
                                                   'dd/MM/yyyy hh:mm a'),
                                               style: StyleManagement
                                                   .textFieldTextStyle,
                                               currentDate: DateTime.now(),
+                                              initialTime: TimeOfDay.now(),
                                               decoration: DecoratorManagement
                                                   .defaultTextFieldDecorator,
                                               validator:
@@ -320,6 +348,8 @@ class NewDonationScreen extends StatelessWidget {
                                               scrollDirection: Axis.horizontal,
                                               itemCount: donationController
                                                       .images.length +
+                                                  donationController
+                                                      .urls.length +
                                                   1,
                                               itemBuilder: (context, index) =>
                                                   Padding(
@@ -328,10 +358,7 @@ class NewDonationScreen extends StatelessWidget {
                                                 child: ClipRRect(
                                                   borderRadius:
                                                       BorderRadius.circular(9),
-                                                  child: index == 0
-                                                      ? NewImageButton()
-                                                      : ImageListTileWidget(
-                                                          index - 1),
+                                                  child: getListTile(index),
                                                 ),
                                               ),
                                             ),
@@ -344,23 +371,7 @@ class NewDonationScreen extends StatelessWidget {
                                 Padding(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 10),
-                                  child: ElevatedButton(
-                                    onPressed: () => newDonation(context),
-                                    style: StyleManagement.elevatedButtonStyle
-                                        .copyWith(
-                                      backgroundColor: MaterialStatePropertyAll(
-                                          Theme.of(context)
-                                              .colorScheme
-                                              .secondary),
-                                      elevation:
-                                          const MaterialStatePropertyAll(4),
-                                    ),
-                                    child: Text(
-                                      localeController
-                                          .getTranslate('confirm-button-title'),
-                                      style: const TextStyle(fontSize: 20),
-                                    ),
-                                  ),
+                                  child: getBottomBar(donation),
                                 ),
                               ],
                             ),
@@ -377,12 +388,126 @@ class NewDonationScreen extends StatelessWidget {
       ),
     );
   }
+
+  StatelessWidget getListTile(int index) {
+    if (index == 0) return NewImageButton();
+    index -= 1;
+    if (index < donationController.images.length) {
+      return ImageListTileWidget(
+        index - 1,
+        Image.file(
+          File(donationController.images[index].path),
+          fit: BoxFit.cover,
+        ),
+        donationController.removeImage,
+      );
+    }
+    index -= donationController.images.length;
+    return ImageListTileWidget(
+      index,
+      FutureBuilder(
+        future: donationController.getUrl(donationController.urls[index]),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: SizedBox(
+                width: 30,
+                height: 30,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                ),
+              ),
+            );
+          }
+          return CachedNetworkImage(
+            imageUrl: snapshot.data!,
+            fit: BoxFit.cover,
+            placeholder: (context, url) => const Center(
+              child: SizedBox(
+                width: 30,
+                height: 30,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                ),
+              ),
+            ),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
+          );
+        },
+      ),
+      donationController.removeUrl,
+    );
+  }
+
+  getBottomBar(Donation? donation) {
+    if (donation == null) {
+      return ElevatedButton(
+        onPressed: () => newDonation(navigatorKey.currentState!.context),
+        style: StyleManagement.elevatedButtonStyle.copyWith(
+          backgroundColor: MaterialStatePropertyAll(
+              Theme.of(navigatorKey.currentState!.context)
+                  .colorScheme
+                  .secondary),
+          elevation: const MaterialStatePropertyAll(4),
+        ),
+        child: Text(
+          localeController.getTranslate('confirm-button-title'),
+          style: const TextStyle(fontSize: 20),
+        ),
+      );
+    }
+    return Row(
+      children: [
+        Flexible(
+          child: ElevatedButton(
+            onPressed: () {},
+            style: StyleManagement.elevatedButtonStyle.copyWith(
+                backgroundColor: MaterialStatePropertyAll(
+                    Theme.of(navigatorKey.currentState!.context)
+                        .colorScheme
+                        .secondary)),
+            child: Text(
+              localeController.getTranslate('confirm-button-title'),
+              style: const TextStyle(fontSize: 20),
+            ),
+          ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        Card(
+          elevation: 5,
+          color: ColorManagement.cardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: InkWell(
+            onTap: () {},
+            borderRadius: BorderRadius.circular(10),
+            splashColor: ColorManagement.deleteColor.withOpacity(.5),
+            child: const Padding(
+              padding: EdgeInsets.all(5),
+              child: Icon(
+                Icons.delete_forever_rounded,
+                color: ColorManagement.deleteColor,
+                size: 40,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class ImageListTileWidget extends StatelessWidget {
   final int index;
+  final Widget image;
+  final Function callback;
   const ImageListTileWidget(
-    this.index, {
+    this.index,
+    this.image,
+    this.callback, {
     super.key,
   });
 
@@ -394,17 +519,12 @@ class ImageListTileWidget extends StatelessWidget {
         alignment: Alignment.center,
         fit: StackFit.expand,
         children: [
-          Image.file(
-            File(donationController.images[index].path),
-            fit: BoxFit.cover,
-          ),
+          image,
           Positioned(
               top: 5,
               right: 5,
               child: InkWell(
-                onTap: () {
-                  donationController.removeImage(index);
-                },
+                onTap: () => callback(index),
                 splashColor: Theme.of(context).colorScheme.primary,
                 child: Container(
                   decoration: BoxDecoration(
@@ -477,8 +597,8 @@ class FoodTypeCheckBoxWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
-      value: FoodTypeCheckBoxController(),
-      child: Consumer<FoodTypeCheckBoxController>(
+      value: FoodCategoryCheckBoxController(),
+      child: Consumer<FoodCategoryCheckBoxController>(
         builder: (_, checkBoxController, __) => Column(
           children: [
             Card(

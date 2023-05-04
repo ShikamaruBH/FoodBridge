@@ -8,8 +8,8 @@ class MapController extends ChangeNotifier {
   static const String kGoogleApiKey = 'AIzaSyBsMkcCb61CevxuTKee09quBOI0qbo6BFA';
   Set<Marker> markers = {};
   LatLng currentLatLng = const LatLng(45.521563, -122.677433);
-  late GoogleMapController controller;
-  String address = '';
+  late GoogleMapController? controller;
+  String currentAddress = '';
   TextEditingController addressTextFieldController = TextEditingController();
   MapController._internal();
 
@@ -25,7 +25,7 @@ class MapController extends ChangeNotifier {
       ),
     };
     notifyListeners();
-    controller.animateCamera(
+    controller?.animateCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(target: argument, zoom: 20),
       ),
@@ -33,14 +33,13 @@ class MapController extends ChangeNotifier {
     currentLatLng = argument;
     addressTextFieldController.text =
         LocalizationController().getTranslate('loading-text');
-    List<Placemark> placemarks =
-        await placemarkFromCoordinates(argument.latitude, argument.longitude);
-    address = getAddress(placemarks.first);
-    addressTextFieldController.text = address;
-    notifyListeners();
+    await getAddress(argument);
   }
 
-  String getAddress(Placemark placemark) {
+  Future<String> getAddress(LatLng argument) async {
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(argument.latitude, argument.longitude);
+    Placemark placemark = placemarks.first;
     String rs = '';
     if (placemark.street != null && placemark.street!.isNotEmpty) {
       rs = placemark.street!;
@@ -65,7 +64,13 @@ class MapController extends ChangeNotifier {
     if (placemark.postalCode != null && placemark.postalCode!.isNotEmpty) {
       rs += ', ${placemark.postalCode}';
     }
+    addressTextFieldController.text = rs;
+    notifyListeners();
     return rs;
+  }
+
+  void setAddress(LatLng address) async {
+    currentAddress = await getAddress(address);
   }
 
   List<num> getLatLng() {

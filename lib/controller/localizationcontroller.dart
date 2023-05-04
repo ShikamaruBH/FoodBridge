@@ -20,7 +20,7 @@ class LocalizationController extends ChangeNotifier {
     return _instance;
   }
 
-  String getTranslate(String text) {
+  dynamic getTranslate(String text) {
     if (!appLocalizations.containsKey(text)) {
       return '';
     }

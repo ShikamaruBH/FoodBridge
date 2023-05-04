@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
           secondary: const Color(0xff489FB5),
         ),
       ),
-      // home: NewDonationScreen(),
+      // home: const DonationDetailScreen(),
       home: LoginScreen(),
     );
   }

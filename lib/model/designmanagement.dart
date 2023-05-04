@@ -4,6 +4,7 @@ import 'package:food_bridge/controller/localizationcontroller.dart';
 
 class ColorManagement {
   static final titleColorDark = Colors.black.withOpacity(0.71);
+  static const deleteColor = Color(0xffD60F0F);
   static final iconColor = Colors.black.withOpacity(0.85);
   static final descriptionColorDark = Colors.black.withOpacity(0.55);
   static final descriptionColorLight = Colors.white.withOpacity(0.55);
@@ -12,6 +13,7 @@ class ColorManagement {
   static const foodTypeCheckBoxCardBackgroundChecked = Color(0xff489FB5);
   static final foodTypeCheckBoxCardIconUncheckColor =
       Colors.black.withOpacity(.1);
+  static const cardColor = Color(0xffe6e6e6);
   static const selectedColor = Color(0xffFFA62B);
   static const donationTileColor = Color(0xffF5F5F5);
   static const notificationUnread = Color(0xffEAEAEA);

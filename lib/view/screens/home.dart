@@ -7,6 +7,7 @@ import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/view/screens/chooselocation.dart';
+import 'package:food_bridge/view/screens/donationdetail.dart';
 import 'package:food_bridge/view/screens/login.dart';
 import 'package:food_bridge/view/screens/settings.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
@@ -90,7 +91,7 @@ class HomeScreen extends StatelessWidget {
                 // ignore: use_build_context_synchronously
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => ChooseLocationScreen(),
+                    builder: (context) => ChooseLocationScreen(true),
                   ),
                 );
               },
@@ -235,7 +236,14 @@ class DonationTileWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(9),
         ),
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            mapController.setAddress(donation.latlng);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => DonationDetailScreen(donation),
+              ),
+            );
+          },
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -245,7 +253,38 @@ class DonationTileWidget extends StatelessWidget {
                   child: SizedBox(
                     width: 71,
                     height: 85,
-                    child: getImage(donation),
+                    child: FutureBuilder(
+                      future: donationController.getUrl(donation.imgs.first),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: SizedBox(
+                              width: 30,
+                              height: 30,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            ),
+                          );
+                        }
+                        return CachedNetworkImage(
+                          imageUrl: snapshot.data!,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => const Center(
+                            child: SizedBox(
+                              width: 30,
+                              height: 30,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                        );
+                      },
+                    ),
                   ),
                 ),
                 Expanded(
@@ -300,27 +339,6 @@ class DonationTileWidget extends StatelessWidget {
       ),
     );
   }
-
-  getImage(donation) {
-    if (donation.imgs.isEmpty ||
-        !donationController.imgURLs.containsKey(donation.imgs.first)) {
-      return null;
-    }
-    return CachedNetworkImage(
-      imageUrl: donationController.imgURLs[donation.imgs.first]!,
-      placeholder: (context, url) => const Center(
-        child: SizedBox(
-          width: 30,
-          height: 30,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-          ),
-        ),
-      ),
-      errorWidget: (context, url, error) => const Icon(Icons.error),
-      fit: BoxFit.cover,
-    );
-  }
 }
 
 class MonthlyDescriptionTextWidget extends StatelessWidget {
@@ -342,22 +360,10 @@ class MonthlyDescriptionTextWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Flexible(
-                child: RichText(
-                    text: TextSpan(
-                        style: StyleManagement.monthlyDescriptionTextStyle,
-                        children: [
-                      TextSpan(
-                        text: localeController
-                            .getTranslate('monthly-donation-text-part-1'),
-                      ),
-                      TextSpan(
-                        text: ' $total ',
-                      ),
-                      TextSpan(
-                        text: localeController
-                            .getTranslate('monthly-donation-text-part-2'),
-                      ),
-                    ])),
+                child: Text(
+                  localeController.getTranslate('monthly-donation-text')(total),
+                  style: StyleManagement.monthlyDescriptionTextStyle,
+                ),
               )
             ],
           ),
