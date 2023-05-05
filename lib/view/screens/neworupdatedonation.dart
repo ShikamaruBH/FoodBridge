@@ -34,7 +34,9 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
       showDialog(
         barrierDismissible: false,
         context: navigatorKey.currentState!.context,
-        builder: (context) => const LoadingDialog(),
+        builder: (context) => const LoadingDialog(
+          message: 'creating-donation-text',
+        ),
       );
       Map<String, dynamic> data = {
         "latlng": MapController().getLatLng(),
@@ -87,7 +89,9 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
       showDialog(
         barrierDismissible: false,
         context: navigatorKey.currentState!.context,
-        builder: (context) => const LoadingDialog(),
+        builder: (context) => const LoadingDialog(
+          message: 'updating-donation-text',
+        ),
       );
       Map<String, dynamic> data = {
         'id': donation!.id,
@@ -109,11 +113,11 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
             builder: (context) => SuccessDialog(
               'update-donation-success-text',
               'new-donation-success-description',
-              () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const HomeScreen(),
-                ),
-              ),
+              () => Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (context) => const HomeScreen(),
+                  ),
+                  (route) => false),
             ),
           );
         } else {
@@ -132,6 +136,66 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
         );
       });
     }
+  }
+
+  void deleteDonation(String id) async {
+    bool result = await showDialog(
+      barrierDismissible: false,
+      context: navigatorKey.currentState!.context,
+      builder: (context) => const ConfirmDialog(
+        'delete-donation-confirm-title',
+        'delete-donation-confirm-content',
+      ),
+    );
+    if (!result) {
+      return;
+    }
+    showDialog(
+      barrierDismissible: false,
+      context: navigatorKey.currentState!.context,
+      builder: (context) => const LoadingDialog(
+        message: 'deleteing-text',
+      ),
+    );
+    await DonationController().deleteDonation({"id": id}).then((result) async {
+      Navigator.pop(navigatorKey.currentState!.context);
+      if (result['success']) {
+        Navigator.of(navigatorKey.currentState!.context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => const HomeScreen(),
+            ),
+            (route) => false);
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => SuccessDialog(
+            'delete-donation-success-text',
+            'delete-donation-success-description',
+            () {},
+            showActions: false,
+          ),
+        );
+        await delayThenPop();
+      } else {
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => ErrorDialog(result['err']),
+        );
+      }
+    }).catchError((err) {
+      Navigator.pop(navigatorKey.currentState!.context);
+      showDialog(
+        barrierDismissible: false,
+        context: navigatorKey.currentState!.context,
+        builder: (context) => ErrorDialog(err),
+      );
+    });
+  }
+
+  Future<void> delayThenPop() async {
+    await Future.delayed(const Duration(seconds: 1));
+    Navigator.of(navigatorKey.currentState!.context).pop();
   }
 
   @override
@@ -465,7 +529,8 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
       FutureBuilder(
         future: donationController.getUrl(donationController.urls[index]),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (snapshot.connectionState == ConnectionState.waiting ||
+              snapshot.data == null) {
             return const Center(
               child: SizedBox(
                 width: 30,
@@ -539,7 +604,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           child: InkWell(
-            onTap: () {},
+            onTap: () => deleteDonation(donation.id),
             borderRadius: BorderRadius.circular(10),
             splashColor: ColorManagement.deleteColor.withOpacity(.5),
             child: const Padding(

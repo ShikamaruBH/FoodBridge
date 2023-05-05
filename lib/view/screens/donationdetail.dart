@@ -60,7 +60,8 @@ class DonationDetailScreen extends StatelessWidget {
                                       .getUrl(donation.imgs[index]),
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
+                                            ConnectionState.waiting ||
+                                        snapshot.data == null) {
                                       return const Center(
                                         child: SizedBox(
                                           width: 30,

@@ -44,6 +44,7 @@ dependencies:
   cloud_functions: ^4.0.11
   timer_count_down: ^2.2.2
   firebase_storage: ^11.1.1
+  md5_file_checksum: ^1.0.4
   permission_handler: ^10.2.0
   shared_preferences: ^2.0.17
   google_maps_flutter: ^2.2.5

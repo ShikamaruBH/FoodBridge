@@ -53,6 +53,38 @@ exports.updateDonation = functions.https.onCall(async (data, context) => {
   }
 });
 
+exports.deleteDonation = functions.https.onCall(async (data, context) => {
+  isAuthenticated(context);
+  hasRole(context, Role.DONOR);
+  const donationRef = donationsRef.doc(data.id);
+  try {
+    const donation = await donationRef.get();
+    if (!donation.exists) {
+      throw new functions.https.HttpsError("not-found", "not-found");
+    }
+    const uid = context.auth?.uid;
+    if (donation.data()?.donor != uid) {
+      throw new functions.https
+          .HttpsError("unauthenticated", "unauthenticated");
+    }
+    const imgs = donation.data()?.imgs;
+    for (const img of imgs) {
+      await admin.storage().bucket().file(`${uid}/${img}`).delete();
+    }
+    return donationsRef
+        .doc(data.id)
+        .delete()
+        .then((writeResult) => ({"": ""}))
+        .catch((err) => {
+          throw new functions.https.HttpsError(err.code, err.message);
+        });
+  } catch (error) {
+    console.log(`Error ${error}`);
+    throw new functions.https
+        .HttpsError("unknown", "unknown");
+  }
+});
+
 const isAuthenticated = (context: any) => {
   if (!context.auth) {
     throw new functions.https.HttpsError("unauthenticated", "unauthenticated");

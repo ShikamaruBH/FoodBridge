@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:food_bridge/controller/localizationcontroller.dart';
+import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 
 class LoadingDialog extends StatelessWidget {
+  final String message;
   const LoadingDialog({
+    this.message = 'loading-text',
     Key? key,
   }) : super(key: key);
 
@@ -20,7 +22,7 @@ class LoadingDialog extends StatelessWidget {
             const SizedBox(
               height: 15,
             ),
-            Text(LocalizationController().getTranslate('loading-text'))
+            Text(localeController.getTranslate(message))
           ],
         ),
       ),
@@ -28,46 +30,39 @@ class LoadingDialog extends StatelessWidget {
   }
 }
 
-class SuccessDialog extends StatelessWidget {
+class ConfirmDialog extends StatelessWidget {
   final String title;
   final String content;
-  final Function callback;
-  const SuccessDialog(
+  final Color confirmColor;
+  const ConfirmDialog(
     this.title,
-    this.content,
-    this.callback, {
+    this.content, {
+    this.confirmColor = ColorManagement.deleteColor,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      icon: const CircleAvatar(
-        radius: 30,
-        backgroundColor: Colors.green,
-        child: Icon(
-          Icons.done_rounded,
-          color: Colors.white,
-          size: 40,
-        ),
-      ),
-      title: Text(LocalizationController().getTranslate(title)),
-      content: Text(LocalizationController().getTranslate(content)),
+      title: Text(localeController.getTranslate(title)),
+      content: Text(localeController.getTranslate(content)),
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pop(context, false);
           },
-          style: StyleManagement.textButtonStyle,
-          child: Text(LocalizationController().getTranslate('cancel-text')),
+          style: StyleManagement.textButtonStyle.copyWith(),
+          child: Text(localeController.getTranslate('cancel-text')),
         ),
         TextButton(
           onPressed: () {
-            Navigator.pop(context);
-            callback();
+            Navigator.pop(context, true);
           },
           style: StyleManagement.textButtonStyle,
-          child: const Text("OK"),
+          child: Text(
+            localeController.getTranslate('confirm-button-title'),
+            style: TextStyle(color: confirmColor),
+          ),
         ),
       ],
     );
@@ -77,9 +72,8 @@ class SuccessDialog extends StatelessWidget {
 class ErrorDialog extends StatelessWidget {
   // ignore: prefer_typing_uninitialized_variables
   final err;
-  final localeController = LocalizationController();
 
-  ErrorDialog(
+  const ErrorDialog(
     this.err, {
     Key? key,
   }) : super(key: key);
@@ -116,5 +110,65 @@ class ErrorDialog extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class SuccessDialog extends StatelessWidget {
+  final String title;
+  final String content;
+  final Function callback;
+  final bool showActions;
+  const SuccessDialog(
+    this.title,
+    this.content,
+    this.callback, {
+    this.showActions = true,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      icon: const CircleAvatar(
+        radius: 30,
+        backgroundColor: Colors.green,
+        child: Icon(
+          Icons.done_rounded,
+          color: Colors.white,
+          size: 40,
+        ),
+      ),
+      title: Text(localeController.getTranslate(title)),
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(localeController.getTranslate(content)),
+        ],
+      ),
+      actions: getActions(context),
+    );
+  }
+
+  getActions(BuildContext context) {
+    if (!showActions) {
+      return null;
+    }
+    return [
+      TextButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        style: StyleManagement.textButtonStyle,
+        child: Text(localeController.getTranslate('cancel-text')),
+      ),
+      TextButton(
+        onPressed: () {
+          Navigator.pop(context);
+          callback();
+        },
+        style: StyleManagement.textButtonStyle,
+        child: const Text("OK"),
+      ),
+    ];
   }
 }

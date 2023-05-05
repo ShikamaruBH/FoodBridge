@@ -257,7 +257,8 @@ class DonationTileWidget extends StatelessWidget {
                       future: donationController.getUrl(donation.imgs.first),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
+                                ConnectionState.waiting ||
+                            snapshot.data == null) {
                           return const Center(
                             child: SizedBox(
                               width: 30,

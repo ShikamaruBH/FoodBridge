@@ -5,9 +5,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
 import 'package:food_bridge/model/donation.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:md5_file_checksum/md5_file_checksum.dart';
 
 class DonationController extends ChangeNotifier {
   static final DonationController _instance = DonationController._internal();
@@ -75,15 +77,27 @@ class DonationController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void removeUrl(index) {
+    urls.removeAt(index);
+    notifyListeners();
+  }
+
   Future<Map<String, dynamic>> createDonation(Map<String, dynamic> data) async {
     List<String> imgs = [];
     String imgName;
     for (XFile img in images) {
-      imgName = "${DateTime.now().toString()}-${img.name}";
-      await FirebaseStorage.instance
-          .ref('${FirebaseAuth.instance.currentUser!.uid}/$imgName')
-          .putFile(File(img.path));
-      imgs.add(imgName);
+      String imgHash =
+          await Md5FileChecksum.getFileChecksum(filePath: img.path);
+      imgName = "$imgHash.jpg";
+      final imgRef = FirebaseStorage.instance
+          .ref('${FirebaseAuth.instance.currentUser!.uid}/$imgName');
+      try {
+        await imgRef.getData();
+        print("Image already exist");
+      } catch (e) {
+        await imgRef.putFile(File(img.path));
+        imgs.add(imgName);
+      }
     }
     data['imgs'] = imgs;
     images.clear();
@@ -94,11 +108,18 @@ class DonationController extends ChangeNotifier {
     List<String> imgs = [];
     String imgName;
     for (XFile img in images) {
-      imgName = "${DateTime.now().toString()}-${img.name}";
-      await FirebaseStorage.instance
-          .ref('${FirebaseAuth.instance.currentUser!.uid}/$imgName')
-          .putFile(File(img.path));
-      imgs.add(imgName);
+      String imgHash =
+          await Md5FileChecksum.getFileChecksum(filePath: img.path);
+      imgName = "$imgHash.jpg";
+      final imgRef = FirebaseStorage.instance
+          .ref('${FirebaseAuth.instance.currentUser!.uid}/$imgName');
+      try {
+        await imgRef.getData();
+        print("Image already exist");
+      } catch (e) {
+        await imgRef.putFile(File(img.path));
+        imgs.add(imgName);
+      }
     }
     imgs.addAll(urls);
     data['imgs'] = imgs;
@@ -106,17 +127,23 @@ class DonationController extends ChangeNotifier {
     return callCloudFunction(data, "donation-updateDonation");
   }
 
-  void removeUrl(index) {
-    urls.removeAt(index);
-    notifyListeners();
+  Future<Map<String, dynamic>> deleteDonation(Map<String, dynamic> data) async {
+    urls.clear();
+    foodCategoryController.update([]);
+    images.clear();
+    return callCloudFunction(data, 'donation-deleteDonation');
   }
 
   Future<String> getUrl(String img) async {
-    if (!imgURLs.containsKey(img)) {
-      imgURLs[img] = await FirebaseStorage.instance
-          .ref("${FirebaseAuth.instance.currentUser!.uid}/$img")
-          .getDownloadURL();
+    try {
+      if (!imgURLs.containsKey(img)) {
+        imgURLs[img] = await FirebaseStorage.instance
+            .ref("${FirebaseAuth.instance.currentUser!.uid}/$img")
+            .getDownloadURL();
+      }
+      return imgURLs[img]!;
+    } catch (e) {
+      return '';
     }
-    return imgURLs[img]!;
   }
 }

@@ -155,7 +155,11 @@ class ChooseLocationScreen extends StatelessWidget {
                                     ),
                                     const CustomSpacerWidget(),
                                     ElevatedButton(
-                                      onPressed: () => next(context),
+                                      onPressed: mapController.isError &&
+                                              mapController
+                                                  .currentAddress.isEmpty
+                                          ? null
+                                          : () => next(context),
                                       style: StyleManagement.elevatedButtonStyle
                                           .copyWith(
                                         backgroundColor:

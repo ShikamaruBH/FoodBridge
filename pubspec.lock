@@ -637,6 +637,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.0"
+  md5_file_checksum:
+    dependency: "direct main"
+    description:
+      name: md5_file_checksum
+      sha256: bb84388dd9f1d6175958d1fdcee67037bec31f780805462ad57b10c8064d931e
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   meta:
     dependency: transitive
     description:

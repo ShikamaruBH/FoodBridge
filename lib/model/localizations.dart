@@ -184,6 +184,14 @@ Map<String, dynamic> appLocalizations = {
     "en": "Confirm",
     "vi": "Xác nhận",
   },
+  "delete-donation-confirm-title": {
+    "en": "Confirm delete",
+    "vi": "Xác nhận xoá",
+  },
+  "delete-donation-confirm-content": {
+    "en": "Are you sure want to delete this donation?",
+    "vi": "Bạn có chắc muốn xoá quyên góp này?",
+  },
   "address-hint-text": {
     "en": "Pick or seach for your location on the map",
     "vi": "Chọn hoặc tìm địa chỉ của bạn trên bản đồ",
@@ -195,6 +203,10 @@ Map<String, dynamic> appLocalizations = {
   "update-donation-success-text": {
     "en": "Update donation success",
     "vi": "Cập nhật thành công",
+  },
+  "updating-donation-text": {
+    "en": "Updating donation...",
+    "vi": "Đang cập nhật quyên góp...",
   },
   "register-success-description": {
     "en": "Press OK to return to login screen",
@@ -208,6 +220,14 @@ Map<String, dynamic> appLocalizations = {
     "en": "Donation created",
     "vi": "Đã tạo quyên góp",
   },
+  "creating-donation-text": {
+    "en": "Creating new donation...",
+    "vi": "Đang tạo quyên góp mới...",
+  },
+  "network-error": {
+    "en": "Network error, please check your network connection",
+    "vi": "Lỗi kết nối, vui lòng kiểm tra kết nối mạng của bạn",
+  },
   "new-donation-success-description": {
     "en": "Press OK to return to home screen",
     "vi": "Nhấn OK để trở về trang chủ",
@@ -215,6 +235,18 @@ Map<String, dynamic> appLocalizations = {
   "cancel-text": {
     "en": "Cancel",
     "vi": "Huỷ",
+  },
+  "deleteing-text": {
+    "en": "Deleting...",
+    "vi": "Đang xoá...",
+  },
+  "delete-donation-success-text": {
+    "en": "Donation deleted",
+    "vi": "Đã xoá quyên góp",
+  },
+  "delete-donation-success-description": {
+    "en": "Donation has been deleted",
+    "vi": "Quyên góp đã bị xoá",
   },
   "error-text": {
     "en": "Error",
