@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:food_bridge/controller/authcontroller.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/donationcontroller.dart';
@@ -10,6 +11,7 @@ import 'package:food_bridge/view/screens/chooselocation.dart';
 import 'package:food_bridge/view/screens/donationdetail.dart';
 import 'package:food_bridge/view/screens/login.dart';
 import 'package:food_bridge/view/screens/settings.dart';
+import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -225,115 +227,195 @@ class DonationTileWidget extends StatelessWidget {
     super.key,
   });
 
+  Future<bool> deleteDonation(String id) async {
+    bool rs = await showDialog(
+      barrierDismissible: false,
+      context: navigatorKey.currentState!.context,
+      builder: (context) => const ConfirmDialog(
+        'delete-donation-confirm-title',
+        'delete-donation-confirm-content',
+      ),
+    );
+    if (!rs) {
+      return rs;
+    }
+    showDialog(
+      barrierDismissible: false,
+      context: navigatorKey.currentState!.context,
+      builder: (context) => const LoadingDialog(
+        message: 'deleting-text',
+      ),
+    );
+    await DonationController().deleteDonation({"id": id}).then((result) async {
+      Navigator.pop(navigatorKey.currentState!.context);
+      if (result['success']) {
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => SuccessDialog(
+            'delete-donation-success-text',
+            'delete-donation-success-description',
+            () {},
+            showActions: false,
+          ),
+        );
+        await Future.delayed(const Duration(seconds: 1));
+        Navigator.of(navigatorKey.currentState!.context).pop();
+      } else {
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => ErrorDialog(result['err']),
+        );
+      }
+      return true;
+    }).catchError((err) {
+      Navigator.pop(navigatorKey.currentState!.context);
+      showDialog(
+        barrierDismissible: false,
+        context: navigatorKey.currentState!.context,
+        builder: (context) => ErrorDialog(err),
+      );
+      return true;
+    });
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final donation = donationController.donations[index];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Card(
-        color: ColorManagement.donationTileColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(9),
+      child: Slidable(
+        key: Key(donation.id),
+        endActionPane: ActionPane(
+          motion: const ScrollMotion(),
+          extentRatio: .3,
+          dismissible: DismissiblePane(
+            onDismissed: () {},
+            confirmDismiss: () async {
+              bool rs = await deleteDonation(donation.id);
+              return rs;
+            },
+          ),
+          children: [
+            SlidableAction(
+              onPressed: (context) async {
+                await deleteDonation(donation.id);
+              },
+              borderRadius: BorderRadius.circular(10),
+              backgroundColor: ColorManagement.deleteColor,
+              foregroundColor: Colors.white,
+              icon: Icons.delete,
+              label: localeController.getTranslate('delete-text'),
+            ),
+          ],
         ),
-        child: InkWell(
-          onTap: () {
-            mapController.setAddress(donation.latlng);
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => DonationDetailScreen(donation),
-              ),
-            );
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(7),
-                  child: SizedBox(
-                    width: 71,
-                    height: 85,
-                    child: FutureBuilder(
-                      future: donationController.getUrl(donation.imgs.first),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                                ConnectionState.waiting ||
-                            snapshot.data == null) {
-                          return const Center(
-                            child: SizedBox(
-                              width: 30,
-                              height: 30,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                              ),
-                            ),
-                          );
-                        }
-                        return CachedNetworkImage(
-                          imageUrl: snapshot.data!,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => const Center(
-                            child: SizedBox(
-                              width: 30,
-                              height: 30,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                              ),
-                            ),
-                          ),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
-                        );
-                      },
-                    ),
-                  ),
+        child: Card(
+          color: ColorManagement.donationTileColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(9),
+          ),
+          child: InkWell(
+            onTap: () {
+              mapController.setAddress(donation.latlng);
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => DonationDetailScreen(donation),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        left: 10, top: 2, bottom: 2, right: 0),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(7),
                     child: SizedBox(
+                      width: 71,
                       height: 85,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  donation.title,
-                                  overflow: TextOverflow.ellipsis,
-                                  style:
-                                      StyleManagement.historyItemTitleTextStyle,
+                      child: FutureBuilder(
+                        future: donationController.getUrl(donation.imgs.first),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                                  ConnectionState.waiting ||
+                              snapshot.data == null) {
+                            return const Center(
+                              child: SizedBox(
+                                width: 30,
+                                height: 30,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
                                 ),
                               ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  "Category: ${donation.categories.map((e) => localeController.getTranslate(e)).join(", ")}",
-                                  style: StyleManagement
-                                      .historyItemCategoryTextStyle,
+                            );
+                          }
+                          return CachedNetworkImage(
+                            imageUrl: snapshot.data!,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => const Center(
+                              child: SizedBox(
+                                width: 30,
+                                height: 30,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
                                 ),
                               ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(DateFormat('dd/MM/yyyy')
-                                  .format(donation.created))
-                            ],
-                          ),
-                        ],
+                            ),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                          );
+                        },
                       ),
                     ),
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 10, top: 2, bottom: 2, right: 0),
+                      child: SizedBox(
+                        height: 85,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    donation.title,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: StyleManagement
+                                        .historyItemTitleTextStyle,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    "Category: ${donation.categories.map((e) => localeController.getTranslate(e)).join(", ")}",
+                                    style: StyleManagement
+                                        .historyItemCategoryTextStyle,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text(DateFormat('dd/MM/yyyy')
+                                    .format(donation.created))
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

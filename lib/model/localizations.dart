@@ -236,7 +236,11 @@ Map<String, dynamic> appLocalizations = {
     "en": "Cancel",
     "vi": "Huỷ",
   },
-  "deleteing-text": {
+  "delete-text": {
+    "en": "Delete",
+    "vi": "Xoá",
+  },
+  "deleting-text": {
     "en": "Deleting...",
     "vi": "Đang xoá...",
   },
