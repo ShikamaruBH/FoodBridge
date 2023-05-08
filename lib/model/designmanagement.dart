@@ -151,6 +151,7 @@ class StyleManagement {
 class DecoratorManagement {
   static final defaultTextFieldDecorator = InputDecoration(
     isDense: true,
+    errorMaxLines: 2,
     contentPadding: const EdgeInsets.all(11),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),

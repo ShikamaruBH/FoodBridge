@@ -196,6 +196,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "Are you sure want to move this donation to trash bin?",
     "vi": "Bạn có chắc muốn chuyển quyên góp này vào thùng rác?",
   },
+  "invalid-datetime-error-text": {
+    "en": "End time must be after start time",
+    "vi": "Thời gian kết thúc phải ở sau thời gian bắt đầu",
+  },
   "address-hint-text": {
     "en": "Pick or seach for your location on the map",
     "vi": "Chọn hoặc tìm địa chỉ của bạn trên bản đồ",

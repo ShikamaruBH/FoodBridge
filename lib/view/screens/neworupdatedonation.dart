@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
+import 'package:food_bridge/controller/datetimepickercontroller.dart';
 import 'package:food_bridge/controller/donationcontroller.dart';
 import 'package:food_bridge/controller/foodtypecheckboxcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
@@ -395,66 +396,101 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                     )
                                   ],
                                 ),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        children: [
-                                          const FieldTitleWidget(
-                                              'food-start-date-title'),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 5),
-                                            child: FormBuilderDateTimePicker(
-                                              name: 'start',
-                                              initialValue: donation?.start ??
-                                                  DateTime.now(),
-                                              format: DateFormat(
-                                                  'dd/MM/yyyy hh:mm a'),
-                                              style: StyleManagement
-                                                  .textFieldTextStyle,
-                                              currentDate: DateTime.now(),
-                                              initialTime: TimeOfDay.now(),
-                                              decoration: DecoratorManagement
-                                                  .defaultTextFieldDecorator,
-                                              validator:
-                                                  CustomValidator.required,
-                                            ),
+                                ChangeNotifierProvider.value(
+                                  value: dateTimePickerController,
+                                  child: Consumer<DatetimePickerController>(
+                                    builder:
+                                        (_, dateTimePickerController, __) =>
+                                            Row(
+                                      children: [
+                                        Expanded(
+                                          child: Column(
+                                            children: [
+                                              const FieldTitleWidget(
+                                                  'food-start-date-title'),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 5),
+                                                child:
+                                                    FormBuilderDateTimePicker(
+                                                  name: 'start',
+                                                  onChanged: (value) =>
+                                                      dateTimePickerController
+                                                          .setStart(value!),
+                                                  initialValue:
+                                                      dateTimePickerController
+                                                          .start,
+                                                  format: DateFormat(
+                                                      'dd/MM/yyyy hh:mm a'),
+                                                  style: StyleManagement
+                                                      .textFieldTextStyle,
+                                                  currentDate: DateTime.now(),
+                                                  initialTime: TimeOfDay.now(),
+                                                  locale: Locale(
+                                                      localeController.locale!),
+                                                  decoration: DecoratorManagement
+                                                      .defaultTextFieldDecorator,
+                                                  validator:
+                                                      CustomValidator.required,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        children: [
-                                          const FieldTitleWidget(
-                                              'food-end-date-title'),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 5),
-                                            child: FormBuilderDateTimePicker(
-                                              name: 'end',
-                                              initialValue: donation?.end ??
-                                                  DateTime.now(),
-                                              format: DateFormat(
-                                                  'dd/MM/yyyy hh:mm a'),
-                                              style: StyleManagement
-                                                  .textFieldTextStyle,
-                                              currentDate: DateTime.now(),
-                                              initialTime: TimeOfDay.now(),
-                                              decoration: DecoratorManagement
-                                                  .defaultTextFieldDecorator,
-                                              validator:
-                                                  CustomValidator.required,
-                                            ),
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            children: [
+                                              const FieldTitleWidget(
+                                                  'food-end-date-title'),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 5),
+                                                child:
+                                                    FormBuilderDateTimePicker(
+                                                        name: 'end',
+                                                        onChanged: (value) =>
+                                                            dateTimePickerController
+                                                                .setEnd(value!),
+                                                        initialValue:
+                                                            dateTimePickerController
+                                                                .end,
+                                                        format: DateFormat(
+                                                            'dd/MM/yyyy hh:mm a'),
+                                                        style: StyleManagement
+                                                            .textFieldTextStyle,
+                                                        firstDate:
+                                                            dateTimePickerController
+                                                                .start,
+                                                        currentDate:
+                                                            DateTime.now(),
+                                                        locale: Locale(
+                                                            localeController
+                                                                .locale!),
+                                                        initialTime:
+                                                            TimeOfDay.now(),
+                                                        decoration:
+                                                            DecoratorManagement
+                                                                .defaultTextFieldDecorator,
+                                                        validator:
+                                                            FormBuilderValidators
+                                                                .compose([
+                                                          CustomValidator
+                                                              .required,
+                                                          CustomValidator
+                                                              .datetime,
+                                                        ])),
+                                              ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                  ),
                                 ),
                                 const FieldTitleWidget('food-photo-title'),
                                 Expanded(

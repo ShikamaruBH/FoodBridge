@@ -305,6 +305,8 @@ class DonationDetailScreen extends StatelessWidget {
             FoodCategoryCheckBoxController().update(donation.categories);
             donationController.urls = List.from(donation.imgs);
             donationController.images.clear();
+            dateTimePickerController.setStart(donation.start);
+            dateTimePickerController.setEnd(donation.end);
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => NewOrUpdateDonationScreen(donation),
