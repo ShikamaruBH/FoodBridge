@@ -511,11 +511,11 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
   }
 
   StatelessWidget getListTile(int index) {
-    if (index == 0) return NewImageButton();
+    if (index == 0) return const NewImageButton();
     index -= 1;
     if (index < donationController.images.length) {
       return ImageListTileWidget(
-        index - 1,
+        index,
         Image.file(
           File(donationController.images[index].path),
           fit: BoxFit.cover,
@@ -667,13 +667,84 @@ class ImageListTileWidget extends StatelessWidget {
 }
 
 class NewImageButton extends StatelessWidget {
-  final ImagePicker picker = ImagePicker();
-  static const int maxImg = 5;
-  NewImageButton({
+  const NewImageButton({
     super.key,
   });
 
-  void pickImage() async {
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(9),
+      onTap: () => showImageSourceBottomSheet(context),
+      child: Container(
+        width: 90,
+        color: ColorManagement.foodTypeCheckBoxCardBackgroundUncheck,
+        child: Icon(
+          Icons.add_rounded,
+          size: 40,
+          color: ColorManagement.descriptionColorDark,
+        ),
+      ),
+    );
+  }
+
+  Future<dynamic> showImageSourceBottomSheet(BuildContext context) {
+    return showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(15),
+          topRight: Radius.circular(15),
+        ),
+        child: Container(
+          color: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      localeController.getTranslate('choose-image-text'),
+                      style: StyleManagement.usernameTextStyle
+                          .copyWith(color: Colors.black.withOpacity(.8)),
+                    )
+                  ],
+                ),
+                Row(
+                  children: [
+                    ImageSourceButton(
+                        Icons.camera_alt_rounded, "Camera", ImageSource.camera),
+                    ImageSourceButton(Icons.image_rounded, "gallery-text",
+                        ImageSource.gallery),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ImageSourceButton extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  final ImageSource source;
+  final ImagePicker picker = ImagePicker();
+  static const int maxImg = 5;
+  ImageSourceButton(
+    this.icon,
+    this.text,
+    this.source, {
+    super.key,
+  });
+
+  void pickImage(ImageSource source) async {
     if (donationController.images.length + donationController.urls.length >=
         maxImg) {
       Fluttertoast.showToast(
@@ -684,25 +755,43 @@ class NewImageButton extends StatelessWidget {
       );
       return;
     }
-    XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    XFile? image = await picker.pickImage(source: source);
     if (image == null) return;
     donationController.addImage(image);
   }
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(9),
-      onTap: () => pickImage(),
-      child: Container(
-        width: 90,
-        color: ColorManagement.foodTypeCheckBoxCardBackgroundUncheck,
-        child: Icon(
-          Icons.add_rounded,
-          size: 40,
-          color: ColorManagement.descriptionColorDark,
+    return Column(
+      children: [
+        Material(
+          child: InkWell(
+            onTap: () {
+              Navigator.pop(context);
+              pickImage(source);
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(children: [
+                Icon(
+                  icon,
+                  color: ColorManagement.iconColor,
+                  size: 50,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      localeController.getTranslate(text),
+                      style: StyleManagement.newDonationFieldTitleTextStyle,
+                    )
+                  ],
+                )
+              ]),
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }

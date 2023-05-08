@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
-import 'package:food_bridge/view/screens/login.dart';
+import 'package:food_bridge/view/screens/neworupdatedonation.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -24,8 +24,8 @@ class MyApp extends StatelessWidget {
           secondary: const Color(0xff489FB5),
         ),
       ),
-      // home: const DonationDetailScreen(),
-      home: LoginScreen(),
+      home: NewOrUpdateDonationScreen(null),
+      // home: LoginScreen(),
     );
   }
 }

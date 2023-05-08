@@ -240,6 +240,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "Delete",
     "vi": "Xoá",
   },
+  "choose-image-text": {
+    "en": "Choose image",
+    "vi": "Chọn ảnh",
+  },
   "deleting-text": {
     "en": "Deleting...",
     "vi": "Đang xoá...",
@@ -279,6 +283,10 @@ Map<String, dynamic> appLocalizations = {
   "recipient-text": {
     "en": "Recipient",
     "vi": "Người nhận",
+  },
+  "gallery-text": {
+    "en": "Gallery",
+    "vi": "Thư viện",
   },
   "recipient-description": {
     "en": "Receive food from Donor",
