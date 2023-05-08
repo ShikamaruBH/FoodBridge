@@ -192,6 +192,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "Are you sure want to delete this donation?",
     "vi": "Bạn có chắc muốn xoá quyên góp này?",
   },
+  "soft-delete-donation-confirm-content": {
+    "en": "Are you sure want to move this donation to trash bin?",
+    "vi": "Bạn có chắc muốn chuyển quyên góp này vào thùng rác?",
+  },
   "address-hint-text": {
     "en": "Pick or seach for your location on the map",
     "vi": "Chọn hoặc tìm địa chỉ của bạn trên bản đồ",
@@ -240,6 +244,18 @@ Map<String, dynamic> appLocalizations = {
     "en": "Delete",
     "vi": "Xoá",
   },
+  "restoring-text": {
+    "en": "Restoring...",
+    "vi": "Đang phục hồi...",
+  },
+  "deleted-donation-text": {
+    "en": "Deleted donation",
+    "vi": "Quyên góp đã xoá",
+  },
+  "restore-text": {
+    "en": "Restore",
+    "vi": "Phục hồi",
+  },
   "choose-image-text": {
     "en": "Choose image",
     "vi": "Chọn ảnh",
@@ -248,13 +264,29 @@ Map<String, dynamic> appLocalizations = {
     "en": "Deleting...",
     "vi": "Đang xoá...",
   },
+  "trash-bin-title": {
+    "en": "Trash bin",
+    "vi": "Thùng rác",
+  },
   "delete-donation-success-text": {
-    "en": "Donation deleted",
-    "vi": "Đã xoá quyên góp",
+    "en": "Deleted",
+    "vi": "Đã xoá",
   },
   "delete-donation-success-description": {
     "en": "Donation has been deleted",
     "vi": "Quyên góp đã bị xoá",
+  },
+  "soft-delete-donation-success-description": {
+    "en": "Donation has been moved to trash bin",
+    "vi": "Quyên góp đã được đưa vào thùng rác",
+  },
+  "restore-donation-success-text": {
+    "en": "Restored",
+    "vi": "Đã phục hồi",
+  },
+  "restore-donation-success-description": {
+    "en": "Donation has been restored",
+    "vi": "Quyên góp đã được phục hồi",
   },
   "error-text": {
     "en": "Error",

@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class Donation {
   String id;
   DateTime createAt;
+  DateTime? deleteAt;
   String donor;
   String title;
   List<String> categories;
@@ -17,6 +18,7 @@ class Donation {
   Donation(
     this.id,
     this.createAt,
+    this.deleteAt,
     this.donor,
     this.title,
     this.categories,
@@ -32,6 +34,7 @@ class Donation {
   factory Donation.fromJson(String id, Map<String, dynamic> data) => Donation(
         id,
         data['createAt'].toDate(),
+        data['deleteAt']?.toDate(),
         data['donor'],
         data['title'],
         List<String>.from(data['categories']),

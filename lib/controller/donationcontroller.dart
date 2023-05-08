@@ -13,7 +13,9 @@ import 'package:md5_file_checksum/md5_file_checksum.dart';
 
 class DonationController extends ChangeNotifier {
   static final DonationController _instance = DonationController._internal();
+  List<Donation> allDonations = [];
   List<Donation> donations = [];
+  List<Donation> deletedDonations = [];
   Map<String, String> imgURLs = {};
   StreamSubscription? listener;
   List<XFile> images = [];
@@ -38,7 +40,6 @@ class DonationController extends ChangeNotifier {
     listener = FirebaseFirestore.instance
         .collection('donations')
         .where('donor', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-        .where('deleteAt', isNull: true)
         .snapshots()
         .listen((event) async {
       isLoading = true;
@@ -49,20 +50,24 @@ class DonationController extends ChangeNotifier {
 
         switch (element.type) {
           case DocumentChangeType.added:
-            donations.add(donation);
+            allDonations.add(donation);
             break;
           case DocumentChangeType.modified:
-            donations[donations.indexWhere((d) => d.id == donation.id)] =
+            allDonations[allDonations.indexWhere((d) => d.id == donation.id)] =
                 donation;
             break;
           case DocumentChangeType.removed:
-            donations.removeWhere((d) => d.id == donation.id);
+            allDonations.removeWhere((d) => d.id == donation.id);
             for (var img in donation.imgs) {
               imgURLs.remove(img);
             }
             break;
         }
       }
+      donations =
+          allDonations.where((element) => element.deleteAt == null).toList();
+      deletedDonations =
+          allDonations.where((element) => element.deleteAt != null).toList();
       isLoading = false;
       notifyListeners();
     });

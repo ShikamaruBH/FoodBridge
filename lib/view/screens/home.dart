@@ -11,6 +11,7 @@ import 'package:food_bridge/view/screens/chooselocation.dart';
 import 'package:food_bridge/view/screens/donationdetail.dart';
 import 'package:food_bridge/view/screens/login.dart';
 import 'package:food_bridge/view/screens/settings.dart';
+import 'package:food_bridge/view/screens/trashbin.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:intl/intl.dart';
@@ -58,11 +59,22 @@ class HomeScreen extends StatelessWidget {
                     MenuListTile(
                         Icons.account_box_rounded, 'account-title', () {}),
                     MenuListTile(
+                      Icons.delete_rounded,
+                      'trash-bin-title',
+                      () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const TrashBinScreen(),
+                        ),
+                      ),
+                    ),
+                    MenuListTile(
                       Icons.settings,
                       'setting-title',
-                      () => Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const SettingsScreen(),
-                      )),
+                      () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const SettingsScreen(),
+                        ),
+                      ),
                     ),
                     MenuListTile(Icons.logout, 'logout-title', logout),
                   ],
@@ -227,13 +239,13 @@ class DonationTileWidget extends StatelessWidget {
     super.key,
   });
 
-  Future<bool> deleteDonation(String id) async {
+  Future<bool> softDeleteDonation(String id) async {
     bool rs = await showDialog(
       barrierDismissible: false,
       context: navigatorKey.currentState!.context,
       builder: (context) => const ConfirmDialog(
         'delete-donation-confirm-title',
-        'delete-donation-confirm-content',
+        'soft-delete-donation-confirm-content',
       ),
     );
     if (!rs) {
@@ -255,7 +267,7 @@ class DonationTileWidget extends StatelessWidget {
           context: navigatorKey.currentState!.context,
           builder: (context) => SuccessDialog(
             'delete-donation-success-text',
-            'delete-donation-success-description',
+            'soft-delete-donation-success-description',
             () {},
             showActions: false,
           ),
@@ -294,15 +306,16 @@ class DonationTileWidget extends StatelessWidget {
           extentRatio: .3,
           dismissible: DismissiblePane(
             onDismissed: () {},
+            closeOnCancel: true,
             confirmDismiss: () async {
-              bool rs = await deleteDonation(donation.id);
-              return rs;
+              softDeleteDonation(donation.id);
+              return false;
             },
           ),
           children: [
             SlidableAction(
               onPressed: (context) async {
-                await deleteDonation(donation.id);
+                await softDeleteDonation(donation.id);
               },
               borderRadius: BorderRadius.circular(10),
               backgroundColor: ColorManagement.deleteColor,

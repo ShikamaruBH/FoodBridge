@@ -5,9 +5,11 @@ import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/foodtypecheckboxcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/mapcontroller.dart';
+import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/model/donation.dart';
 import 'package:food_bridge/view/screens/neworupdatedonation.dart';
+import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:provider/provider.dart';
 import 'package:timer_count_down/timer_count_down.dart';
@@ -220,54 +222,7 @@ class DonationDetailScreen extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
-                        children: [
-                          Flexible(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                FoodCategoryCheckBoxController()
-                                    .update(donation.categories);
-                                donationController.urls =
-                                    List.from(donation.imgs);
-                                donationController.images.clear();
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        NewOrUpdateDonationScreen(donation),
-                                  ),
-                                );
-                              },
-                              style:
-                                  StyleManagement.elevatedButtonStyle.copyWith(
-                                backgroundColor: MaterialStatePropertyAll(
-                                  Theme.of(context).colorScheme.secondary,
-                                ),
-                              ),
-                              child: Text(
-                                localeController
-                                    .getTranslate('edit-button-title'),
-                                style: const TextStyle(fontSize: 20),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Flexible(
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              style: StyleManagement.elevatedButtonStyle
-                                  .copyWith(
-                                      backgroundColor:
-                                          const MaterialStatePropertyAll(
-                                              ColorManagement.selectedColor)),
-                              child: Text(
-                                localeController
-                                    .getTranslate('rate-button-title'),
-                                style: const TextStyle(fontSize: 20),
-                              ),
-                            ),
-                          ),
-                        ],
+                        children: getBottomButton(context),
                       ),
                     ),
                   ),
@@ -278,6 +233,111 @@ class DonationDetailScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<bool> restoreDonation(String id) async {
+    showDialog(
+      barrierDismissible: false,
+      context: navigatorKey.currentState!.context,
+      builder: (context) => const LoadingDialog(
+        message: 'restoring-text',
+      ),
+    );
+    await donationController.restoreDonation({"id": id}).then((result) async {
+      Navigator.pop(navigatorKey.currentState!.context);
+      if (result['success']) {
+        Navigator.pop(navigatorKey.currentState!.context);
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => SuccessDialog(
+            'restore-donation-success-text',
+            'restore-donation-success-description',
+            () {},
+            showActions: false,
+          ),
+        );
+        await Future.delayed(const Duration(seconds: 1));
+        Navigator.of(navigatorKey.currentState!.context).pop();
+      } else {
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => ErrorDialog(result['err']),
+        );
+      }
+      return true;
+    }).catchError((err) {
+      Navigator.pop(navigatorKey.currentState!.context);
+      showDialog(
+        barrierDismissible: false,
+        context: navigatorKey.currentState!.context,
+        builder: (context) => ErrorDialog(err),
+      );
+      return true;
+    });
+    return false;
+  }
+
+  List<Widget> getBottomButton(BuildContext context) {
+    if (donation.deleteAt != null) {
+      return [
+        Flexible(
+          child: ElevatedButton(
+            onPressed: () => restoreDonation(donation.id),
+            style: StyleManagement.elevatedButtonStyle.copyWith(
+              backgroundColor: MaterialStatePropertyAll(
+                Theme.of(context).colorScheme.secondary,
+              ),
+            ),
+            child: Text(
+              localeController.getTranslate('restore-text'),
+              style: const TextStyle(fontSize: 20),
+            ),
+          ),
+        )
+      ];
+    }
+    return [
+      Flexible(
+        child: ElevatedButton(
+          onPressed: () {
+            FoodCategoryCheckBoxController().update(donation.categories);
+            donationController.urls = List.from(donation.imgs);
+            donationController.images.clear();
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => NewOrUpdateDonationScreen(donation),
+              ),
+            );
+          },
+          style: StyleManagement.elevatedButtonStyle.copyWith(
+            backgroundColor: MaterialStatePropertyAll(
+              Theme.of(context).colorScheme.secondary,
+            ),
+          ),
+          child: Text(
+            localeController.getTranslate('edit-button-title'),
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+      ),
+      const SizedBox(
+        width: 10,
+      ),
+      Flexible(
+        child: ElevatedButton(
+          onPressed: () {},
+          style: StyleManagement.elevatedButtonStyle.copyWith(
+              backgroundColor: const MaterialStatePropertyAll(
+                  ColorManagement.selectedColor)),
+          child: Text(
+            localeController.getTranslate('rate-button-title'),
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+      ),
+    ];
   }
 
   List<dynamic> getDayHourMinute(double seconds) {

@@ -142,7 +142,12 @@ class SuccessDialog extends StatelessWidget {
       content: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(localeController.getTranslate(content)),
+          Flexible(
+            child: Text(
+              localeController.getTranslate(content),
+              textAlign: TextAlign.center,
+            ),
+          ),
         ],
       ),
       actions: getActions(context),
