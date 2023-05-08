@@ -154,10 +154,11 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
       barrierDismissible: false,
       context: navigatorKey.currentState!.context,
       builder: (context) => const LoadingDialog(
-        message: 'deleteing-text',
+        message: 'deleting-text',
       ),
     );
-    await DonationController().deleteDonation({"id": id}).then((result) async {
+    await DonationController()
+        .softDeleteDonation({"id": id}).then((result) async {
       Navigator.pop(navigatorKey.currentState!.context);
       if (result['success']) {
         Navigator.of(navigatorKey.currentState!.context).pushAndRemoveUntil(

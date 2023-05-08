@@ -38,6 +38,7 @@ class DonationController extends ChangeNotifier {
     listener = FirebaseFirestore.instance
         .collection('donations')
         .where('donor', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .where('deleteAt', isNull: true)
         .snapshots()
         .listen((event) async {
       isLoading = true;
@@ -93,7 +94,6 @@ class DonationController extends ChangeNotifier {
           .ref('${FirebaseAuth.instance.currentUser!.uid}/$imgName');
       try {
         await imgRef.getData();
-        print("Image already exist");
       } catch (e) {
         await imgRef.putFile(File(img.path));
         imgs.add(imgName);
@@ -115,7 +115,6 @@ class DonationController extends ChangeNotifier {
           .ref('${FirebaseAuth.instance.currentUser!.uid}/$imgName');
       try {
         await imgRef.getData();
-        print("Image already exist");
       } catch (e) {
         await imgRef.putFile(File(img.path));
         imgs.add(imgName);
@@ -128,10 +127,25 @@ class DonationController extends ChangeNotifier {
   }
 
   Future<Map<String, dynamic>> deleteDonation(Map<String, dynamic> data) async {
+    clearImageCache();
+    return callCloudFunction(data, 'donation-deleteDonation');
+  }
+
+  Future<Map<String, dynamic>> softDeleteDonation(
+      Map<String, dynamic> data) async {
+    clearImageCache();
+    return callCloudFunction(data, 'donation-softDeleteDonation');
+  }
+
+  Future<Map<String, dynamic>> restoreDonation(
+      Map<String, dynamic> data) async {
+    return callCloudFunction(data, 'donation-restoreDonation');
+  }
+
+  void clearImageCache() {
     urls.clear();
     foodCategoryController.update([]);
     images.clear();
-    return callCloudFunction(data, 'donation-deleteDonation');
   }
 
   Future<String> getUrl(String img) async {

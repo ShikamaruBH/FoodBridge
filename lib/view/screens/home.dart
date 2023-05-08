@@ -246,7 +246,8 @@ class DonationTileWidget extends StatelessWidget {
         message: 'deleting-text',
       ),
     );
-    await DonationController().deleteDonation({"id": id}).then((result) async {
+    await DonationController()
+        .softDeleteDonation({"id": id}).then((result) async {
       Navigator.pop(navigatorKey.currentState!.context);
       if (result['success']) {
         showDialog(
@@ -406,7 +407,7 @@ class DonationTileWidget extends StatelessWidget {
                             Row(
                               children: [
                                 Text(DateFormat('dd/MM/yyyy')
-                                    .format(donation.created))
+                                    .format(donation.createAt))
                               ],
                             ),
                           ],
