@@ -45,15 +45,15 @@ dependencies:
   cloud_functions: ^4.0.11
   timer_count_down: ^2.2.2
   firebase_storage: ^11.1.1
+  flutter_typeahead: ^4.3.8
   md5_file_checksum: ^1.0.4
+  open_route_service: ^1.2.2
   permission_handler: ^10.2.0
   shared_preferences: ^2.0.17
   google_maps_flutter: ^2.2.5
   flutter_form_builder: ^7.7.0
   cached_network_image: ^3.2.3
   flutter_facebook_auth: ^5.0.8
-  flutter_google_places: ^0.3.0
-  google_maps_webservice: ^0.0.19
   form_builder_validators: ^8.4.0
 
 

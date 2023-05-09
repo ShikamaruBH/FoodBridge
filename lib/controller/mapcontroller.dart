@@ -3,10 +3,12 @@ import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:open_route_service/open_route_service.dart';
 
 class MapController extends ChangeNotifier {
   static final MapController _instance = MapController._internal();
-  static const String kGoogleApiKey = 'AIzaSyBsMkcCb61CevxuTKee09quBOI0qbo6BFA';
+  static final OpenRouteService openrouteservice = OpenRouteService(
+      apiKey: '5b3ce3597851110001cf6248df3273ba3d46409d8f718de0d4746d28');
   Set<Marker> markers = {};
   LatLng currentLatLng = const LatLng(45.521563, -122.677433);
   late GoogleMapController? controller;
@@ -83,5 +85,13 @@ class MapController extends ChangeNotifier {
 
   List<num> getLatLng() {
     return [currentLatLng.latitude, currentLatLng.longitude];
+  }
+
+  Future<List<GeoJsonFeature>> getSuggestion(String s) async {
+    if (s.isEmpty) {
+      return [];
+    }
+    final collections = await openrouteservice.geocodeAutoCompleteGet(text: s);
+    return collections.features;
   }
 }

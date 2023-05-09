@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/mapcontroller.dart';
@@ -8,9 +8,8 @@ import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/view/screens/neworupdatedonation.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_webservice/places.dart' hide Location;
+import 'package:open_route_service/open_route_service.dart';
 import 'package:provider/provider.dart';
 
 class ChooseLocationScreen extends StatelessWidget {
@@ -34,14 +33,6 @@ class ChooseLocationScreen extends StatelessWidget {
     }
   }
 
-  void displayPrediction(Prediction? p) async {
-    if (p != null) {
-      List<Location> locations = await locationFromAddress(p.description!);
-      Location location = locations.first;
-      MapController().addMarker(LatLng(location.latitude, location.longitude));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -61,18 +52,10 @@ class ChooseLocationScreen extends StatelessWidget {
               actions: [
                 IconButton(
                   onPressed: () async {
-                    Prediction? p = await PlacesAutocomplete.show(
+                    showDialog(
                       context: context,
-                      apiKey: MapController.kGoogleApiKey,
-                      mode: Mode.overlay, // Mode.fullscreen
-                      language: localeController.locale,
-                      types: [],
-                      radius: 100000000,
-                      strictbounds: false,
-                      components: [],
+                      builder: (context) => const AutoCompleteTextField(),
                     );
-
-                    displayPrediction(p);
                   },
                   icon: const Icon(Icons.search_rounded),
                   splashRadius: 20,
@@ -189,6 +172,86 @@ class ChooseLocationScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class AutoCompleteTextField extends StatelessWidget {
+  const AutoCompleteTextField({
+    super.key,
+  });
+
+  void addMarker(context, suggestion) {
+    final coordinate = suggestion.geometry.coordinates[0][0];
+    mapController.addMarker(LatLng(
+      coordinate.latitude,
+      coordinate.longitude,
+    ));
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Material(
+              child: TypeAheadField(
+                textFieldConfiguration: TextFieldConfiguration(
+                  autofocus: true,
+                  decoration: DecoratorManagement.defaultTextFieldDecorator,
+                ),
+                suggestionsCallback: (pattern) =>
+                    mapController.getSuggestion(pattern),
+                itemBuilder: (context, suggestion) =>
+                    AddressListTitle(suggestion),
+                onSuggestionSelected: (suggestion) =>
+                    addMarker(context, suggestion),
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class AddressListTitle extends StatelessWidget {
+  final GeoJsonFeature suggestion;
+  const AddressListTitle(
+    this.suggestion, {
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(5),
+          child: Icon(
+            Icons.location_on_sharp,
+            size: 25,
+            color: ColorManagement.iconColor,
+          ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        Flexible(
+          child: Text(
+            suggestion.properties['label'],
+            style: StyleManagement.historyItemTitleTextStyle.copyWith(
+              color: ColorManagement.titleColorDark,
+            ),
+          ),
+        )
+      ],
     );
   }
 }
