@@ -1,9 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
-import 'package:food_bridge/view/screens/home.dart';
 import 'package:food_bridge/view/screens/login.dart';
-import 'package:food_bridge/view/screens/trashbin.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -27,15 +24,15 @@ class MyApp extends StatelessWidget {
           secondary: const Color(0xff489FB5),
         ),
       ),
-      // home: const TrashBinScreen(),
       home: getScreen(),
     );
   }
 
   getScreen() {
-    if (FirebaseAuth.instance.currentUser != null) {
-      return const HomeScreen();
-    }
+    // if (FirebaseAuth.instance.currentUser != null) {
+    //   return const HomeScreen();
+    // }
     return LoginScreen();
+    // return const FindDonationScreen();
   }
 }

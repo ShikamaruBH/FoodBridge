@@ -18,7 +18,7 @@ class TrashBinScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (_, constraints) => ChangeNotifierProvider.value(
-        value: LocalizationController(),
+        value: localeController,
         child: Consumer<LocalizationController>(
           builder: (__, localeController, _) => Scaffold(
             appBar: AppBar(
@@ -69,7 +69,7 @@ class DeletedDonationWidget extends StatelessWidget {
             ),
           ),
           child: ChangeNotifierProvider.value(
-            value: DonationController(),
+            value: donationController,
             child: Consumer<DonationController>(
               builder: (_, donationController, __) => Column(
                 children: [
@@ -141,7 +141,7 @@ class DonationTileWidget extends StatelessWidget {
         message: 'restoring-text',
       ),
     );
-    await DonationController().restoreDonation({"id": id}).then((result) async {
+    await donationController.restoreDonation({"id": id}).then((result) async {
       Navigator.pop(navigatorKey.currentState!.context);
       if (result['success']) {
         showDialog(
@@ -195,7 +195,7 @@ class DonationTileWidget extends StatelessWidget {
         message: 'deleting-text',
       ),
     );
-    await DonationController().deleteDonation({"id": id}).then((result) async {
+    await donationController.deleteDonation({"id": id}).then((result) async {
       Navigator.pop(navigatorKey.currentState!.context);
       if (result['success']) {
         showDialog(

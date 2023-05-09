@@ -3,11 +3,13 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:food_bridge/controller/authcontroller.dart';
+import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/passwordtextfieldcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
+import 'package:food_bridge/model/userrole.dart';
 import 'package:food_bridge/view/screens/chooserole.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/screens/forgotpassword.dart';
@@ -79,8 +81,8 @@ class LoginScreen extends StatelessWidget {
   }
 
   void navigate() {
-    if (AuthController().currentUserRole.isNotEmpty) {
-      print('User role: ${AuthController().currentUserRole}');
+    if (AuthController().currentUserRole != Role.none) {
+      debugPrint('User role: ${AuthController().currentUserRole}');
       Navigator.of(navigatorKey.currentState!.context).push(
         MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
@@ -95,7 +97,7 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ChangeNotifierProvider.value(
-        value: LocalizationController(),
+        value: localeController,
         child: Consumer<LocalizationController>(
           builder: (_, localeController, __) => Stack(
             alignment: Alignment.center,
@@ -112,7 +114,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              Positioned(
+              const Positioned(
                 left: 10,
                 top: 80,
                 child: LaguageSwitchWidget(),

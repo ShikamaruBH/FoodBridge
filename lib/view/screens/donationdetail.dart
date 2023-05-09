@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
-import 'package:food_bridge/controller/foodtypecheckboxcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/mapcontroller.dart';
 import 'package:food_bridge/main.dart';
@@ -22,7 +21,7 @@ class DonationDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (_, constraints) => ChangeNotifierProvider.value(
-        value: LocalizationController(),
+        value: localeController,
         child: Consumer<LocalizationController>(
           builder: (_, localeController, __) => Scaffold(
             appBar: AppBar(
@@ -164,7 +163,7 @@ class DonationDetailScreen extends StatelessWidget {
                             children: [
                               Flexible(
                                 child: ChangeNotifierProvider.value(
-                                  value: MapController(),
+                                  value: mapController,
                                   child: Consumer<MapController>(
                                     builder: (_, mapController, __) => Text(
                                       mapController.currentAddress,
@@ -302,7 +301,7 @@ class DonationDetailScreen extends StatelessWidget {
       Flexible(
         child: ElevatedButton(
           onPressed: () {
-            FoodCategoryCheckBoxController().update(donation.categories);
+            foodCategoryController.update(donation.categories);
             donationController.urls = List.from(donation.imgs);
             donationController.images.clear();
             dateTimePickerController.setStart(donation.start);

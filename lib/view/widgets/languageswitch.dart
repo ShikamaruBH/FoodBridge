@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:food_bridge/controller/localizationcontroller.dart';
+import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 
 class LaguageSwitchWidget extends StatelessWidget {
-  final localeController = LocalizationController();
-  LaguageSwitchWidget({
+  const LaguageSwitchWidget({
     super.key,
   });
 

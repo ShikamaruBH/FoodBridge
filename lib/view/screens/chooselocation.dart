@@ -37,7 +37,7 @@ class ChooseLocationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) => ChangeNotifierProvider.value(
-        value: LocalizationController(),
+        value: localeController,
         child: Consumer<LocalizationController>(
           builder: (_, localeController, __) => Scaffold(
             appBar: AppBar(
@@ -66,7 +66,7 @@ class ChooseLocationScreen extends StatelessWidget {
               width: constraints.maxWidth,
               height: constraints.maxHeight,
               child: ChangeNotifierProvider.value(
-                value: MapController(),
+                value: mapController,
                 child: Consumer<MapController>(
                   builder: (__, mapController, _) => Stack(
                     children: [
@@ -203,7 +203,7 @@ class AutoCompleteTextField extends StatelessWidget {
               child: TypeAheadField(
                 textFieldConfiguration: TextFieldConfiguration(
                   autofocus: true,
-                  decoration: DecoratorManagement.defaultTextFieldDecorator,
+                  decoration: DecoratorManagement.defaultTextFieldDecoratorDark,
                 ),
                 suggestionsCallback: (pattern) =>
                     mapController.getSuggestion(pattern),

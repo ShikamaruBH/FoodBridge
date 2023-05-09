@@ -33,7 +33,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
-      value: LocalizationController(),
+      value: localeController,
       child: Consumer<LocalizationController>(
         builder: (_, localeController, __) => LayoutBuilder(
           builder: (context, constraints) => Scaffold(
@@ -174,7 +174,7 @@ class DonationHistoryWidget extends StatelessWidget {
             ),
           ),
           child: ChangeNotifierProvider.value(
-            value: DonationController(),
+            value: donationController,
             child: Consumer<DonationController>(
               builder: (_, donationController, __) => Column(
                 children: [
@@ -258,7 +258,7 @@ class DonationTileWidget extends StatelessWidget {
         message: 'deleting-text',
       ),
     );
-    await DonationController()
+    await donationController
         .softDeleteDonation({"id": id}).then((result) async {
       Navigator.pop(navigatorKey.currentState!.context);
       if (result['success']) {

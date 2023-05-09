@@ -204,6 +204,18 @@ Map<String, dynamic> appLocalizations = {
     "en": "Pick or seach for your location on the map",
     "vi": "Chọn hoặc tìm địa chỉ của bạn trên bản đồ",
   },
+  "distance-title": {
+    "en": "Distance",
+    "vi": "Khoảng cách",
+  },
+  "find-donation-title": {
+    "en": "Find donation",
+    "vi": "Tìm quyên góp",
+  },
+  "avaiable-donation-text": {
+    "en": "Avaiable donation",
+    "vi": "Quyên góp",
+  },
   "register-success-text": {
     "en": "Register success",
     "vi": "Đăng ký hoàn tất",

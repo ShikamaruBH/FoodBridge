@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/view/widgets/languageswitch.dart';
@@ -10,7 +11,7 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
-      value: LocalizationController(),
+      value: localeController,
       child: Consumer<LocalizationController>(
         builder: (_, localeController, __) => Scaffold(
           appBar: AppBar(
@@ -22,7 +23,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           body: ListView(
             children: [
-              SettingsLabelWidget('general-setting-label'),
+              const SettingsLabelWidget('general-setting-label'),
               Padding(
                 padding: const EdgeInsets.all(8),
                 child: Row(
@@ -33,11 +34,11 @@ class SettingsScreen extends StatelessWidget {
                         style: StyleManagement.settingsItemTextStyle,
                       ),
                     ),
-                    LaguageSwitchWidget(),
+                    const LaguageSwitchWidget(),
                   ],
                 ),
               ),
-              SettingsLabelWidget('notifications-text'),
+              const SettingsLabelWidget('notifications-text'),
             ],
           ),
         ),
@@ -48,8 +49,7 @@ class SettingsScreen extends StatelessWidget {
 
 class SettingsLabelWidget extends StatelessWidget {
   final String label;
-  final localeController = LocalizationController();
-  SettingsLabelWidget(
+  const SettingsLabelWidget(
     this.label, {
     super.key,
   });

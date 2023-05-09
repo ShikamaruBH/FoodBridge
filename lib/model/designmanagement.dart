@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
-import 'package:food_bridge/controller/localizationcontroller.dart';
 
 class ColorManagement {
   static final titleColorDark = Colors.black.withOpacity(0.71);
@@ -8,11 +7,14 @@ class ColorManagement {
   static final iconColor = Colors.black.withOpacity(0.85);
   static final descriptionColorDark = Colors.black.withOpacity(0.55);
   static final descriptionColorLight = Colors.white.withOpacity(0.55);
+  static final titleColorLight = Colors.white.withOpacity(0.96);
   static final foodTypeCheckBoxCardBackgroundUncheck =
       const Color(0xffD9D9D9).withOpacity(.6);
   static const foodTypeCheckBoxCardBackgroundChecked = Color(0xff489FB5);
-  static final foodTypeCheckBoxCardIconUncheckColor =
+  static final foodTypeCheckBoxCardIconUncheckColorDark =
       Colors.black.withOpacity(.1);
+  static final foodTypeCheckBoxCardIconUncheckColorLight =
+      Colors.white.withOpacity(.34);
   static const cardColor = Color(0xffe6e6e6);
   static const selectedColor = Color(0xffFFA62B);
   static const donationTileColor = Color(0xffF5F5F5);
@@ -98,8 +100,13 @@ class StyleManagement {
     fontSize: 12,
     fontWeight: FontWeight.w500,
   );
-  static final textFieldTextStyle = TextStyle(
+  static final textFieldTextStyleDark = TextStyle(
     color: ColorManagement.titleColorDark,
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
+  );
+  static final textFieldTextStyleLight = TextStyle(
+    color: ColorManagement.titleColorLight,
     fontSize: 12,
     fontWeight: FontWeight.w600,
   );
@@ -136,10 +143,9 @@ class StyleManagement {
     minimumSize: const Size(double.infinity, 50),
   );
 
-  static getLanguageButtonStyle(locale) =>
-      LocalizationController().locale == locale
-          ? textButtonLanguageStyle
-          : textButtonLanguageInactiveStyle;
+  static getLanguageButtonStyle(locale) => localeController.locale == locale
+      ? textButtonLanguageStyle
+      : textButtonLanguageInactiveStyle;
 
   static getIcon(IconData icon) => Icon(
         icon,
@@ -149,7 +155,7 @@ class StyleManagement {
 }
 
 class DecoratorManagement {
-  static final defaultTextFieldDecorator = InputDecoration(
+  static final defaultTextFieldDecoratorDark = InputDecoration(
     isDense: true,
     errorMaxLines: 2,
     contentPadding: const EdgeInsets.all(11),
@@ -158,6 +164,17 @@ class DecoratorManagement {
       borderSide: const BorderSide(
         width: 1,
       ),
+    ),
+  );
+  static final defaultTextFieldDecoratorLight =
+      defaultTextFieldDecoratorDark.copyWith(
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide(width: 1, color: ColorManagement.titleColorLight),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide(width: 1, color: ColorManagement.titleColorLight),
     ),
   );
   static addressTextFieldDecorator(String hint, prefixIcon) => InputDecoration(

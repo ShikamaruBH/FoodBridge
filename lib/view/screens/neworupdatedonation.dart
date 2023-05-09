@@ -40,7 +40,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
         ),
       );
       Map<String, dynamic> data = {
-        "latlng": MapController().getLatLng(),
+        "latlng": mapController.getLatLng(),
         'note': formData['note']?.trim() ?? "",
         'categories': foodCategoryController.getChecked(),
         'title': formData['title'].trim(),
@@ -49,7 +49,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
         'start': formData['start'].toUtc().toIso8601String(),
         'end': formData['end'].toUtc().toIso8601String(),
       };
-      await DonationController().createDonation(data).then((result) {
+      await donationController.createDonation(data).then((result) {
         Navigator.pop(navigatorKey.currentState!.context);
         if (result['success']) {
           showDialog(
@@ -96,7 +96,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
       );
       Map<String, dynamic> data = {
         'id': donation!.id,
-        "latlng": MapController().getLatLng(),
+        "latlng": mapController.getLatLng(),
         'note': formData['note']?.trim() ?? "",
         'categories': foodCategoryController.getChecked(),
         'title': formData['title'].trim(),
@@ -105,7 +105,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
         'start': formData['start'].toUtc().toIso8601String(),
         'end': formData['end'].toUtc().toIso8601String(),
       };
-      await DonationController().updateDonation(data).then((result) {
+      await donationController.updateDonation(data).then((result) {
         Navigator.pop(navigatorKey.currentState!.context);
         if (result['success']) {
           showDialog(
@@ -158,7 +158,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
         message: 'deleting-text',
       ),
     );
-    await DonationController()
+    await donationController
         .softDeleteDonation({"id": id}).then((result) async {
       Navigator.pop(navigatorKey.currentState!.context);
       if (result['success']) {
@@ -204,7 +204,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (_, constraints) => ChangeNotifierProvider.value(
-        value: LocalizationController(),
+        value: localeController,
         child: Consumer<LocalizationController>(
           builder: (_, localeController, __) => Scaffold(
             resizeToAvoidBottomInset: false,
@@ -232,7 +232,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 28),
                       child: ChangeNotifierProvider.value(
-                        value: MapController(),
+                        value: mapController,
                         child: Consumer<MapController>(
                           builder: (_, mapController, __) => TextFormField(
                             readOnly: true,
@@ -325,9 +325,10 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                   child: FormBuilderTextField(
                                     name: 'title',
                                     initialValue: donation?.title ?? "",
-                                    style: StyleManagement.textFieldTextStyle,
+                                    style:
+                                        StyleManagement.textFieldTextStyleDark,
                                     decoration: DecoratorManagement
-                                        .defaultTextFieldDecorator,
+                                        .defaultTextFieldDecoratorDark,
                                     validator: CustomValidator.required,
                                   ),
                                 ),
@@ -348,11 +349,11 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                                       .toString() ??
                                                   "",
                                               style: StyleManagement
-                                                  .textFieldTextStyle,
+                                                  .textFieldTextStyleDark,
                                               keyboardType:
                                                   TextInputType.number,
                                               decoration: DecoratorManagement
-                                                  .defaultTextFieldDecorator,
+                                                  .defaultTextFieldDecoratorDark,
                                               validator: FormBuilderValidators
                                                   .compose([
                                                 CustomValidator.required,
@@ -383,9 +384,9 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                                 initialValue:
                                                     donation?.unit ?? "",
                                                 style: StyleManagement
-                                                    .textFieldTextStyle,
+                                                    .textFieldTextStyleDark,
                                                 decoration: DecoratorManagement
-                                                    .defaultTextFieldDecorator,
+                                                    .defaultTextFieldDecoratorDark,
                                                 validator:
                                                     CustomValidator.required,
                                               ),
@@ -412,27 +413,12 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                                 padding:
                                                     const EdgeInsets.symmetric(
                                                         vertical: 5),
-                                                child:
-                                                    FormBuilderDateTimePicker(
-                                                  name: 'start',
-                                                  onChanged: (value) =>
-                                                      dateTimePickerController
-                                                          .setStart(value!),
-                                                  initialValue:
-                                                      dateTimePickerController
-                                                          .start,
-                                                  format: DateFormat(
-                                                      'dd/MM/yyyy hh:mm a'),
-                                                  style: StyleManagement
-                                                      .textFieldTextStyle,
-                                                  currentDate: DateTime.now(),
-                                                  initialTime: TimeOfDay.now(),
-                                                  locale: Locale(
-                                                      localeController.locale!),
-                                                  decoration: DecoratorManagement
-                                                      .defaultTextFieldDecorator,
-                                                  validator:
-                                                      CustomValidator.required,
+                                                child: DonationDatetimePicker(
+                                                  'start',
+                                                  dateTimePickerController
+                                                      .setStart,
+                                                  dateTimePickerController
+                                                      .start,
                                                 ),
                                               ),
                                             ],
@@ -450,40 +436,15 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                                 padding:
                                                     const EdgeInsets.symmetric(
                                                         vertical: 5),
-                                                child:
-                                                    FormBuilderDateTimePicker(
-                                                        name: 'end',
-                                                        onChanged: (value) =>
-                                                            dateTimePickerController
-                                                                .setEnd(value!),
-                                                        initialValue:
-                                                            dateTimePickerController
-                                                                .end,
-                                                        format: DateFormat(
-                                                            'dd/MM/yyyy hh:mm a'),
-                                                        style: StyleManagement
-                                                            .textFieldTextStyle,
-                                                        firstDate:
-                                                            dateTimePickerController
-                                                                .start,
-                                                        currentDate:
-                                                            DateTime.now(),
-                                                        locale: Locale(
-                                                            localeController
-                                                                .locale!),
-                                                        initialTime:
-                                                            TimeOfDay.now(),
-                                                        decoration:
-                                                            DecoratorManagement
-                                                                .defaultTextFieldDecorator,
-                                                        validator:
-                                                            FormBuilderValidators
-                                                                .compose([
-                                                          CustomValidator
-                                                              .required,
-                                                          CustomValidator
-                                                              .datetime,
-                                                        ])),
+                                                child: DonationDatetimePicker(
+                                                  'end',
+                                                  dateTimePickerController
+                                                      .setEnd,
+                                                  dateTimePickerController.end,
+                                                  firstDate:
+                                                      dateTimePickerController
+                                                          .start,
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -498,7 +459,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                     children: [
                                       Expanded(
                                         child: ChangeNotifierProvider.value(
-                                          value: DonationController(),
+                                          value: donationController,
                                           child: Consumer<DonationController>(
                                             builder:
                                                 (_, donationController, __) =>
@@ -655,6 +616,47 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class DonationDatetimePicker extends StatelessWidget {
+  final String name;
+  final Function onChanged;
+  final DateTime initialValue;
+  final DateTime? firstDate;
+  final TextStyle? style;
+  final InputDecoration? decoration;
+  const DonationDatetimePicker(
+    this.name,
+    this.onChanged,
+    this.initialValue, {
+    this.firstDate,
+    this.style,
+    this.decoration,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FormBuilderDateTimePicker(
+      name: name,
+      onChanged: (value) => onChanged(value!),
+      initialValue: initialValue,
+      format: DateFormat('dd/MM/yyyy hh:mm a'),
+      style: style ?? StyleManagement.textFieldTextStyleDark,
+      firstDate: firstDate ?? DateTime(1900),
+      currentDate: DateTime.now(),
+      initialTime: TimeOfDay.now(),
+      locale: Locale(localeController.locale!),
+      decoration:
+          decoration ?? DecoratorManagement.defaultTextFieldDecoratorDark,
+      validator: FormBuilderValidators.compose(
+        [
+          CustomValidator.required,
+          CustomValidator.datetime,
+        ],
+      ),
     );
   }
 }
@@ -846,7 +848,7 @@ class FoodTypeCheckBoxWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
-      value: FoodCategoryCheckBoxController(),
+      value: foodCategoryController,
       child: Consumer<FoodCategoryCheckBoxController>(
         builder: (_, checkBoxController, __) => Column(
           children: [
@@ -869,7 +871,8 @@ class FoodTypeCheckBoxWidget extends StatelessWidget {
                     size: 48,
                     color: checkBoxController.status(type)
                         ? Colors.white
-                        : ColorManagement.foodTypeCheckBoxCardIconUncheckColor,
+                        : ColorManagement
+                            .foodTypeCheckBoxCardIconUncheckColorDark,
                   ),
                 ),
               ),

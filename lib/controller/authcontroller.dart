@@ -1,12 +1,13 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
+import 'package:food_bridge/model/userrole.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthController {
   static final AuthController _instance = AuthController._internal();
   String currentUsername = 'No username';
-  String currentUserRole = '';
+  Role currentUserRole = Role.none;
 
   AuthController._internal();
 
@@ -41,7 +42,8 @@ class AuthController {
       currentUsername = userCredential.user!.displayName ?? "No display name";
       IdTokenResult idTokenResult =
           await userCredential.user!.getIdTokenResult();
-      currentUserRole = idTokenResult.claims?['role'] ?? '';
+      currentUserRole =
+          RoleExtension.fromValue(idTokenResult.claims?['role'] ?? '');
       return {"success": true};
     } catch (err) {
       return {"success": false, "err": err};
@@ -56,7 +58,8 @@ class AuthController {
       currentUsername = userCredential.user!.displayName ?? "No display name";
       IdTokenResult idTokenResult =
           await userCredential.user!.getIdTokenResult();
-      currentUserRole = idTokenResult.claims?['role'] ?? '';
+      currentUserRole =
+          RoleExtension.fromValue(idTokenResult.claims?['role'] ?? '');
       return {"success": true};
     } on FirebaseFunctionsException catch (err) {
       return {"success": false, "err": err};

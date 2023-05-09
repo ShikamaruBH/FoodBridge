@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/authcontroller.dart';
+import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/rolebuttoncontroller.dart';
 import 'package:food_bridge/model/designmanagement.dart';
@@ -49,7 +50,7 @@ class ChooseRoleScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ChangeNotifierProvider.value(
-        value: LocalizationController(),
+        value: localeController,
         child: Consumer<LocalizationController>(
           builder: (__, localeController, _) => Stack(
             alignment: Alignment.center,
@@ -66,7 +67,7 @@ class ChooseRoleScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              Positioned(
+              const Positioned(
                 left: 10,
                 top: 80,
                 child: LaguageSwitchWidget(),

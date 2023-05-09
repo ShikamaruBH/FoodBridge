@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
-import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:open_route_service/open_route_service.dart';
@@ -36,7 +35,7 @@ class MapController extends ChangeNotifier {
     );
     currentLatLng = argument;
     addressTextFieldController.text =
-        LocalizationController().getTranslate('loading-text');
+        localeController.getTranslate('loading-text');
     await getAddress(argument);
   }
 
