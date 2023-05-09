@@ -3,6 +3,7 @@ import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/datetimepickercontroller.dart';
 import 'package:food_bridge/controller/distanceslidercontroller.dart';
 import 'package:food_bridge/controller/donationcontroller.dart';
+import 'package:food_bridge/controller/finddonationfiltercontroller.dart';
 import 'package:food_bridge/controller/foodtypecheckboxcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/model/designmanagement.dart';
@@ -30,138 +31,175 @@ class FindDonationScreen extends StatelessWidget {
                 localeController.getTranslate('find-donation-title'),
               ),
             ),
-            body: Container(
-              width: constraints.maxWidth,
-              color: Theme.of(context).colorScheme.primary,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 22,
-                      vertical: 10,
-                    ),
-                    child: Column(
-                      children: [
-                        const FieldTitleWidget('food-type-title'),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              FoodTypeCheckBoxWidget(
-                                'food-type-grocery',
-                                Icons.local_grocery_store_rounded,
-                              ),
-                              FoodTypeCheckBoxWidget(
-                                'food-type-cooked',
-                                Icons.ramen_dining_rounded,
-                              ),
-                              FoodTypeCheckBoxWidget(
-                                'food-type-fruits',
-                                Icons.apple_rounded,
-                              ),
-                              FoodTypeCheckBoxWidget(
-                                'food-type-beverage',
-                                Icons.emoji_food_beverage_rounded,
-                              ),
-                            ],
+            body: ChangeNotifierProvider.value(
+              value: filterController,
+              child: Consumer<FilterController>(
+                builder: (_, filterController, __) => Container(
+                  width: constraints.maxWidth,
+                  color: Theme.of(context).colorScheme.primary,
+                  child: Column(
+                    children: [
+                      showFilter(),
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            top: filterController.isEnable ? 10 : 0,
                           ),
-                        ),
-                        ChangeNotifierProvider.value(
-                          value: dateTimePickerController,
-                          child: Consumer<DatetimePickerController>(
-                            builder: (_, dateTimePickerController, __) => Row(
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    children: [
-                                      const FieldTitleWidget(
-                                          'food-start-date-title'),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 5),
-                                        child: DonationDatetimePicker(
-                                          'start',
-                                          dateTimePickerController.setStart,
-                                          dateTimePickerController.start,
-                                          style: StyleManagement
-                                              .textFieldTextStyleLight,
-                                          decoration: DecoratorManagement
-                                              .defaultTextFieldDecoratorLight,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                          child: Card(
+                            margin: EdgeInsets.zero,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(13),
+                                topRight: Radius.circular(13),
+                              ),
                             ),
-                          ),
-                        ),
-                        const CustomSpacerWidget(),
-                        const FieldTitleWidget('distance-title'),
-                        const DistanceSlider()
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Card(
-                        margin: EdgeInsets.zero,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(13),
-                            topRight: Radius.circular(13),
-                          ),
-                        ),
-                        child: ChangeNotifierProvider.value(
-                          value: donationController,
-                          child: Consumer<DonationController>(
-                            builder: (_, donationController, __) => Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      RichText(
-                                        text: TextSpan(
-                                            style: StyleManagement
-                                                .usernameTextStyle
-                                                .copyWith(color: Colors.black),
-                                            children: [
-                                              TextSpan(
-                                                text: localeController
-                                                    .getTranslate(
-                                                        'avaiable-donation-text'),
-                                              ),
-                                              TextSpan(
-                                                text:
-                                                    ' (${donationController.isLoading ? 0 : donationController.donations.length})',
-                                                style: StyleManagement
-                                                    .notificationTitleBold
-                                                    .copyWith(fontSize: 20),
-                                              )
-                                            ]),
+                            child: ChangeNotifierProvider.value(
+                              value: donationController,
+                              child: Consumer<DonationController>(
+                                builder: (_, donationController, __) => Column(
+                                  children: [
+                                    InkWell(
+                                      onTap: filterController.swap,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            getIcon(),
+                                            size: 25,
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8, bottom: 8, right: 8),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          RichText(
+                                            text: TextSpan(
+                                                style: StyleManagement
+                                                    .usernameTextStyle
+                                                    .copyWith(
+                                                        color: Colors.black),
+                                                children: [
+                                                  TextSpan(
+                                                    text: localeController
+                                                        .getTranslate(
+                                                            'avaiable-donation-text'),
+                                                  ),
+                                                  TextSpan(
+                                                    text:
+                                                        ' (${donationController.isLoading ? 0 : donationController.donations.length})',
+                                                    style: StyleManagement
+                                                        .notificationTitleBold
+                                                        .copyWith(fontSize: 20),
+                                                  )
+                                                ]),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(child: ListView())
+                                  ],
                                 ),
-                                Expanded(child: ListView())
-                              ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  showFilter() {
+    if (!filterController.isEnable) {
+      return const Text("");
+    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 22,
+        vertical: 10,
+      ),
+      child: Column(
+        children: [
+          const FieldTitleWidget('food-type-title'),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                FoodTypeCheckBoxWidget(
+                  'food-type-grocery',
+                  Icons.local_grocery_store_rounded,
+                ),
+                FoodTypeCheckBoxWidget(
+                  'food-type-cooked',
+                  Icons.ramen_dining_rounded,
+                ),
+                FoodTypeCheckBoxWidget(
+                  'food-type-fruits',
+                  Icons.apple_rounded,
+                ),
+                FoodTypeCheckBoxWidget(
+                  'food-type-beverage',
+                  Icons.emoji_food_beverage_rounded,
+                ),
+              ],
+            ),
+          ),
+          ChangeNotifierProvider.value(
+            value: dateTimePickerController,
+            child: Consumer<DatetimePickerController>(
+              builder: (_, dateTimePickerController, __) => Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        const FieldTitleWidget('food-start-date-title'),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: DonationDatetimePicker(
+                            'start',
+                            dateTimePickerController.setStart,
+                            dateTimePickerController.start,
+                            style: StyleManagement.textFieldTextStyleLight
+                                .copyWith(fontSize: 14),
+                            decoration: DecoratorManagement
+                                .defaultTextFieldDecoratorLight,
+                            format: 'MMMM dd, yyyy hh:mm a',
+                            prefix: Icons.calendar_month_outlined,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const CustomSpacerWidget(),
+          const FieldTitleWidget('distance-title'),
+          const DistanceSlider()
+        ],
+      ),
+    );
+  }
+
+  getIcon() {
+    if (filterController.isEnable) {
+      return Icons.arrow_drop_up_sharp;
+    }
+    return Icons.arrow_drop_down_sharp;
   }
 }
 

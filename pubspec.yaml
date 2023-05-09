@@ -55,6 +55,8 @@ dependencies:
   cached_network_image: ^3.2.3
   flutter_facebook_auth: ^5.0.8
   form_builder_validators: ^8.4.0
+  flutter_localizations:
+    sdk: flutter
 
 
 dev_dependencies:

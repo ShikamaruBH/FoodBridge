@@ -627,6 +627,8 @@ class DonationDatetimePicker extends StatelessWidget {
   final DateTime? firstDate;
   final TextStyle? style;
   final InputDecoration? decoration;
+  final String? format;
+  final IconData? prefix;
   const DonationDatetimePicker(
     this.name,
     this.onChanged,
@@ -634,23 +636,40 @@ class DonationDatetimePicker extends StatelessWidget {
     this.firstDate,
     this.style,
     this.decoration,
+    this.format,
+    this.prefix,
     super.key,
   });
+
+  getDecoration() {
+    // ignore: no_leading_underscores_for_local_identifiers
+    final _decoration =
+        decoration ?? DecoratorManagement.defaultTextFieldDecoratorDark;
+    if (prefix == null) {
+      return _decoration;
+    }
+    return _decoration.copyWith(
+        prefixIcon: Icon(
+      prefix,
+      color: Colors.white,
+      size: 30,
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
     return FormBuilderDateTimePicker(
       name: name,
       onChanged: (value) => onChanged(value!),
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
       initialValue: initialValue,
-      format: DateFormat('dd/MM/yyyy hh:mm a'),
+      format: DateFormat(format ?? 'dd/MM/yyyy hh:mm a'),
       style: style ?? StyleManagement.textFieldTextStyleDark,
       firstDate: firstDate ?? DateTime(1900),
       currentDate: DateTime.now(),
       initialTime: TimeOfDay.now(),
       locale: Locale(localeController.locale!),
-      decoration:
-          decoration ?? DecoratorManagement.defaultTextFieldDecoratorDark,
+      decoration: getDecoration(),
       validator: FormBuilderValidators.compose(
         [
           CustomValidator.required,

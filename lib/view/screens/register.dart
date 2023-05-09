@@ -88,7 +88,7 @@ class RegisterScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const Positioned(
+              Positioned(
                 left: 10,
                 top: 80,
                 child: LaguageSwitchWidget(),

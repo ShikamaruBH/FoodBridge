@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
-import 'package:food_bridge/view/screens/login.dart';
+import 'package:food_bridge/view/screens/finddonation.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -17,6 +18,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: navigatorKey,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('vi'),
+      ],
       title: 'Food Bridge',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSwatch().copyWith(
@@ -32,7 +42,7 @@ class MyApp extends StatelessWidget {
     // if (FirebaseAuth.instance.currentUser != null) {
     //   return const HomeScreen();
     // }
-    return LoginScreen();
-    // return const FindDonationScreen();
+    // return LoginScreen();
+    return const FindDonationScreen();
   }
 }

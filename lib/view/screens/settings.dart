@@ -23,7 +23,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           body: ListView(
             children: [
-              const SettingsLabelWidget('general-setting-label'),
+              SettingsLabelWidget('general-setting-label'),
               Padding(
                 padding: const EdgeInsets.all(8),
                 child: Row(
@@ -34,11 +34,11 @@ class SettingsScreen extends StatelessWidget {
                         style: StyleManagement.settingsItemTextStyle,
                       ),
                     ),
-                    const LaguageSwitchWidget(),
+                    LaguageSwitchWidget(),
                   ],
                 ),
               ),
-              const SettingsLabelWidget('notifications-text'),
+              SettingsLabelWidget('notifications-text'),
             ],
           ),
         ),
@@ -49,7 +49,8 @@ class SettingsScreen extends StatelessWidget {
 
 class SettingsLabelWidget extends StatelessWidget {
   final String label;
-  const SettingsLabelWidget(
+  // ignore: prefer_const_constructors_in_immutables
+  SettingsLabelWidget(
     this.label, {
     super.key,
   });

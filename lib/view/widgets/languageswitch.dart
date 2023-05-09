@@ -3,7 +3,8 @@ import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 
 class LaguageSwitchWidget extends StatelessWidget {
-  const LaguageSwitchWidget({
+  // ignore: prefer_const_constructors_in_immutables
+  LaguageSwitchWidget({
     super.key,
   });
 
