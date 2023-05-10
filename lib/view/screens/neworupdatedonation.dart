@@ -257,7 +257,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const CustomSpacerWidget(),
+                    const VSpacer(),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 28),
                       child: FormBuilderTextField(
@@ -271,7 +271,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const CustomSpacerWidget(),
+                    const VSpacer(),
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 10),

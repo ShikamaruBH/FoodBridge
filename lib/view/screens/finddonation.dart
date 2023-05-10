@@ -163,7 +163,7 @@ class FindDonationScreen extends StatelessWidget {
               ),
             ),
           ),
-          const CustomSpacerWidget(),
+          const VSpacer(),
           const FieldTitleWidget('distance-title'),
           const DistanceSlider()
         ],

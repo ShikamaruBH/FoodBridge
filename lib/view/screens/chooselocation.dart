@@ -127,7 +127,7 @@ class ChooseLocationScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    const CustomSpacerWidget(),
+                                    const VSpacer(),
                                     FormBuilder(
                                       key: _formKey,
                                       child: FormBuilderTextField(
@@ -150,7 +150,7 @@ class ChooseLocationScreen extends StatelessWidget {
                                         validator: CustomValidator.required,
                                       ),
                                     ),
-                                    const CustomSpacerWidget(),
+                                    const VSpacer(),
                                     ElevatedButton(
                                       onPressed: mapController.isError &&
                                               mapController

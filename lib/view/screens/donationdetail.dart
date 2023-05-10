@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/mapcontroller.dart';
+import 'package:food_bridge/controller/quantitycontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/model/donation.dart';
+import 'package:food_bridge/model/userrole.dart';
 import 'package:food_bridge/view/screens/neworupdatedonation.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
@@ -141,12 +143,12 @@ class DonationDetailScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          const CustomSpacerWidget(),
+                          const VSpacer(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [getDurationUntilEnd(donation.end)],
                           ),
-                          const CustomSpacerWidget(),
+                          const VSpacer(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -178,7 +180,7 @@ class DonationDetailScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          const CustomSpacerWidget(),
+                          const VSpacer(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -278,67 +280,128 @@ class DonationDetailScreen extends StatelessWidget {
     return false;
   }
 
+  void receiveDonation(String id) {}
+
   List<Widget> getBottomButton(BuildContext context) {
-    if (donation.deleteAt != null) {
-      return [
-        Flexible(
-          child: ElevatedButton(
-            onPressed: () => restoreDonation(donation.id),
-            style: StyleManagement.elevatedButtonStyle.copyWith(
-              backgroundColor: MaterialStatePropertyAll(
-                Theme.of(context).colorScheme.secondary,
+    switch (authController.currentUserRole) {
+      case Role.donor:
+        if (donation.deleteAt != null) {
+          return [
+            Flexible(
+              child: ElevatedButton(
+                onPressed: () => restoreDonation(donation.id),
+                style: StyleManagement.elevatedButtonStyle.copyWith(
+                  backgroundColor: MaterialStatePropertyAll(
+                    Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+                child: Text(
+                  localeController.getTranslate('restore-text'),
+                  style: const TextStyle(fontSize: 20),
+                ),
               ),
             ),
-            child: Text(
-              localeController.getTranslate('restore-text'),
-              style: const TextStyle(fontSize: 20),
+          ];
+        }
+        return [
+          Flexible(
+            child: ElevatedButton(
+              onPressed: () {
+                foodCategoryController.update(donation.categories);
+                donationController.urls = List.from(donation.imgs);
+                donationController.images.clear();
+                dateTimePickerController.setStart(donation.start);
+                dateTimePickerController.setEnd(donation.end);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => NewOrUpdateDonationScreen(donation),
+                  ),
+                );
+              },
+              style: StyleManagement.elevatedButtonStyle.copyWith(
+                backgroundColor: MaterialStatePropertyAll(
+                  Theme.of(context).colorScheme.secondary,
+                ),
+              ),
+              child: Text(
+                localeController.getTranslate('edit-button-title'),
+                style: const TextStyle(fontSize: 20),
+              ),
             ),
           ),
-        )
-      ];
+          const HSpacer(),
+          Flexible(
+            child: ElevatedButton(
+              onPressed: () {},
+              style: StyleManagement.elevatedButtonStyle.copyWith(
+                  backgroundColor: const MaterialStatePropertyAll(
+                      ColorManagement.selectedColor)),
+              child: Text(
+                localeController.getTranslate('rate-button-title'),
+                style: const TextStyle(fontSize: 20),
+              ),
+            ),
+          ),
+        ];
+      case Role.recipient:
+        return [
+          FoodQuantityButton(
+            Icons.remove,
+            quantityController.decrease,
+            const BorderRadius.only(
+              topLeft: Radius.circular(6),
+              bottomLeft: Radius.circular(6),
+            ),
+          ),
+          const HSpacer(
+            offset: -9.5,
+          ),
+          Container(
+            color: Colors.white,
+            width: 40,
+            child: ChangeNotifierProvider.value(
+              value: quantityController,
+              child: Consumer<QuantityController>(
+                builder: (_, quantityController, __) => TextField(
+                  controller: quantityController.controller,
+                  onChanged: quantityController.update,
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  style: StyleManagement.quantityTextStyle,
+                ),
+              ),
+            ),
+          ),
+          const HSpacer(
+            offset: -9.9,
+          ),
+          FoodQuantityButton(
+            Icons.add,
+            quantityController.increase,
+            const BorderRadius.only(
+              topRight: Radius.circular(6),
+              bottomRight: Radius.circular(6),
+            ),
+          ),
+          const HSpacer(),
+          Flexible(
+            child: ElevatedButton(
+              onPressed: () => receiveDonation(donation.id),
+              style: StyleManagement.elevatedButtonStyle.copyWith(
+                backgroundColor: MaterialStatePropertyAll(
+                  Theme.of(context).colorScheme.secondary,
+                ),
+              ),
+              child: Text(
+                localeController.getTranslate('receive-text'),
+                style: const TextStyle(fontSize: 20),
+              ),
+            ),
+          ),
+        ];
+      default:
+        return [];
     }
-    return [
-      Flexible(
-        child: ElevatedButton(
-          onPressed: () {
-            foodCategoryController.update(donation.categories);
-            donationController.urls = List.from(donation.imgs);
-            donationController.images.clear();
-            dateTimePickerController.setStart(donation.start);
-            dateTimePickerController.setEnd(donation.end);
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => NewOrUpdateDonationScreen(donation),
-              ),
-            );
-          },
-          style: StyleManagement.elevatedButtonStyle.copyWith(
-            backgroundColor: MaterialStatePropertyAll(
-              Theme.of(context).colorScheme.secondary,
-            ),
-          ),
-          child: Text(
-            localeController.getTranslate('edit-button-title'),
-            style: const TextStyle(fontSize: 20),
-          ),
-        ),
-      ),
-      const SizedBox(
-        width: 10,
-      ),
-      Flexible(
-        child: ElevatedButton(
-          onPressed: () {},
-          style: StyleManagement.elevatedButtonStyle.copyWith(
-              backgroundColor: const MaterialStatePropertyAll(
-                  ColorManagement.selectedColor)),
-          child: Text(
-            localeController.getTranslate('rate-button-title'),
-            style: const TextStyle(fontSize: 20),
-          ),
-        ),
-      ),
-    ];
   }
 
   List<dynamic> getDayHourMinute(double seconds) {
@@ -393,6 +456,73 @@ class DonationDetailScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class FoodQuantityButton extends StatelessWidget {
+  final IconData icon;
+  final Function callback;
+  final BorderRadius borderRadius;
+  bool isHoding = false;
+  int delay = 500;
+  int minDelay = 10;
+  FoodQuantityButton(
+    this.icon,
+    this.callback,
+    this.borderRadius, {
+    super.key,
+  });
+
+  void callbackLoop(details) async {
+    if (isHoding) {
+      return;
+    }
+    isHoding = true;
+    int newDelay = delay;
+    int count = 0;
+    while (isHoding) {
+      callback();
+      await Future.delayed(Duration(milliseconds: newDelay));
+      count++;
+      if (count % 5 != 0) {
+        continue;
+      }
+      if (newDelay > minDelay) {
+        newDelay ~/= 2;
+      }
+    }
+  }
+
+  void stopCallbackLoop(details) {
+    isHoding = false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTapDown: callbackLoop,
+      onTapUp: stopCallbackLoop,
+      onTap: () => stopCallbackLoop(1),
+      onTapCancel: () => stopCallbackLoop(1),
+      borderRadius: borderRadius,
+      child: Ink(
+        width: 40,
+        height: 47,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: borderRadius,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(6),
+          child: Icon(
+            icon,
+            color: Theme.of(context).colorScheme.secondary,
+            size: 30,
+          ),
         ),
       ),
     );

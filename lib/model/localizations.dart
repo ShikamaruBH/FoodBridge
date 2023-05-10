@@ -67,6 +67,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "New donation",
     "vi": "Tạo quyên góp mới",
   },
+  "receive-text": {
+    "en": "Receive",
+    "vi": "Nhận",
+  },
   "edit-donation-title": {
     "en": "Edit donation",
     "vi": "Chỉnh sửa quyên góp",

@@ -91,12 +91,12 @@ class HomeScreen extends StatelessWidget {
                       size: 60,
                     ),
                   ),
-                  const CustomSpacerWidget(),
+                  const VSpacer(),
                   Text(
                     AuthController().currentUsername,
                     style: StyleManagement.usernameTextStyle,
                   ),
-                  const CustomSpacerWidget(),
+                  const VSpacer(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -109,7 +109,7 @@ class HomeScreen extends StatelessWidget {
                       )
                     ],
                   ),
-                  const CustomSpacerWidget(),
+                  const VSpacer(),
                   getMonthlyDescriptionTextWidget(),
                   getDonationHistoryWidget(),
                 ],

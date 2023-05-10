@@ -50,6 +50,11 @@ class StyleManagement {
     fontSize: 18,
     fontWeight: FontWeight.w500,
   );
+  static const quantityTextStyle = TextStyle(
+    color: Colors.black,
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+  );
   static const historyItemTitleTextStyle = TextStyle(
     color: Colors.black,
     fontSize: 17,
@@ -111,10 +116,12 @@ class StyleManagement {
     fontWeight: FontWeight.w600,
   );
   static final textButtonStyle = TextButton.styleFrom(
-      padding: const EdgeInsets.all(5),
-      minimumSize: Size.zero,
-      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      foregroundColor: const Color(0xff489FB5).withOpacity(0.71));
+    padding: const EdgeInsets.all(5),
+    minimumSize: Size.zero,
+    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    foregroundColor: const Color(0xff489FB5).withOpacity(0.71),
+  );
+
   static final textButtonLanguageStyle = textButtonStyle.copyWith(
     backgroundColor: const MaterialStatePropertyAll(Color(0xff16697A)),
     foregroundColor: ColorManagement.materialStateWhite,
@@ -127,6 +134,7 @@ class StyleManagement {
       ),
     ),
   );
+
   static final textButtonLanguageInactiveStyle =
       textButtonLanguageStyle.copyWith(
     foregroundColor: ColorManagement.materialStateWhiteInactive,
