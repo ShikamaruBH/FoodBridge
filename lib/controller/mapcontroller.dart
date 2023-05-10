@@ -34,6 +34,7 @@ class MapController extends ChangeNotifier {
       ),
     );
     currentLatLng = argument;
+    debugPrint("Current latlng: $currentLatLng");
     addressTextFieldController.text =
         localeController.getTranslate('loading-text');
     await getAddress(argument);

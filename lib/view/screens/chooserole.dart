@@ -24,6 +24,7 @@ class ChooseRoleScreen extends StatelessWidget {
         {"role": RoleButtonController().currentRole}).then((result) {
       Navigator.pop(context);
       if (result['success']) {
+        donationController.listenToUserChange();
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => const HomeScreen(),

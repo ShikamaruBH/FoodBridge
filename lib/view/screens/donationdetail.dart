@@ -57,8 +57,8 @@ class DonationDetailScreen extends StatelessWidget {
                                   ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: FutureBuilder(
-                                  future: donationController
-                                      .getUrl(donation.imgs[index]),
+                                  future: donationController.getUrl(
+                                      donation.donor, donation.imgs[index]),
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState ==
                                             ConnectionState.waiting ||

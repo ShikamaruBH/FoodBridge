@@ -309,7 +309,8 @@ class DonationTileWidget extends StatelessWidget {
                       width: 71,
                       height: 85,
                       child: FutureBuilder(
-                        future: donationController.getUrl(donation.imgs.first),
+                        future: donationController.getUrl(
+                            donation.donor, donation.imgs.first),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                                   ConnectionState.waiting ||

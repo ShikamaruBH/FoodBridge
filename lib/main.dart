@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
-import 'package:food_bridge/view/screens/finddonation.dart';
+import 'package:food_bridge/view/screens/login.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
     // if (FirebaseAuth.instance.currentUser != null) {
     //   return const HomeScreen();
     // }
-    // return LoginScreen();
-    return const FindDonationScreen();
+    return LoginScreen();
+    // return const FindDonationScreen();
   }
 }

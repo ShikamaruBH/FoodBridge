@@ -7,6 +7,8 @@ import 'package:food_bridge/controller/donationcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
+import 'package:food_bridge/model/donation.dart';
+import 'package:food_bridge/model/userrole.dart';
 import 'package:food_bridge/view/screens/chooselocation.dart';
 import 'package:food_bridge/view/screens/donationdetail.dart';
 import 'package:food_bridge/view/screens/login.dart';
@@ -54,30 +56,7 @@ class HomeScreen extends StatelessWidget {
               child: Drawer(
                 child: ListView(
                   padding: EdgeInsets.zero,
-                  children: [
-                    const AccountHeaderWidget(),
-                    MenuListTile(
-                        Icons.account_box_rounded, 'account-title', () {}),
-                    MenuListTile(
-                      Icons.delete_rounded,
-                      'trash-bin-title',
-                      () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const TrashBinScreen(),
-                        ),
-                      ),
-                    ),
-                    MenuListTile(
-                      Icons.settings,
-                      'setting-title',
-                      () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const SettingsScreen(),
-                        ),
-                      ),
-                    ),
-                    MenuListTile(Icons.logout, 'logout-title', logout),
-                  ],
+                  children: getDrawerListTitle(context),
                 ),
               ),
             ),
@@ -98,18 +77,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            floatingActionButton: FloatingActionButton(
-              child: const Icon(Icons.add),
-              onPressed: () async {
-                await Permission.location.request();
-                // ignore: use_build_context_synchronously
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ChooseLocationScreen(true),
-                  ),
-                );
-              },
-            ),
+            floatingActionButton: getFloatingButton(context),
             body: Container(
               width: constraints.maxWidth,
               height: constraints.maxHeight,
@@ -142,8 +110,8 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
                   const CustomSpacerWidget(),
-                  MonthlyDescriptionTextWidget(5),
-                  DonationHistoryWidget(),
+                  getMonthlyDescriptionTextWidget(),
+                  getDonationHistoryWidget(),
                 ],
               ),
             ),
@@ -152,11 +120,97 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+
+  FloatingActionButton getFloatingButton(BuildContext context) {
+    return FloatingActionButton(
+      child: Icon(authController.currentUserRole == Role.donor
+          ? Icons.add
+          : Icons.search),
+      onPressed: () async {
+        await Permission.location.request();
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ChooseLocationScreen(true),
+          ),
+        );
+      },
+    );
+  }
+
+  getDonationHistoryWidget() {
+    switch (authController.currentUserRole) {
+      case Role.donor:
+        return DonationHistoryWidget(
+          'donation-history-text-donor',
+          'no-donation-text',
+          donationController.donations,
+        );
+      case Role.recipient:
+        return DonationHistoryWidget(
+          'donation-history-text-recipient',
+          'no-received-donation-text',
+          donationController.receivedDonations,
+        );
+      default:
+        return const Text('');
+    }
+  }
+
+  getMonthlyDescriptionTextWidget() {
+    switch (authController.currentUserRole) {
+      case Role.donor:
+        return MonthlyDescriptionTextWidget(
+          5,
+          'monthly-donation-text-donor',
+        );
+      case Role.recipient:
+        return MonthlyDescriptionTextWidget(
+          2,
+          'monthly-donation-text-recipient',
+        );
+      default:
+        return const Text('');
+    }
+  }
+
+  List<Widget> getDrawerListTitle(BuildContext context) {
+    return [
+      const AccountHeaderWidget(),
+      MenuListTile(Icons.account_box_rounded, 'account-title', () {}),
+      if (authController.currentUserRole == Role.donor)
+        MenuListTile(
+          Icons.delete_rounded,
+          'trash-bin-title',
+          () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const TrashBinScreen(),
+            ),
+          ),
+        ),
+      MenuListTile(
+        Icons.settings,
+        'setting-title',
+        () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const SettingsScreen(),
+          ),
+        ),
+      ),
+      MenuListTile(Icons.logout, 'logout-title', logout),
+    ];
+  }
 }
 
 class DonationHistoryWidget extends StatelessWidget {
+  final String text;
+  final String noDataText;
+  final List<Donation> source;
   // ignore: prefer_const_constructors_in_immutables
-  DonationHistoryWidget({
+  DonationHistoryWidget(
+    this.text,
+    this.noDataText,
+    this.source, {
     super.key,
   });
 
@@ -189,12 +243,11 @@ class DonationHistoryWidget extends StatelessWidget {
                                   .copyWith(color: Colors.black),
                               children: [
                                 TextSpan(
-                                  text: localeController
-                                      .getTranslate('donation-history-text'),
+                                  text: localeController.getTranslate(text),
                                 ),
                                 TextSpan(
                                   text:
-                                      ' (${donationController.isLoading ? 0 : donationController.donations.length})',
+                                      ' (${donationController.isLoading ? 0 : source.length})',
                                   style: StyleManagement.notificationTitleBold
                                       .copyWith(fontSize: 20),
                                 )
@@ -204,7 +257,7 @@ class DonationHistoryWidget extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                    child: getHistoryListView(),
+                    child: getHistoryListView(noDataText),
                   ),
                 ],
               ),
@@ -215,9 +268,9 @@ class DonationHistoryWidget extends StatelessWidget {
     );
   }
 
-  getHistoryListView() {
+  getHistoryListView(String nodata) {
     if (donationController.donations.isEmpty) {
-      return Text(localeController.getTranslate('no-data-text'));
+      return Text(localeController.getTranslate(nodata));
     }
     if (donationController.donations.isNotEmpty &&
         !donationController.isLoading) {
@@ -227,7 +280,15 @@ class DonationHistoryWidget extends StatelessWidget {
       );
     }
     if (donationController.isLoading) {
-      return Text(localeController.getTranslate('loading-text'));
+      return const Center(
+        child: SizedBox(
+          width: 30,
+          height: 30,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+          ),
+        ),
+      );
     }
   }
 }
@@ -349,7 +410,8 @@ class DonationTileWidget extends StatelessWidget {
                       width: 71,
                       height: 85,
                       child: FutureBuilder(
-                        future: donationController.getUrl(donation.imgs.first),
+                        future: donationController.getUrl(
+                            donation.donor, donation.imgs.first),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                                   ConnectionState.waiting ||
@@ -440,9 +502,11 @@ class DonationTileWidget extends StatelessWidget {
 
 class MonthlyDescriptionTextWidget extends StatelessWidget {
   final num total;
+  final String text;
   // ignore: prefer_const_constructors_in_immutables
   MonthlyDescriptionTextWidget(
-    this.total, {
+    this.total,
+    this.text, {
     super.key,
   });
 
@@ -458,7 +522,7 @@ class MonthlyDescriptionTextWidget extends StatelessWidget {
             children: [
               Flexible(
                 child: Text(
-                  localeController.getTranslate('monthly-donation-text')(total),
+                  localeController.getTranslate(text)(total),
                   style: StyleManagement.monthlyDescriptionTextStyle,
                 ),
               )

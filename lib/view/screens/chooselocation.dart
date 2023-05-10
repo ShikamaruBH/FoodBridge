@@ -6,6 +6,8 @@ import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/mapcontroller.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
+import 'package:food_bridge/model/userrole.dart';
+import 'package:food_bridge/view/screens/finddonation.dart';
 import 'package:food_bridge/view/screens/neworupdatedonation.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -25,11 +27,23 @@ class ChooseLocationScreen extends StatelessWidget {
     if (!newScreen) {
       Navigator.of(context).pop();
     } else {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => NewOrUpdateDonationScreen(null),
-        ),
-      );
+      switch (authController.currentUserRole) {
+        case Role.donor:
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => NewOrUpdateDonationScreen(null),
+            ),
+          );
+          break;
+        case Role.recipient:
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const FindDonationScreen(),
+            ),
+          );
+          break;
+        default:
+      }
     }
   }
 

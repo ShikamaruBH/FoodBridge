@@ -17,10 +17,10 @@ import 'package:food_bridge/model/donation.dart';
 import 'package:food_bridge/view/screens/chooselocation.dart';
 import 'package:food_bridge/view/screens/home.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
+import 'package:food_bridge/view/widgets/donationdatetimepicker.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class NewOrUpdateDonationScreen extends StatelessWidget {
@@ -525,7 +525,8 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
     return ImageListTileWidget(
       index,
       FutureBuilder(
-        future: donationController.getUrl(donationController.urls[index]),
+        future: donationController.getUrl(
+            donation!.donor, donationController.urls[index]),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting ||
               snapshot.data == null) {
@@ -616,66 +617,6 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class DonationDatetimePicker extends StatelessWidget {
-  final String name;
-  final Function onChanged;
-  final DateTime initialValue;
-  final DateTime? firstDate;
-  final TextStyle? style;
-  final InputDecoration? decoration;
-  final String? format;
-  final IconData? prefix;
-  const DonationDatetimePicker(
-    this.name,
-    this.onChanged,
-    this.initialValue, {
-    this.firstDate,
-    this.style,
-    this.decoration,
-    this.format,
-    this.prefix,
-    super.key,
-  });
-
-  getDecoration() {
-    // ignore: no_leading_underscores_for_local_identifiers
-    final _decoration =
-        decoration ?? DecoratorManagement.defaultTextFieldDecoratorDark;
-    if (prefix == null) {
-      return _decoration;
-    }
-    return _decoration.copyWith(
-        prefixIcon: Icon(
-      prefix,
-      color: Colors.white,
-      size: 30,
-    ));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FormBuilderDateTimePicker(
-      name: name,
-      onChanged: (value) => onChanged(value!),
-      initialEntryMode: DatePickerEntryMode.calendarOnly,
-      initialValue: initialValue,
-      format: DateFormat(format ?? 'dd/MM/yyyy hh:mm a'),
-      style: style ?? StyleManagement.textFieldTextStyleDark,
-      firstDate: firstDate ?? DateTime(1900),
-      currentDate: DateTime.now(),
-      initialTime: TimeOfDay.now(),
-      locale: Locale(localeController.locale!),
-      decoration: getDecoration(),
-      validator: FormBuilderValidators.compose(
-        [
-          CustomValidator.required,
-          CustomValidator.datetime,
-        ],
-      ),
     );
   }
 }

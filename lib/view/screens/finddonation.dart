@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/datetimepickercontroller.dart';
@@ -7,8 +8,10 @@ import 'package:food_bridge/controller/finddonationfiltercontroller.dart';
 import 'package:food_bridge/controller/foodtypecheckboxcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/model/designmanagement.dart';
-import 'package:food_bridge/view/screens/neworupdatedonation.dart';
+import 'package:food_bridge/view/screens/donationdetail.dart';
+import 'package:food_bridge/view/widgets/donationdatetimepicker.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class FindDonationScreen extends StatelessWidget {
@@ -71,38 +74,8 @@ class FindDonationScreen extends StatelessWidget {
                                         ],
                                       ),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8, bottom: 8, right: 8),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          RichText(
-                                            text: TextSpan(
-                                                style: StyleManagement
-                                                    .usernameTextStyle
-                                                    .copyWith(
-                                                        color: Colors.black),
-                                                children: [
-                                                  TextSpan(
-                                                    text: localeController
-                                                        .getTranslate(
-                                                            'avaiable-donation-text'),
-                                                  ),
-                                                  TextSpan(
-                                                    text:
-                                                        ' (${donationController.isLoading ? 0 : donationController.donations.length})',
-                                                    style: StyleManagement
-                                                        .notificationTitleBold
-                                                        .copyWith(fontSize: 20),
-                                                  )
-                                                ]),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Expanded(child: ListView())
+                                    availableDonationWidget(
+                                        'available-donation-text')
                                   ],
                                 ),
                               ),
@@ -170,7 +143,10 @@ class FindDonationScreen extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(vertical: 5),
                           child: DonationDatetimePicker(
                             'start',
-                            dateTimePickerController.setStart,
+                            (value) {
+                              dateTimePickerController.setStart(value);
+                              donationController.listenToFilteredDonation();
+                            },
                             dateTimePickerController.start,
                             style: StyleManagement.textFieldTextStyleLight
                                 .copyWith(fontSize: 14),
@@ -203,6 +179,215 @@ class FindDonationScreen extends StatelessWidget {
   }
 }
 
+class availableDonationWidget extends StatelessWidget {
+  final String text;
+  // ignore: prefer_const_constructors_in_immutables
+  availableDonationWidget(
+    this.text, {
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Card(
+        margin: EdgeInsets.zero,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(13),
+            topRight: Radius.circular(13),
+          ),
+        ),
+        child: ChangeNotifierProvider.value(
+          value: donationController,
+          child: Consumer<DonationController>(
+            builder: (_, donationController, __) => Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                            style: StyleManagement.usernameTextStyle
+                                .copyWith(color: Colors.black),
+                            children: [
+                              TextSpan(
+                                text: localeController.getTranslate(text),
+                              ),
+                              TextSpan(
+                                text:
+                                    ' (${donationController.isLoading ? 0 : donationController.donations.length})',
+                                style: StyleManagement.notificationTitleBold
+                                    .copyWith(fontSize: 20),
+                              )
+                            ]),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: getavailableListView(),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  getavailableListView() {
+    if (donationController.donations.isEmpty) {
+      return Text(localeController.getTranslate('no-available-donation-text'));
+    }
+    if (donationController.donations.isNotEmpty &&
+        !donationController.isLoading) {
+      return ListView.builder(
+        itemCount: donationController.donations.length,
+        itemBuilder: (context, index) => DonationTileWidget(index),
+      );
+    }
+    if (donationController.isLoading) {
+      return const Center(
+        child: SizedBox(
+          width: 30,
+          height: 30,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+          ),
+        ),
+      );
+    }
+  }
+}
+
+class DonationTileWidget extends StatelessWidget {
+  final int index;
+  const DonationTileWidget(
+    this.index, {
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final donation = donationController.donations[index];
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Card(
+        color: ColorManagement.donationTileColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(9),
+        ),
+        child: InkWell(
+          onTap: () {
+            mapController.setAddress(donation.latlng);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => DonationDetailScreen(donation),
+              ),
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(7),
+                  child: SizedBox(
+                    width: 71,
+                    height: 85,
+                    child: FutureBuilder(
+                      future: donationController.getUrl(
+                          donation.donor, donation.imgs.first),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                                ConnectionState.waiting ||
+                            snapshot.data == null) {
+                          return const Center(
+                            child: SizedBox(
+                              width: 30,
+                              height: 30,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            ),
+                          );
+                        }
+                        return CachedNetworkImage(
+                          imageUrl: snapshot.data!,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => const Center(
+                            child: SizedBox(
+                              width: 30,
+                              height: 30,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 10, top: 2, bottom: 2, right: 0),
+                    child: SizedBox(
+                      height: 85,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  donation.title,
+                                  overflow: TextOverflow.ellipsis,
+                                  style:
+                                      StyleManagement.historyItemTitleTextStyle,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  "Category: ${donation.categories.map((e) => localeController.getTranslate(e)).join(", ")}",
+                                  style: StyleManagement
+                                      .historyItemCategoryTextStyle,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Text(DateFormat('dd/MM/yyyy')
+                                  .format(donation.createAt))
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class DistanceSlider extends StatelessWidget {
   const DistanceSlider({
     super.key,
@@ -229,7 +414,10 @@ class DistanceSlider extends StatelessWidget {
                   inactiveColor:
                       Theme.of(context).colorScheme.secondary.withOpacity(.4),
                   value: sliderController.value,
-                  onChanged: (value) => sliderController.setValue(value),
+                  onChanged: (value) {
+                    sliderController.setValue(value);
+                    donationController.listenToFilteredDonation();
+                  },
                 ),
               ),
               SizedBox(
@@ -301,7 +489,10 @@ class FoodTypeCheckBoxWidget extends StatelessWidget {
                   ? ColorManagement.foodTypeCheckBoxCardBackgroundChecked
                   : ColorManagement.foodTypeCheckBoxCardBackgroundUncheck,
               child: InkWell(
-                onTap: () => checkBoxController.check(type),
+                onTap: () {
+                  checkBoxController.check(type);
+                  donationController.listenToFilteredDonation();
+                },
                 child: SizedBox(
                   width: 75,
                   height: 75,

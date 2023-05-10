@@ -51,9 +51,17 @@ Map<String, dynamic> appLocalizations = {
     "en": "Loading...",
     "vi": "Đang load...",
   },
-  "no-data-text": {
+  "no-donation-text": {
     "en": "You haven't made any donation yet.",
     "vi": "Bạn chưa có quyên góp nào.",
+  },
+  "no-received-donation-text": {
+    "en": "You haven't received any donation yet.",
+    "vi": "Bạn chưa nhận quyên góp nào.",
+  },
+  "no-available-donation-text": {
+    "en": "No available donation found",
+    "vi": "Không tìm thấy quyên góp nào",
   },
   "new-donation-title": {
     "en": "New donation",
@@ -212,8 +220,8 @@ Map<String, dynamic> appLocalizations = {
     "en": "Find donation",
     "vi": "Tìm quyên góp",
   },
-  "avaiable-donation-text": {
-    "en": "Avaiable donation",
+  "available-donation-text": {
+    "en": "Available donation",
     "vi": "Quyên góp",
   },
   "register-success-text": {
@@ -426,10 +434,15 @@ Map<String, dynamic> appLocalizations = {
     "en": "Welcome back !",
     "vi": "Chào mừng quay lại !",
   },
-  "monthly-donation-text": {
+  "monthly-donation-text-donor": {
     "en": (total) =>
         "You've created $total donation${total > 1 ? 's' : ''} this month.",
     "vi": (total) => "Bạn đã tạo $total quyên góp trong tháng này.",
+  },
+  "monthly-donation-text-recipient": {
+    "en": (total) =>
+        "You've received $total donation${total > 1 ? 's' : ''} this month.",
+    "vi": (total) => "Bạn đã nhận $total quyên góp trong tháng này.",
   },
   "language-setting-text": {
     "en": "Language",
@@ -447,9 +460,13 @@ Map<String, dynamic> appLocalizations = {
     "en": "Choose your location",
     "vi": "Chọn vị trí của bạn",
   },
-  "donation-history-text": {
+  "donation-history-text-donor": {
     "en": "Donation history",
     "vi": "Lịch sử quyên góp",
+  },
+  "donation-history-text-recipient": {
+    "en": "Receiced donation",
+    "vi": "Quyên góp đã nhận",
   },
   "donor-notification-title-part-1": {
     "en": "Your donation",

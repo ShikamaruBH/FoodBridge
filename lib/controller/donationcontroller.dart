@@ -1,42 +1,62 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
+import 'package:food_bridge/controller/distanceslidercontroller.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
 import 'package:food_bridge/model/donation.dart';
+import 'package:food_bridge/model/userrole.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:md5_file_checksum/md5_file_checksum.dart';
 
 class DonationController extends ChangeNotifier {
   static final DonationController _instance = DonationController._internal();
-  List<Donation> allDonations = [];
+  final Distance distance = const Distance();
+  List<String> urls = [];
+  List<XFile> images = [];
   List<Donation> donations = [];
+  List<Donation> receivedDonations = [];
+  List<Donation> allDonations = [];
   List<Donation> deletedDonations = [];
   Map<String, String> imgURLs = {};
-  StreamSubscription? listener;
-  List<XFile> images = [];
-  List<String> urls = [];
   bool isLoading = false;
+  StreamSubscription? listener;
 
   DonationController._internal() {
-    FirebaseAuth.instance.userChanges().listen((user) {
-      if (user != null) {
-        listenToUserDonation();
-      }
-    });
+    listenToUserChange();
   }
 
   factory DonationController() {
     return _instance;
   }
 
+  void listenToUserChange() {
+    FirebaseAuth.instance.userChanges().listen((user) {
+      if (user == null) {
+        listener?.cancel();
+        return;
+      }
+      switch (authController.currentUserRole) {
+        case Role.donor:
+          listenToUserDonation();
+          break;
+        case Role.recipient:
+          listenToFilteredDonation();
+          break;
+        default:
+      }
+    });
+  }
+
   void listenToUserDonation() {
     listener?.cancel();
-    donations.clear();
+    allDonations.clear();
+    debugPrint(
+        "Listen to donations of user ${FirebaseAuth.instance.currentUser!.uid}");
     listener = FirebaseFirestore.instance
         .collection('donations')
         .where('donor', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
@@ -73,6 +93,70 @@ class DonationController extends ChangeNotifier {
     });
   }
 
+  void listenToFilteredDonation() {
+    listener?.cancel();
+    donations.clear();
+    debugPrint(
+        "Listen to filtered donations from user ${FirebaseAuth.instance.currentUser!.uid}");
+    debugPrint("Category filter: ${foodCategoryController.getChecked()}");
+    debugPrint(
+        "Datetime filter: ${dateTimePickerController.start.toUtc().toString()}");
+    debugPrint("Distance filter: ${DistanceSliderController().value}");
+    Query query = FirebaseFirestore.instance.collection('donations').where(
+          'start',
+          isGreaterThanOrEqualTo:
+              dateTimePickerController.start.toUtc().toIso8601String(),
+        );
+    if (foodCategoryController.getChecked().isNotEmpty) {
+      query = query.where(
+        'categories',
+        arrayContainsAny: foodCategoryController.getChecked(),
+      );
+    }
+    listener = query.snapshots().listen((event) async {
+      isLoading = true;
+      notifyListeners();
+      for (var element in event.docChanges) {
+        Donation donation = Donation.fromJson(
+            element.doc.id, element.doc.data()! as Map<String, dynamic>);
+        if (!distanceFilter(
+            donation.latlng.latitude, donation.latlng.longitude)) {
+          continue;
+        }
+        switch (element.type) {
+          case DocumentChangeType.added:
+            donations.add(donation);
+            break;
+          case DocumentChangeType.modified:
+            donations[donations.indexWhere((d) => d.id == donation.id)] =
+                donation;
+            break;
+          case DocumentChangeType.removed:
+            donations.removeWhere((d) => d.id == donation.id);
+            for (var img in donation.imgs) {
+              imgURLs.remove(img);
+            }
+            break;
+        }
+      }
+      debugPrint("Donation $donations");
+      isLoading = false;
+      notifyListeners();
+    });
+  }
+
+  bool distanceFilter(double latitude, double longitude) {
+    final LatLng userLatLng = LatLng(
+      mapController.currentLatLng.latitude,
+      mapController.currentLatLng.longitude,
+    );
+    final LatLng donationLatLng = LatLng(latitude, longitude);
+    final double km = distance(donationLatLng, userLatLng) / 1000;
+    debugPrint(
+        "Donation latlng: $donationLatLng, User latlng: $userLatLng, distance: $km");
+    return km <= DistanceSliderController().value;
+  }
+
   void addImage(XFile image) {
     images.add(image);
     notifyListeners();
@@ -86,6 +170,12 @@ class DonationController extends ChangeNotifier {
   void removeUrl(index) {
     urls.removeAt(index);
     notifyListeners();
+  }
+
+  void clearImageCache() {
+    urls.clear();
+    foodCategoryController.update([]);
+    images.clear();
   }
 
   Future<Map<String, dynamic>> createDonation(Map<String, dynamic> data) async {
@@ -147,18 +237,11 @@ class DonationController extends ChangeNotifier {
     return callCloudFunction(data, 'donation-restoreDonation');
   }
 
-  void clearImageCache() {
-    urls.clear();
-    foodCategoryController.update([]);
-    images.clear();
-  }
-
-  Future<String> getUrl(String img) async {
+  Future<String> getUrl(String uid, String img) async {
     try {
       if (!imgURLs.containsKey(img)) {
-        imgURLs[img] = await FirebaseStorage.instance
-            .ref("${FirebaseAuth.instance.currentUser!.uid}/$img")
-            .getDownloadURL();
+        imgURLs[img] =
+            await FirebaseStorage.instance.ref("$uid/$img").getDownloadURL();
       }
       return imgURLs[img]!;
     } catch (e) {
