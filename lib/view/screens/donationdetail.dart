@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
@@ -387,6 +388,23 @@ class DonationDetailScreen extends StatelessWidget {
           ),
         ];
       case Role.recipient:
+        if (donation.recipients
+            .containsKey(FirebaseAuth.instance.currentUser!.uid)) {
+          return [
+            Flexible(
+              child: ElevatedButton(
+                onPressed: () {},
+                style: StyleManagement.elevatedButtonStyle.copyWith(
+                    backgroundColor: const MaterialStatePropertyAll(
+                        ColorManagement.selectedColor)),
+                child: Text(
+                  localeController.getTranslate('rate-button-title'),
+                  style: const TextStyle(fontSize: 20),
+                ),
+              ),
+            ),
+          ];
+        }
         return [
           FoodQuantityButton(
             Icons.remove,
