@@ -280,7 +280,49 @@ class DonationDetailScreen extends StatelessWidget {
     return false;
   }
 
-  void receiveDonation(String id) {}
+  void receiveDonation(String id) async {
+    showDialog(
+      barrierDismissible: false,
+      context: navigatorKey.currentState!.context,
+      builder: (context) => const LoadingDialog(
+        message: 'loading-text',
+      ),
+    );
+    await donationController.receiveDonation({
+      "id": id,
+      "quantity": quantityController.value,
+    }).then((result) async {
+      Navigator.pop(navigatorKey.currentState!.context);
+      if (result['success']) {
+        Navigator.pop(navigatorKey.currentState!.context);
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => SuccessDialog(
+            'receive-donation-success-text',
+            'receive-donation-success-description',
+            () {},
+            showActions: false,
+          ),
+        );
+        await Future.delayed(const Duration(seconds: 1));
+        Navigator.of(navigatorKey.currentState!.context).pop();
+      } else {
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => ErrorDialog(result['err']),
+        );
+      }
+    }).catchError((err) {
+      Navigator.pop(navigatorKey.currentState!.context);
+      showDialog(
+        barrierDismissible: false,
+        context: navigatorKey.currentState!.context,
+        builder: (context) => ErrorDialog(err),
+      );
+    });
+  }
 
   List<Widget> getBottomButton(BuildContext context) {
     switch (authController.currentUserRole) {
@@ -364,7 +406,7 @@ class DonationDetailScreen extends StatelessWidget {
               child: Consumer<QuantityController>(
                 builder: (_, quantityController, __) => TextField(
                   controller: quantityController.controller,
-                  onChanged: quantityController.update,
+                  onChanged: quantityController.setValue,
                   textAlign: TextAlign.center,
                   keyboardType: TextInputType.number,
                   style: StyleManagement.quantityTextStyle,

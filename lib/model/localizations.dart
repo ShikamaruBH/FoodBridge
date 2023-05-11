@@ -63,6 +63,14 @@ Map<String, dynamic> appLocalizations = {
     "en": "No available donation found",
     "vi": "Không tìm thấy quyên góp nào",
   },
+  "receive-donation-success-description": {
+    "en": "You have received this donation",
+    "vi": "Bạn đã nhận quyên góp này",
+  },
+  "receive-donation-success-text": {
+    "en": "Receive success",
+    "vi": "Nhận thành công",
+  },
   "new-donation-title": {
     "en": "New donation",
     "vi": "Tạo quyên góp mới",

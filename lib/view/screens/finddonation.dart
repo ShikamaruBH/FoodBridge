@@ -74,7 +74,7 @@ class FindDonationScreen extends StatelessWidget {
                                         ],
                                       ),
                                     ),
-                                    availableDonationWidget(
+                                    AvailableDonationWidget(
                                         'available-donation-text')
                                   ],
                                 ),
@@ -179,10 +179,10 @@ class FindDonationScreen extends StatelessWidget {
   }
 }
 
-class availableDonationWidget extends StatelessWidget {
+class AvailableDonationWidget extends StatelessWidget {
   final String text;
   // ignore: prefer_const_constructors_in_immutables
-  availableDonationWidget(
+  AvailableDonationWidget(
     this.text, {
     super.key,
   });
@@ -283,6 +283,7 @@ class DonationTileWidget extends StatelessWidget {
         child: InkWell(
           onTap: () {
             mapController.setAddress(donation.latlng);
+            quantityController.setMaxValue(donation.getQuantityLeft().toInt());
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => DonationDetailScreen(donation),

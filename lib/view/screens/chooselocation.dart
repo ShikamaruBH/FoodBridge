@@ -153,8 +153,13 @@ class ChooseLocationScreen extends StatelessWidget {
                                     const VSpacer(),
                                     ElevatedButton(
                                       onPressed: mapController.isError &&
-                                              mapController
-                                                  .currentAddress.isEmpty
+                                              (mapController
+                                                      .currentAddress.isEmpty ||
+                                                  mapController
+                                                          .currentAddress ==
+                                                      localeController
+                                                          .getTranslate(
+                                                              'loading-text'))
                                           ? null
                                           : () => next(context),
                                       style: StyleManagement.elevatedButtonStyle

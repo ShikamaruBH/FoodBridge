@@ -237,6 +237,11 @@ class DonationController extends ChangeNotifier {
     return callCloudFunction(data, 'donation-restoreDonation');
   }
 
+  Future<Map<String, dynamic>> receiveDonation(
+      Map<String, dynamic> data) async {
+    return callCloudFunction(data, 'donation-receiveDonation');
+  }
+
   Future<String> getUrl(String uid, String img) async {
     try {
       if (!imgURLs.containsKey(img)) {

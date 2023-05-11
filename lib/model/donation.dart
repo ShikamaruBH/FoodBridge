@@ -46,4 +46,8 @@ class Donation {
         DateTime.parse(data['end']).toLocal(),
         List<String>.from(data['imgs']),
       );
+
+  num getQuantityLeft() {
+    return quantity;
+  }
 }

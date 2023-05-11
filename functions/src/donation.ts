@@ -37,7 +37,7 @@ exports.updateDonation = functions.https.onCall(async (data, context) => {
     }
     const {id, ...newDonation} = data;
     return donationsRef
-        .doc(data.id)
+        .doc(id)
         .update(newDonation)
         .then(() => ({"": ""}))
         .catch((err) => {
@@ -127,14 +127,59 @@ exports.restoreDonation = functions.https.onCall(async (data, context) => {
   }
 });
 
-const isAuthenticated = (context: any) => {
+exports.receiveDonation = functions.https.onCall(async (data, context) => {
+  isAuthenticated(context);
+  hasRole(context, Role.RECIPIENT);
+  const donationRef = donationsRef.doc(data.id);
+  try {
+    return admin
+        .firestore()
+        .runTransaction(async (t) => {
+          const donation = await t.get(donationRef);
+          isExist(donation);
+          let recipients = donation.get("recipients");
+          if (recipients == undefined) {
+            recipients = {};
+          }
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const uid:string = context.auth!.uid;
+          if (uid in recipients) {
+            throw new functions.https
+                .HttpsError("aborted", "aborted");
+          }
+          let total = 0;
+          const quantity = donation.get("quantity");
+          // eslint-disable-next-line guard-for-in
+          for (const key in recipients) {
+            total += recipients[key];
+          }
+          if (total + data.quantity > quantity) {
+            throw new functions.https
+                .HttpsError("invalid-argument", "invalid-argument");
+          }
+          recipients[uid] = data.quantity;
+          t.set(donationRef, {recipients}, {merge: true});
+        })
+        .then(() => ({"": ""}))
+        .catch((err) => {
+          throw new functions.https.HttpsError(err.code, err.message);
+        });
+  } catch (error) {
+    console.log(`Error ${error}`);
+    throw new functions.https
+        .HttpsError("aborted", "aborted");
+  }
+});
+
+const isAuthenticated = (context: functions.https.CallableContext) => {
   if (!context.auth) {
     throw new functions.https.HttpsError("unauthenticated", "unauthenticated");
   }
 };
 
-const hasRole = (context: any, role: Role) => {
-  if (context.auth.token.role != role) {
+const hasRole = (context: functions.https.CallableContext, role: Role) => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  if (context.auth!.token.role != role) {
     throw new functions.https.
         HttpsError("permission-denied", "permission-denied");
   }
