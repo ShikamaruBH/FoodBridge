@@ -131,7 +131,8 @@ class DonationDetailScreen extends StatelessWidget {
                                     TextSpan(
                                       text: localeController.getTranslate(
                                               "quantity-left-text")(
-                                          donation.quantity, donation.unit),
+                                          donation.getQuantityLeft(),
+                                          donation.unit),
                                       style: StyleManagement
                                           .notificationTitleBold
                                           .copyWith(

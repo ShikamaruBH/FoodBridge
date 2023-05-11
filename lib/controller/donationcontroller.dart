@@ -117,8 +117,8 @@ class DonationController extends ChangeNotifier {
       isLoading = true;
       notifyListeners();
       for (var element in event.docChanges) {
-        Donation donation = Donation.fromJson(
-            element.doc.id, element.doc.data()! as Map<String, dynamic>);
+        var data = element.doc.data()! as Map<String, dynamic>;
+        Donation donation = Donation.fromJson(element.doc.id, data);
         if (!distanceFilter(
             donation.latlng.latitude, donation.latlng.longitude)) {
           continue;

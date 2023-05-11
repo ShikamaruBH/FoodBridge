@@ -14,6 +14,7 @@ class Donation {
   DateTime start;
   DateTime end;
   List<String> imgs;
+  Map<String, int> recipients;
 
   Donation(
     this.id,
@@ -29,6 +30,7 @@ class Donation {
     this.start,
     this.end,
     this.imgs,
+    this.recipients,
   );
 
   factory Donation.fromJson(String id, Map<String, dynamic> data) => Donation(
@@ -45,9 +47,12 @@ class Donation {
         DateTime.parse(data['start']).toLocal(),
         DateTime.parse(data['end']).toLocal(),
         List<String>.from(data['imgs']),
+        data["recipients"].cast<String, int>() ?? {},
       );
 
   num getQuantityLeft() {
-    return quantity;
+    num total = 0;
+    recipients.forEach((_, value) => total += value);
+    return quantity - total;
   }
 }
