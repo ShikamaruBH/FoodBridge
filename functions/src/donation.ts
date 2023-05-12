@@ -182,11 +182,14 @@ exports.reviewDonation = functions.https.onCall(async (data, context) => {
         .doc(data.id)
         .set({
           reviews: {
-            user: context.auth?.uid,
-            rating: data.rating,
-            review: data.review,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            [context.auth!.uid]: {
+              rating: data.rating,
+              review: data.review,
+            },
           },
-        },
+        }
+        ,
         {merge: true})
         .then(() => ({"": ""}))
         .catch((err) => {

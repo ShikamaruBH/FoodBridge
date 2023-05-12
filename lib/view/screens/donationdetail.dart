@@ -426,6 +426,11 @@ class DonationDetailScreen extends StatelessWidget {
             Flexible(
               child: ElevatedButton(
                 onPressed: () async {
+                  var uid = FirebaseAuth.instance.currentUser!.uid;
+                  if (donation.reviews.containsKey(uid)) {
+                    reviewController.rating = donation.reviews[uid]!["rating"];
+                    reviewController.review = donation.reviews[uid]!["review"];
+                  }
                   bool rs = await showDialog(
                     context: navigatorKey.currentState!.context,
                     builder: (context) => const ReviewDialog(),

@@ -13,4 +13,8 @@ class ReviewDialogController extends ChangeNotifier {
   }
 
   String get review => controller.text;
+
+  set review(String value) {
+    controller.text = value;
+  }
 }

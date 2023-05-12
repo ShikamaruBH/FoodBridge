@@ -204,7 +204,7 @@ class ReviewDialog extends StatelessWidget {
               ],
             ),
             RatingBar.builder(
-              initialRating: 3.5,
+              initialRating: reviewController.rating,
               itemCount: 5,
               allowHalfRating: true,
               glow: false,
