@@ -71,6 +71,14 @@ Map<String, dynamic> appLocalizations = {
     "en": "Receive success",
     "vi": "Nhận thành công",
   },
+  "write-a-review-text": {
+    "en": "Write a review",
+    "vi": "Viết đánh giá",
+  },
+  "rate-this-donation-title": {
+    "en": "Rate this donation",
+    "vi": "Đánh giá quyên góp này",
+  },
   "new-donation-title": {
     "en": "New donation",
     "vi": "Tạo quyên góp mới",
@@ -107,9 +115,17 @@ Map<String, dynamic> appLocalizations = {
     "en": "Edit",
     "vi": "Chỉnh sửa",
   },
-  "rate-button-title": {
-    "en": "Rating",
+  "review-button-title": {
+    "en": "Review",
     "vi": "Đánh giá",
+  },
+  "review-donation-success-text": {
+    "en": "Review success",
+    "vi": "Đã đánh giá",
+  },
+  "review-donation-success-description": {
+    "en": "You review has been submitted",
+    "vi": "Đánh giá của bạn đã được ghi nhận",
   },
   "quantity-left-text": {
     "en": (value, unit) => "$value $unit left",

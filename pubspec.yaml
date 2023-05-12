@@ -48,6 +48,7 @@ dependencies:
   firebase_storage: ^11.1.1
   flutter_typeahead: ^4.3.8
   md5_file_checksum: ^1.0.4
+  flutter_rating_bar: ^4.0.1
   open_route_service: ^1.2.2
   permission_handler: ^10.2.0
   shared_preferences: ^2.0.17

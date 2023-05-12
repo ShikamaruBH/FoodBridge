@@ -171,6 +171,34 @@ exports.receiveDonation = functions.https.onCall(async (data, context) => {
   }
 });
 
+exports.reviewDonation = functions.https.onCall(async (data, context) => {
+  isAuthenticated(context);
+  hasRole(context, Role.RECIPIENT);
+  const donationRef = donationsRef.doc(data.id);
+  try {
+    const donation = await donationRef.get();
+    isExist(donation);
+    return donationsRef
+        .doc(data.id)
+        .set({
+          reviews: {
+            user: context.auth?.uid,
+            rating: data.rating,
+            review: data.review,
+          },
+        },
+        {merge: true})
+        .then(() => ({"": ""}))
+        .catch((err) => {
+          throw new functions.https.HttpsError(err.code, err.message);
+        });
+  } catch (error) {
+    console.log(`Error ${error}`);
+    throw new functions.https
+        .HttpsError("unknown", "unknown");
+  }
+});
+
 const isAuthenticated = (context: functions.https.CallableContext) => {
   if (!context.auth) {
     throw new functions.https.HttpsError("unauthenticated", "unauthenticated");

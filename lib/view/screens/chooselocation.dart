@@ -222,7 +222,8 @@ class AutoCompleteTextField extends StatelessWidget {
               child: TypeAheadField(
                 textFieldConfiguration: TextFieldConfiguration(
                   autofocus: true,
-                  decoration: DecoratorManagement.defaultTextFieldDecoratorDark,
+                  decoration: DecoratorManagement.defaultTextFieldDecoratorDark(
+                      "", null),
                 ),
                 suggestionsCallback: (pattern) =>
                     mapController.getSuggestion(pattern),

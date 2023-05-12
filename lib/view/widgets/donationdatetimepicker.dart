@@ -29,8 +29,8 @@ class DonationDatetimePicker extends StatelessWidget {
 
   getDecoration() {
     // ignore: no_leading_underscores_for_local_identifiers
-    final _decoration =
-        decoration ?? DecoratorManagement.defaultTextFieldDecoratorDark;
+    final _decoration = decoration ??
+        DecoratorManagement.defaultTextFieldDecoratorDark("", null);
     if (prefix == null) {
       return _decoration;
     }

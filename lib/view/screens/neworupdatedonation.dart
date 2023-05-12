@@ -328,7 +328,8 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                     style:
                                         StyleManagement.textFieldTextStyleDark,
                                     decoration: DecoratorManagement
-                                        .defaultTextFieldDecoratorDark,
+                                        .defaultTextFieldDecoratorDark(
+                                            "", null),
                                     validator: CustomValidator.required,
                                   ),
                                 ),
@@ -353,7 +354,8 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                               keyboardType:
                                                   TextInputType.number,
                                               decoration: DecoratorManagement
-                                                  .defaultTextFieldDecoratorDark,
+                                                  .defaultTextFieldDecoratorDark(
+                                                      "", null),
                                               validator: FormBuilderValidators
                                                   .compose([
                                                 CustomValidator.required,
@@ -386,7 +388,8 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                                 style: StyleManagement
                                                     .textFieldTextStyleDark,
                                                 decoration: DecoratorManagement
-                                                    .defaultTextFieldDecoratorDark,
+                                                    .defaultTextFieldDecoratorDark(
+                                                        "", null),
                                                 validator:
                                                     CustomValidator.required,
                                               ),

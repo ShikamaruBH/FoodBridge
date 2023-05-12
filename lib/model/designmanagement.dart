@@ -5,7 +5,9 @@ class ColorManagement {
   static final titleColorDark = Colors.black.withOpacity(0.71);
   static const deleteColor = Color(0xffD60F0F);
   static final iconColor = Colors.black.withOpacity(0.85);
+  static final reviewTextColor = Colors.black.withOpacity(.75);
   static final descriptionColorDark = Colors.black.withOpacity(0.55);
+  static final hintTextColorDark = Colors.black.withOpacity(.3);
   static final descriptionColorLight = Colors.white.withOpacity(0.55);
   static final titleColorLight = Colors.white.withOpacity(0.96);
   static final foodTypeCheckBoxCardBackgroundUncheck =
@@ -163,19 +165,22 @@ class StyleManagement {
 }
 
 class DecoratorManagement {
-  static final defaultTextFieldDecoratorDark = InputDecoration(
-    isDense: true,
-    errorMaxLines: 2,
-    contentPadding: const EdgeInsets.all(11),
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8),
-      borderSide: const BorderSide(
-        width: 1,
-      ),
-    ),
-  );
+  static defaultTextFieldDecoratorDark(String hint, hintStyle) =>
+      InputDecoration(
+        isDense: true,
+        hintStyle: hintStyle,
+        errorMaxLines: 2,
+        hintText: localeController.getTranslate(hint),
+        contentPadding: const EdgeInsets.all(11),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(
+            width: 1,
+          ),
+        ),
+      );
   static final defaultTextFieldDecoratorLight =
-      defaultTextFieldDecoratorDark.copyWith(
+      defaultTextFieldDecoratorDark("", null).copyWith(
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
       borderSide: BorderSide(width: 1, color: ColorManagement.titleColorLight),

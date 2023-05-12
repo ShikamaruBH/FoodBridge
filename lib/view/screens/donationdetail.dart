@@ -326,6 +326,51 @@ class DonationDetailScreen extends StatelessWidget {
     });
   }
 
+  void reviewDonation(String id) async {
+    showDialog(
+      barrierDismissible: false,
+      context: navigatorKey.currentState!.context,
+      builder: (context) => const LoadingDialog(
+        message: 'loading-text',
+      ),
+    );
+    await donationController.reviewDonation({
+      "id": id,
+      "rating": reviewController.rating,
+      "review": reviewController.review,
+    }).then((result) async {
+      Navigator.pop(navigatorKey.currentState!.context);
+      if (result['success']) {
+        Navigator.pop(navigatorKey.currentState!.context);
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => SuccessDialog(
+            'review-donation-success-text',
+            'review-donation-success-description',
+            () {},
+            showActions: false,
+          ),
+        );
+        await Future.delayed(const Duration(seconds: 1));
+        Navigator.of(navigatorKey.currentState!.context).pop();
+      } else {
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => ErrorDialog(result['err']),
+        );
+      }
+    }).catchError((err) {
+      Navigator.pop(navigatorKey.currentState!.context);
+      showDialog(
+        barrierDismissible: false,
+        context: navigatorKey.currentState!.context,
+        builder: (context) => ErrorDialog(err),
+      );
+    });
+  }
+
   List<Widget> getBottomButton(BuildContext context) {
     switch (authController.currentUserRole) {
       case Role.donor:
@@ -373,19 +418,6 @@ class DonationDetailScreen extends StatelessWidget {
               ),
             ),
           ),
-          const HSpacer(),
-          Flexible(
-            child: ElevatedButton(
-              onPressed: () {},
-              style: StyleManagement.elevatedButtonStyle.copyWith(
-                  backgroundColor: const MaterialStatePropertyAll(
-                      ColorManagement.selectedColor)),
-              child: Text(
-                localeController.getTranslate('rate-button-title'),
-                style: const TextStyle(fontSize: 20),
-              ),
-            ),
-          ),
         ];
       case Role.recipient:
         if (donation.recipients
@@ -393,12 +425,22 @@ class DonationDetailScreen extends StatelessWidget {
           return [
             Flexible(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  bool rs = await showDialog(
+                    context: navigatorKey.currentState!.context,
+                    builder: (context) => const ReviewDialog(),
+                  );
+                  if (rs) {
+                    reviewDonation(donation.id);
+                  }
+                },
                 style: StyleManagement.elevatedButtonStyle.copyWith(
-                    backgroundColor: const MaterialStatePropertyAll(
-                        ColorManagement.selectedColor)),
+                  backgroundColor: MaterialStatePropertyAll(
+                    Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
                 child: Text(
-                  localeController.getTranslate('rate-button-title'),
+                  localeController.getTranslate('review-button-title'),
                   style: const TextStyle(fontSize: 20),
                 ),
               ),
