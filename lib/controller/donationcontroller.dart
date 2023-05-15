@@ -24,7 +24,8 @@ class DonationController extends ChangeNotifier {
   List<Donation> deletedDonations = [];
   Map<String, String> imgURLs = {};
   bool isLoading = false;
-  StreamSubscription? listener;
+  StreamSubscription? donationListener;
+  StreamSubscription? receivedDonationListener;
 
   DonationController._internal() {
     listenToUserChange();
@@ -34,30 +35,49 @@ class DonationController extends ChangeNotifier {
     return _instance;
   }
 
-  void listenToUserChange() {
-    FirebaseAuth.instance.userChanges().listen((user) {
+  void listenToUserChange() async {
+    FirebaseAuth.instance.userChanges().listen((user) async {
       if (user == null) {
-        listener?.cancel();
+        await cancelAllListener();
+        debugPrint("User logged out, cancelled all listener");
         return;
       }
-      switch (authController.currentUserRole) {
+      IdTokenResult idTokenResult =
+          await FirebaseAuth.instance.currentUser!.getIdTokenResult();
+      Role currentUserRole =
+          RoleExtension.fromValue(idTokenResult.claims?['role'] ?? '');
+      switch (currentUserRole) {
         case Role.donor:
           listenToUserDonation();
+          debugPrint("User is donor, listen to user donation");
           break;
         case Role.recipient:
-          listenToFilteredDonation();
+          debugPrint("User is recipient, listen to user received donation");
+          listenToReceivedDonation();
           break;
         default:
+          debugPrint("User has no Role");
       }
     });
   }
 
-  void listenToUserDonation() {
-    listener?.cancel();
+  cancelAllListener() async {
+    await donationListener?.cancel();
+    debugPrint("Donation listener cancelled");
+    await receivedDonationListener?.cancel();
+    debugPrint("Received donation listener cancelled");
+    allDonations.clear();
+    donations.clear();
+    receivedDonations.clear();
+    deletedDonations.clear();
+  }
+
+  void listenToUserDonation() async {
+    await cancelAllListener();
     allDonations.clear();
     debugPrint(
         "Listen to donations of user ${FirebaseAuth.instance.currentUser!.uid}");
-    listener = FirebaseFirestore.instance
+    donationListener = FirebaseFirestore.instance
         .collection('donations')
         .where('donor', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .snapshots()
@@ -88,13 +108,15 @@ class DonationController extends ChangeNotifier {
           allDonations.where((element) => element.deleteAt == null).toList();
       deletedDonations =
           allDonations.where((element) => element.deleteAt != null).toList();
+      debugPrint("Donation: $donations");
+      debugPrint("Deleted donation: $deletedDonations");
       isLoading = false;
       notifyListeners();
     });
   }
 
-  void listenToFilteredDonation() {
-    listener?.cancel();
+  void listenToFilteredDonation() async {
+    await donationListener?.cancel();
     donations.clear();
     debugPrint(
         "Listen to filtered donations from user ${FirebaseAuth.instance.currentUser!.uid}");
@@ -113,7 +135,7 @@ class DonationController extends ChangeNotifier {
         arrayContainsAny: foodCategoryController.getChecked(),
       );
     }
-    listener = query.snapshots().listen((event) async {
+    donationListener = query.snapshots().listen((event) async {
       isLoading = true;
       notifyListeners();
       for (var element in event.docChanges) {
@@ -139,7 +161,47 @@ class DonationController extends ChangeNotifier {
             break;
         }
       }
-      debugPrint("Donation $donations");
+      debugPrint("Filtered donation: $donations");
+      isLoading = false;
+      notifyListeners();
+    });
+  }
+
+  void listenToReceivedDonation() async {
+    await cancelAllListener();
+    receivedDonations.clear();
+    var uid = FirebaseAuth.instance.currentUser!.uid;
+    debugPrint("Listen to received donations of user $uid");
+    receivedDonationListener = FirebaseFirestore.instance
+        .collection("donations")
+        .where(
+          'recipients.$uid',
+          isNull: false,
+        )
+        .snapshots()
+        .listen((event) {
+      isLoading = true;
+      notifyListeners();
+      for (var element in event.docChanges) {
+        Donation donation =
+            Donation.fromJson(element.doc.id, element.doc.data()!);
+        switch (element.type) {
+          case DocumentChangeType.added:
+            receivedDonations.add(donation);
+            break;
+          case DocumentChangeType.modified:
+            receivedDonations[receivedDonations
+                .indexWhere((d) => d.id == donation.id)] = donation;
+            break;
+          case DocumentChangeType.removed:
+            receivedDonations.removeWhere((d) => d.id == donation.id);
+            for (var img in donation.imgs) {
+              imgURLs.remove(img);
+            }
+            break;
+        }
+      }
+      debugPrint("Received donations: $receivedDonations");
       isLoading = false;
       notifyListeners();
     });

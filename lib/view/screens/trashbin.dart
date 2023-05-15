@@ -112,7 +112,7 @@ class DeletedDonationWidget extends StatelessWidget {
 
   getDeletedDonationListView() {
     if (donationController.deletedDonations.isEmpty) {
-      return Text(localeController.getTranslate('no-data-text'));
+      return Text(localeController.getTranslate('no-delete-donation-text'));
     }
     if (donationController.deletedDonations.isNotEmpty &&
         !donationController.isLoading) {

@@ -11,6 +11,11 @@ class DatetimePickerController extends ChangeNotifier {
     return _instance;
   }
 
+  reset() {
+    start = DateTime.now();
+    end = DateTime.now();
+  }
+
   setStart(DateTime value) {
     start = value;
     notifyListeners();

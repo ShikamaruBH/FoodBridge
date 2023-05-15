@@ -119,6 +119,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "Review",
     "vi": "Đánh giá",
   },
+  "no-delete-donation-text": {
+    "en": "No deleted donation found",
+    "vi": "Không có quyên góp nào bị xoá",
+  },
   "review-donation-success-text": {
     "en": "Review success",
     "vi": "Đã đánh giá",

@@ -197,9 +197,12 @@ class ReviewDialog extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  localeController.getTranslate('rate-this-donation-title'),
-                  style: StyleManagement.titleTextStyle,
+                Flexible(
+                  child: Text(
+                    localeController.getTranslate('rate-this-donation-title'),
+                    style: StyleManagement.titleTextStyle,
+                    textAlign: TextAlign.center,
+                  ),
                 )
               ],
             ),

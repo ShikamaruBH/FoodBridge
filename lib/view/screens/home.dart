@@ -82,37 +82,43 @@ class HomeScreen extends StatelessWidget {
               width: constraints.maxWidth,
               height: constraints.maxHeight,
               color: Theme.of(context).colorScheme.primary,
-              child: Column(
-                children: [
-                  const CircleAvatar(
-                    radius: 57,
-                    child: Icon(
-                      Icons.person,
-                      size: 60,
-                    ),
-                  ),
-                  const VSpacer(),
-                  Text(
-                    AuthController().currentUsername,
-                    style: StyleManagement.usernameTextStyle,
-                  ),
-                  const VSpacer(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+              child: ChangeNotifierProvider.value(
+                value: donationController,
+                child: Consumer<DonationController>(
+                  builder: (_, donationController, __) => Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10),
-                        child: Text(
-                          localeController.getTranslate('welcome-back-text'),
-                          style: StyleManagement.regularTextStyle,
+                      const CircleAvatar(
+                        radius: 57,
+                        child: Icon(
+                          Icons.person,
+                          size: 60,
                         ),
-                      )
+                      ),
+                      const VSpacer(),
+                      Text(
+                        AuthController().currentUsername,
+                        style: StyleManagement.usernameTextStyle,
+                      ),
+                      const VSpacer(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: Text(
+                              localeController
+                                  .getTranslate('welcome-back-text'),
+                              style: StyleManagement.regularTextStyle,
+                            ),
+                          )
+                        ],
+                      ),
+                      const VSpacer(),
+                      getMonthlyDescriptionTextWidget(),
+                      getDonationHistoryWidget(),
                     ],
                   ),
-                  const VSpacer(),
-                  getMonthlyDescriptionTextWidget(),
-                  getDonationHistoryWidget(),
-                ],
+                ),
               ),
             ),
           ),
@@ -128,6 +134,7 @@ class HomeScreen extends StatelessWidget {
           : Icons.search),
       onPressed: () async {
         await Permission.location.request();
+        dateTimePickerController.reset();
         // ignore: use_build_context_synchronously
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -145,12 +152,14 @@ class HomeScreen extends StatelessWidget {
           'donation-history-text-donor',
           'no-donation-text',
           donationController.donations,
+          true,
         );
       case Role.recipient:
         return DonationHistoryWidget(
           'donation-history-text-recipient',
           'no-received-donation-text',
           donationController.receivedDonations,
+          false,
         );
       default:
         return const Text('');
@@ -206,11 +215,13 @@ class DonationHistoryWidget extends StatelessWidget {
   final String text;
   final String noDataText;
   final List<Donation> source;
+  final bool canDelete;
   // ignore: prefer_const_constructors_in_immutables
   DonationHistoryWidget(
     this.text,
     this.noDataText,
-    this.source, {
+    this.source,
+    this.canDelete, {
     super.key,
   });
 
@@ -257,7 +268,7 @@ class DonationHistoryWidget extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                    child: getHistoryListView(noDataText),
+                    child: getHistoryListView(noDataText, source, canDelete),
                   ),
                 ],
               ),
@@ -268,15 +279,15 @@ class DonationHistoryWidget extends StatelessWidget {
     );
   }
 
-  getHistoryListView(String nodata) {
-    if (donationController.donations.isEmpty) {
+  getHistoryListView(String nodata, List<Donation> source, bool canDelete) {
+    if (source.isEmpty) {
       return Text(localeController.getTranslate(nodata));
     }
-    if (donationController.donations.isNotEmpty &&
-        !donationController.isLoading) {
+    if (source.isNotEmpty && !donationController.isLoading) {
       return ListView.builder(
-        itemCount: donationController.donations.length,
-        itemBuilder: (context, index) => DonationTileWidget(index),
+        itemCount: source.length,
+        itemBuilder: (context, index) =>
+            DonationTileWidget(index, source, canDelete),
       );
     }
     if (donationController.isLoading) {
@@ -295,8 +306,12 @@ class DonationHistoryWidget extends StatelessWidget {
 
 class DonationTileWidget extends StatelessWidget {
   final int index;
+  final List<Donation> source;
+  final bool canDelete;
   const DonationTileWidget(
-    this.index, {
+    this.index,
+    this.source,
+    this.canDelete, {
     super.key,
   });
 
@@ -357,7 +372,17 @@ class DonationTileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final donation = donationController.donations[index];
+    final donation = source[index];
+    if (canDelete) {
+      return getDeleteAbleDonationTile(donation, context);
+    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: getDonationTile(donation, context),
+    );
+  }
+
+  Padding getDeleteAbleDonationTile(Donation donation, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Slidable(
@@ -386,113 +411,117 @@ class DonationTileWidget extends StatelessWidget {
             ),
           ],
         ),
-        child: Card(
-          color: ColorManagement.donationTileColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(9),
-          ),
-          child: InkWell(
-            onTap: () {
-              mapController.setAddress(donation.latlng);
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => DonationDetailScreen(donation),
-                ),
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(7),
-                    child: SizedBox(
-                      width: 71,
-                      height: 85,
-                      child: FutureBuilder(
-                        future: donationController.getUrl(
-                            donation.donor, donation.imgs.first),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                                  ConnectionState.waiting ||
-                              snapshot.data == null) {
-                            return const Center(
-                              child: SizedBox(
-                                width: 30,
-                                height: 30,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              ),
-                            );
-                          }
-                          return CachedNetworkImage(
-                            imageUrl: snapshot.data!,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => const Center(
-                              child: SizedBox(
-                                width: 30,
-                                height: 30,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              ),
+        child: getDonationTile(donation, context),
+      ),
+    );
+  }
+
+  getDonationTile(Donation donation, BuildContext context) {
+    return Card(
+      color: ColorManagement.donationTileColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(9),
+      ),
+      child: InkWell(
+        onTap: () {
+          mapController.setAddress(donation.latlng);
+          quantityController.setMaxValue(donation.getQuantityLeft().toInt());
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => DonationDetailScreen(donation),
+            ),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(7),
+                child: SizedBox(
+                  width: 71,
+                  height: 85,
+                  child: FutureBuilder(
+                    future: donationController.getUrl(
+                        donation.donor, donation.imgs.first),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting ||
+                          snapshot.data == null) {
+                        return const Center(
+                          child: SizedBox(
+                            width: 30,
+                            height: 30,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
                             ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
-                          );
-                        },
-                      ),
-                    ),
+                          ),
+                        );
+                      }
+                      return CachedNetworkImage(
+                        imageUrl: snapshot.data!,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => const Center(
+                          child: SizedBox(
+                            width: 30,
+                            height: 30,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
+                      );
+                    },
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          left: 10, top: 2, bottom: 2, right: 0),
-                      child: SizedBox(
-                        height: 85,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      left: 10, top: 2, bottom: 2, right: 0),
+                  child: SizedBox(
+                    height: 85,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    donation.title,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: StyleManagement
-                                        .historyItemTitleTextStyle,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    "Category: ${donation.categories.map((e) => localeController.getTranslate(e)).join(", ")}",
-                                    style: StyleManagement
-                                        .historyItemCategoryTextStyle,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Text(DateFormat('dd/MM/yyyy')
-                                    .format(donation.createAt))
-                              ],
+                            Expanded(
+                              child: Text(
+                                donation.title,
+                                overflow: TextOverflow.ellipsis,
+                                style:
+                                    StyleManagement.historyItemTitleTextStyle,
+                              ),
                             ),
                           ],
                         ),
-                      ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                "Category: ${donation.categories.map((e) => localeController.getTranslate(e)).join(", ")}",
+                                style: StyleManagement
+                                    .historyItemCategoryTextStyle,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Text(DateFormat('dd/MM/yyyy')
+                                .format(donation.createAt))
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
