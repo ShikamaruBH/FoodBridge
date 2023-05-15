@@ -461,7 +461,7 @@ class DonationDetailScreen extends StatelessWidget {
               bottomLeft: Radius.circular(6),
             ),
           ),
-          const HSpacer(
+          HSpacer(
             offset: -9.5,
           ),
           Container(
@@ -480,7 +480,7 @@ class DonationDetailScreen extends StatelessWidget {
               ),
             ),
           ),
-          const HSpacer(
+          HSpacer(
             offset: -9.9,
           ),
           FoodQuantityButton(
@@ -491,7 +491,7 @@ class DonationDetailScreen extends StatelessWidget {
               bottomRight: Radius.circular(6),
             ),
           ),
-          const HSpacer(),
+          HSpacer(),
           Flexible(
             child: ElevatedButton(
               onPressed: () => receiveDonation(donation.id),

@@ -8,6 +8,7 @@ class AuthController {
   static final AuthController _instance = AuthController._internal();
   String currentUsername = 'No username';
   Role currentUserRole = Role.none;
+  String? currentUserAvatar;
 
   AuthController._internal();
 
@@ -44,6 +45,7 @@ class AuthController {
           await userCredential.user!.getIdTokenResult();
       currentUserRole =
           RoleExtension.fromValue(idTokenResult.claims?['role'] ?? '');
+      currentUserAvatar = userCredential.user!.photoURL;
       return {"success": true};
     } catch (err) {
       return {"success": false, "err": err};
@@ -60,6 +62,7 @@ class AuthController {
           await userCredential.user!.getIdTokenResult();
       currentUserRole =
           RoleExtension.fromValue(idTokenResult.claims?['role'] ?? '');
+      currentUserAvatar = userCredential.user!.photoURL;
       return {"success": true};
     } on FirebaseFunctionsException catch (err) {
       return {"success": false, "err": err};
@@ -82,5 +85,18 @@ class AuthController {
 
   Future<Map<String, dynamic>> chooseRole(Map<String, String> data) async {
     return callCloudFunction(data, "user-updateUserRole");
+  }
+
+  Future<bool> checkUser() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      currentUsername = user.displayName!;
+      IdTokenResult idTokenResult = await user.getIdTokenResult();
+      currentUserRole =
+          RoleExtension.fromValue(idTokenResult.claims?['role'] ?? '');
+      currentUserAvatar = user.photoURL;
+      return true;
+    }
+    return false;
   }
 }

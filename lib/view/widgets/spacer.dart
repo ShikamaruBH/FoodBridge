@@ -15,15 +15,18 @@ class VSpacer extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class HSpacer extends StatelessWidget {
   final double? offset;
-  const HSpacer({
+  double? width;
+  HSpacer({
     this.offset,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
+    width = 10 + (offset ?? 0);
     return SizedBox(
       width: 10 + (offset ?? 0),
     );

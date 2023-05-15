@@ -1,7 +1,7 @@
 import functions = require("firebase-functions");
 import admin = require("firebase-admin");
 import {Role} from "./roles";
-import {DocumentSnapshot} from "firebase-functions/v1/firestore";
+import {hasRole, isAuthenticated, isExist, isOwner} from "./validators";
 
 const donationsRef = admin.firestore().collection("donations");
 
@@ -201,30 +201,3 @@ exports.reviewDonation = functions.https.onCall(async (data, context) => {
         .HttpsError("unknown", "unknown");
   }
 });
-
-const isAuthenticated = (context: functions.https.CallableContext) => {
-  if (!context.auth) {
-    throw new functions.https.HttpsError("unauthenticated", "unauthenticated");
-  }
-};
-
-const hasRole = (context: functions.https.CallableContext, role: Role) => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  if (context.auth!.token.role != role) {
-    throw new functions.https.
-        HttpsError("permission-denied", "permission-denied");
-  }
-};
-
-const isExist = (donation: DocumentSnapshot) => {
-  if (!donation.exists) {
-    throw new functions.https.HttpsError("not-found", "not-found");
-  }
-};
-
-const isOwner = (donation: DocumentSnapshot, uid: string | undefined) => {
-  if (donation.data()?.donor != uid) {
-    throw new functions.https
-        .HttpsError("unauthenticated", "unauthenticated");
-  }
-};

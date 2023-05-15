@@ -32,6 +32,11 @@ class StyleManagement {
     fontSize: 28,
     fontWeight: FontWeight.bold,
   );
+  static const statsTextStyle = TextStyle(
+    color: ColorManagement.foodTypeCheckBoxCardBackgroundChecked,
+    fontSize: 27,
+    fontWeight: FontWeight.bold,
+  );
   static const monthlyDescriptionTextStyle = TextStyle(
     color: Colors.white,
     fontSize: 24,

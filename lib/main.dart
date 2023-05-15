@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
+import 'package:food_bridge/view/screens/home.dart';
 import 'package:food_bridge/view/screens/login.dart';
+import 'package:food_bridge/view/screens/profile.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -34,15 +37,29 @@ class MyApp extends StatelessWidget {
           secondary: const Color(0xff489FB5),
         ),
       ),
-      home: getScreen(),
+      home: FutureBuilder(
+        future: authController.checkUser(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting ||
+              snapshot.data == null) {
+            return const Scaffold(
+              body: Center(
+                child: SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                  ),
+                ),
+              ),
+            );
+          }
+          if (snapshot.data == true) {
+            return const HomeScreen();
+          }
+          return LoginScreen();
+        },
+      ),
     );
-  }
-
-  getScreen() {
-    // if (FirebaseAuth.instance.currentUser != null) {
-    //   return const HomeScreen();
-    // }
-    return LoginScreen();
-    // return const FindDonationScreen();
   }
 }

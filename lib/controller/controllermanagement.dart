@@ -7,6 +7,7 @@ import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/mapcontroller.dart';
 import 'package:food_bridge/controller/quantitycontroller.dart';
 import 'package:food_bridge/controller/reviewdialogcontroller.dart';
+import 'package:food_bridge/controller/usercontroller.dart';
 
 final localeController = LocalizationController();
 final donationController = DonationController();
@@ -17,3 +18,4 @@ final filterController = FilterController();
 final authController = AuthController();
 final quantityController = QuantityController();
 final reviewController = ReviewDialogController();
+final userController = UserController();

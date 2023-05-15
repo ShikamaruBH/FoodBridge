@@ -12,6 +12,7 @@ import 'package:food_bridge/model/userrole.dart';
 import 'package:food_bridge/view/screens/chooselocation.dart';
 import 'package:food_bridge/view/screens/donationdetail.dart';
 import 'package:food_bridge/view/screens/login.dart';
+import 'package:food_bridge/view/screens/profile.dart';
 import 'package:food_bridge/view/screens/settings.dart';
 import 'package:food_bridge/view/screens/trashbin.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
@@ -186,7 +187,15 @@ class HomeScreen extends StatelessWidget {
   List<Widget> getDrawerListTitle(BuildContext context) {
     return [
       const AccountHeaderWidget(),
-      MenuListTile(Icons.account_box_rounded, 'account-title', () {}),
+      MenuListTile(
+        Icons.account_box_rounded,
+        'profile-title',
+        () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const ProfileScreen(),
+          ),
+        ),
+      ),
       if (authController.currentUserRole == Role.donor)
         MenuListTile(
           Icons.delete_rounded,

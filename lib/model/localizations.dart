@@ -442,7 +442,7 @@ Map<String, dynamic> appLocalizations = {
     "en": "Home",
     "vi": "Trang chủ",
   },
-  "account-title": {
+  "profile-title": {
     "en": "Profile",
     "vi": "Tài khoản",
   },
@@ -465,6 +465,30 @@ Map<String, dynamic> appLocalizations = {
   "welcome-back-text": {
     "en": "Welcome back !",
     "vi": "Chào mừng quay lại !",
+  },
+  "updating-text": {
+    "en": "Updating...",
+    "vi": "Đang cập nhật...",
+  },
+  "donations-stats-label": {
+    "en": "DONATIONS",
+    "vi": "QUYÊN GÓP",
+  },
+  "update-avatar-success-text": {
+    "en": "Updated",
+    "vi": "Đã cập nhật",
+  },
+  "update-avatar-success-description": {
+    "en": "Update avatar success",
+    "vi": "Cập nhật ảnh đại diện thành công",
+  },
+  "recipients-stats-label": {
+    "en": "RECIPIENTS",
+    "vi": "NGƯỜI NHẬN",
+  },
+  "rating-stats-label": {
+    "en": "RATING",
+    "vi": "ĐÁNH GIÁ",
   },
   "monthly-donation-text-donor": {
     "en": (total) =>
