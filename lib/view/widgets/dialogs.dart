@@ -16,6 +16,9 @@ class LoadingDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -48,6 +51,9 @@ class ConfirmDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
       title: Text(localeController.getTranslate(title)),
       content: Text(localeController.getTranslate(content)),
       actions: [
@@ -94,6 +100,9 @@ class ErrorDialog extends StatelessWidget {
     }
 
     return AlertDialog(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
       icon: const CircleAvatar(
         radius: 30,
         backgroundColor: Colors.red,
@@ -133,6 +142,9 @@ class SuccessDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
       icon: const CircleAvatar(
         radius: 30,
         backgroundColor: Colors.green,

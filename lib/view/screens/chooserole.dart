@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:food_bridge/controller/authcontroller.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/rolebuttoncontroller.dart';
@@ -20,7 +19,7 @@ class ChooseRoleScreen extends StatelessWidget {
       context: context,
       builder: (context) => const LoadingDialog(),
     );
-    AuthController().chooseRole(
+    authController.chooseRole(
         {"role": RoleButtonController().currentRole}).then((result) {
       Navigator.pop(context);
       if (result['success']) {

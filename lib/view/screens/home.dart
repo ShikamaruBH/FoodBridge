@@ -17,6 +17,7 @@ import 'package:food_bridge/view/screens/settings.dart';
 import 'package:food_bridge/view/screens/trashbin.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
+import 'package:food_bridge/view/widgets/useravatar.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +26,7 @@ class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   void logout() async {
-    await AuthController().signOut();
+    await authController.signOut();
     Navigator.of(navigatorKey.currentState!.context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (context) => LoginScreen(),
@@ -86,38 +87,38 @@ class HomeScreen extends StatelessWidget {
               child: ChangeNotifierProvider.value(
                 value: donationController,
                 child: Consumer<DonationController>(
-                  builder: (_, donationController, __) => Column(
-                    children: [
-                      const CircleAvatar(
-                        radius: 57,
-                        child: Icon(
-                          Icons.person,
-                          size: 60,
-                        ),
-                      ),
-                      const VSpacer(),
-                      Text(
-                        AuthController().currentUsername,
-                        style: StyleManagement.usernameTextStyle,
-                      ),
-                      const VSpacer(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                  builder: (_, donationController, __) =>
+                      ChangeNotifierProvider.value(
+                    value: authController,
+                    child: Consumer<AuthController>(
+                      builder: (_, authController, __) => Column(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: Text(
-                              localeController
-                                  .getTranslate('welcome-back-text'),
-                              style: StyleManagement.regularTextStyle,
-                            ),
-                          )
+                          UserAvatar(constraints),
+                          const VSpacer(),
+                          Text(
+                            authController.currentUsername,
+                            style: StyleManagement.usernameTextStyle,
+                          ),
+                          const VSpacer(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: Text(
+                                  localeController
+                                      .getTranslate('welcome-back-text'),
+                                  style: StyleManagement.regularTextStyle,
+                                ),
+                              )
+                            ],
+                          ),
+                          const VSpacer(),
+                          getMonthlyDescriptionTextWidget(),
+                          getDonationHistoryWidget(),
                         ],
                       ),
-                      const VSpacer(),
-                      getMonthlyDescriptionTextWidget(),
-                      getDonationHistoryWidget(),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -186,7 +187,12 @@ class HomeScreen extends StatelessWidget {
 
   List<Widget> getDrawerListTitle(BuildContext context) {
     return [
-      const AccountHeaderWidget(),
+      ChangeNotifierProvider.value(
+        value: authController,
+        child: Consumer<AuthController>(
+          builder: (__, authController, _) => AccountHeaderWidget(),
+        ),
+      ),
       MenuListTile(
         Icons.account_box_rounded,
         'profile-title',
@@ -678,36 +684,33 @@ class NotificationBarWidget extends StatelessWidget {
 }
 
 class AccountHeaderWidget extends StatelessWidget {
-  const AccountHeaderWidget({
+  // ignore: prefer_const_constructors_in_immutables
+  AccountHeaderWidget({
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 175,
-      color: Theme.of(context).colorScheme.primary,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 15, top: 15, bottom: 10),
-            child: CircleAvatar(
-              radius: 57,
-              child: Icon(
-                Icons.person,
-                size: 60,
+    return LayoutBuilder(
+      builder: (_, constraints) => Container(
+        height: 175,
+        color: Theme.of(context).colorScheme.primary,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 15, top: 15, bottom: 10),
+              child: UserAvatar(constraints),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: Text(
+                authController.currentUsername,
+                style: StyleManagement.usernameTextStyle,
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 20),
-            child: Text(
-              AuthController().currentUsername,
-              style: StyleManagement.usernameTextStyle,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

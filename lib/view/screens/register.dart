@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:food_bridge/controller/authcontroller.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/passwordtextfieldcontroller.dart';
@@ -36,7 +35,7 @@ class RegisterScreen extends StatelessWidget {
         context: context,
         builder: (context) => const LoadingDialog(),
       );
-      AuthController().register({
+      authController.register({
         "fullname": data["fullname"].trim(),
         "email": data["email"].trim(),
         "password": data["password"].trim(),

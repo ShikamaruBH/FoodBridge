@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:food_bridge/controller/authcontroller.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/passwordtextfieldcontroller.dart';
@@ -32,8 +31,8 @@ class LoginScreen extends StatelessWidget {
         context: context,
         builder: (context) => const LoadingDialog(),
       );
-      await AuthController().signOut();
-      await AuthController().login({
+      await authController.signOut();
+      await authController.login({
         "email": data["email"].trim(),
         "password": data["password"],
       }).then((result) {
@@ -59,8 +58,8 @@ class LoginScreen extends StatelessWidget {
   }
 
   void loginGoogle(context) async {
-    await AuthController().signOut();
-    await AuthController().loginGoogle().then((result) {
+    await authController.signOut();
+    await authController.loginGoogle().then((result) {
       if (result['success']) {
         navigate();
       } else {
@@ -81,8 +80,8 @@ class LoginScreen extends StatelessWidget {
   }
 
   void navigate() {
-    if (AuthController().currentUserRole != Role.none) {
-      debugPrint('User role: ${AuthController().currentUserRole}');
+    if (authController.currentUserRole != Role.none) {
+      debugPrint('User role: ${authController.currentUserRole}');
       Navigator.of(navigatorKey.currentState!.context).push(
         MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
