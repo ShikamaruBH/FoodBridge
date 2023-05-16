@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:food_bridge/controller/firebasecontroller.dart';
 import 'package:image_picker/image_picker.dart';
 
 class UserController extends ChangeNotifier {
@@ -33,5 +34,9 @@ class UserController extends ChangeNotifier {
     } catch (err) {
       return {"success": false, "err": err};
     }
+  }
+
+  Future<Map<String, dynamic>> getDonorInfo(String uid) async {
+    return callCloudFunction({"uid": uid}, "user-getDonorInfo");
   }
 }

@@ -9,8 +9,10 @@ import 'package:food_bridge/controller/quantitycontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/model/donation.dart';
+import 'package:food_bridge/model/donorinfo.dart';
 import 'package:food_bridge/model/userrole.dart';
 import 'package:food_bridge/view/screens/neworupdatedonation.dart';
+import 'package:food_bridge/view/screens/profile.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:provider/provider.dart';
@@ -47,6 +49,59 @@ class DonationDetailScreen extends StatelessWidget {
               height: constraints.maxHeight,
               child: Column(
                 children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    child: FutureBuilder(
+                        future: userController.getDonorInfo(donation.donor),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                                  ConnectionState.waiting ||
+                              snapshot.data == null) {
+                            return const Center(
+                              child: SizedBox(
+                                width: 30,
+                                height: 30,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                            );
+                          }
+                          final donorInfo =
+                              DonorInfo.fromJson(snapshot.data!['result'].data);
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              getUserAvatar(constraints, donorInfo),
+                              HSpacer(),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10),
+                                child: InkWell(
+                                  onTap: () => {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            DonorProfileScreen(
+                                                donorInfo: donorInfo),
+                                      ),
+                                    )
+                                  },
+                                  child: Text(
+                                    donorInfo.displayName,
+                                    style:
+                                        StyleManagement.menuTextStyle.copyWith(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          );
+                        }),
+                  ),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(15),
@@ -566,6 +621,38 @@ class DonationDetailScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  getUserAvatar(BoxConstraints constraints, DonorInfo donorInfo) {
+    if (donorInfo.photoURL != null) {
+      return ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: donorInfo.photoURL!,
+          width: constraints.maxWidth / 7,
+          height: constraints.maxWidth / 7,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => Center(
+            child: SizedBox(
+              width: constraints.maxWidth / 7,
+              height: constraints.maxWidth / 7,
+              child: const CircularProgressIndicator(
+                strokeWidth: 2,
+              ),
+            ),
+          ),
+          errorWidget: (context, url, error) => const Icon(Icons.error),
+        ),
+      );
+    }
+    return CircleAvatar(
+      backgroundColor: Colors.grey.shade300,
+      radius: constraints.maxWidth / 14,
+      child: Icon(
+        Icons.person,
+        size: constraints.maxWidth / 14,
+        color: Colors.white,
       ),
     );
   }

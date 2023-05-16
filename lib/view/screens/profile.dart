@@ -6,13 +6,18 @@ import 'package:food_bridge/controller/donationcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
+import 'package:food_bridge/model/donorinfo.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+class DonorProfileScreen extends StatelessWidget {
+  final DonorInfo? donorInfo;
+  const DonorProfileScreen({
+    this.donorInfo,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +68,7 @@ class ProfileScreen extends StatelessWidget {
                                         Stack(
                                           children: [
                                             getUserAvatar(constraints),
-                                            EditAvatarButton(constraints),
+                                            getEditAvatarButton(constraints),
                                           ],
                                         ),
                                         const VSpacer(),
@@ -78,8 +83,9 @@ class ProfileScreen extends StatelessWidget {
                                               children: [
                                                 Flexible(
                                                   child: Text(
-                                                    authController
-                                                        .currentUsername,
+                                                    donorInfo?.displayName ??
+                                                        authController
+                                                            .currentUsername,
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: StyleManagement
@@ -90,13 +96,7 @@ class ProfileScreen extends StatelessWidget {
                                                   ),
                                                 ),
                                                 HSpacer(),
-                                                InkWell(
-                                                  onTap: updateDisplayName,
-                                                  child: const Icon(
-                                                    Icons.edit,
-                                                    size: 20,
-                                                  ),
-                                                )
+                                                getEditUsernameButton()
                                               ],
                                             ),
                                           ),
@@ -108,7 +108,10 @@ class ProfileScreen extends StatelessWidget {
                               ),
                             ),
                             const VSpacer(),
-                            UserStatsWidget(constraints),
+                            UserStatsWidget(
+                              constraints,
+                              donorInfo: donorInfo,
+                            ),
                           ],
                         ),
                       ),
@@ -123,13 +126,33 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  getEditUsernameButton() {
+    if (donorInfo != null) {
+      return const Text('');
+    }
+    return InkWell(
+      onTap: updateDisplayName,
+      child: const Icon(
+        Icons.edit,
+        size: 20,
+      ),
+    );
+  }
+
+  getEditAvatarButton(BoxConstraints constraints) {
+    if (donorInfo != null) {
+      return const Text('');
+    }
+    return EditAvatarButton(constraints);
+  }
+
   getUserAvatar(BoxConstraints constraints) {
     if (authController.currentUserAvatar != null) {
       return ClipOval(
         child: Container(
           color: Colors.grey.shade100,
           child: CachedNetworkImage(
-            imageUrl: authController.currentUserAvatar!,
+            imageUrl: donorInfo?.photoURL! ?? authController.currentUserAvatar!,
             width: constraints.maxWidth / 3,
             height: constraints.maxWidth / 3,
             fit: BoxFit.cover,
@@ -384,8 +407,10 @@ class ImageSourceButton extends StatelessWidget {
 
 class UserStatsWidget extends StatelessWidget {
   final BoxConstraints constraints;
+  final DonorInfo? donorInfo;
   const UserStatsWidget(
     this.constraints, {
+    this.donorInfo,
     super.key,
   });
 
@@ -400,17 +425,19 @@ class UserStatsWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               StatsBoxWidget(
-                donationController.getTotalDonation(),
+                donorInfo?.getTotalDonation() ??
+                    donationController.getTotalDonation(),
                 'donations-stats-label',
                 constraints: constraints,
               ),
               StatsBoxWidget(
-                donationController.getTotalRecipient(),
+                donorInfo?.getTotalRecipient() ??
+                    donationController.getTotalRecipient(),
                 'recipients-stats-label',
                 constraints: constraints,
               ),
               StatsBoxWidget(
-                donationController.getRating(),
+                donorInfo?.getRating() ?? donationController.getRating(),
                 'rating-stats-label',
                 constraints: constraints,
               ),

@@ -198,7 +198,7 @@ class HomeScreen extends StatelessWidget {
         'profile-title',
         () => Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => const ProfileScreen(),
+            builder: (context) => const DonorProfileScreen(),
           ),
         ),
       ),

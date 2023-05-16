@@ -14,8 +14,9 @@ Future<FirebaseApp> initializeFirebase() async {
 Future<Map<String, dynamic>> callCloudFunction(
     Map<String, dynamic> data, String funcName) async {
   try {
-    await FirebaseFunctions.instance.httpsCallable(funcName).call(data);
-    return {"success": true};
+    final result =
+        await FirebaseFunctions.instance.httpsCallable(funcName).call(data);
+    return {"success": true, "result": result};
   } on FirebaseFunctionsException catch (err) {
     return {"success": false, "err": err};
   }

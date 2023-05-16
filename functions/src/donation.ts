@@ -2,8 +2,7 @@ import functions = require("firebase-functions");
 import admin = require("firebase-admin");
 import {Role} from "./roles";
 import {hasRole, isAuthenticated, isExist, isOwner} from "./validators";
-
-const donationsRef = admin.firestore().collection("donations");
+import {donationsRef} from "./references";
 
 exports.createDonation = functions.https.onCall(async (data, context) => {
   isAuthenticated(context);
