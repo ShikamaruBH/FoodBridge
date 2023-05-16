@@ -152,16 +152,7 @@ class ChooseLocationScreen extends StatelessWidget {
                                     ),
                                     const VSpacer(),
                                     ElevatedButton(
-                                      onPressed: mapController.isError &&
-                                              (mapController
-                                                      .currentAddress.isEmpty ||
-                                                  mapController
-                                                          .currentAddress ==
-                                                      localeController
-                                                          .getTranslate(
-                                                              'loading-text'))
-                                          ? null
-                                          : () => next(context),
+                                      onPressed: getOnPress(context),
                                       style: StyleManagement.elevatedButtonStyle
                                           .copyWith(
                                         backgroundColor:
@@ -192,6 +183,13 @@ class ChooseLocationScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  getOnPress(BuildContext context) {
+    if (mapController.isError || mapController.isLoading) {
+      return null;
+    }
+    return () => next(context);
   }
 }
 

@@ -13,6 +13,7 @@ class MapController extends ChangeNotifier {
   late GoogleMapController? controller;
   String currentAddress = '';
   bool isError = false;
+  bool isLoading = false;
   TextEditingController addressTextFieldController = TextEditingController();
   MapController._internal();
 
@@ -41,6 +42,8 @@ class MapController extends ChangeNotifier {
   }
 
   Future<String> getAddress(LatLng argument) async {
+    isLoading = true;
+    notifyListeners();
     String rs = '';
     try {
       List<Placemark> placemarks =
@@ -74,6 +77,7 @@ class MapController extends ChangeNotifier {
       rs = localeController.getTranslate('network-error');
       isError = true;
     }
+    isLoading = false;
     addressTextFieldController.text = rs;
     notifyListeners();
     return rs;
