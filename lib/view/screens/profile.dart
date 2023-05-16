@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:food_bridge/controller/authcontroller.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/main.dart';
@@ -50,52 +51,60 @@ class ProfileScreen extends StatelessWidget {
                         offset: Offset(0, -constraints.maxWidth / 6),
                         child: Column(
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Column(
+                            ChangeNotifierProvider.value(
+                              value: authController,
+                              child: Consumer<AuthController>(
+                                builder: (__, authController, _) => Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Stack(
+                                    Column(
                                       children: [
-                                        getUserProfile(constraints),
-                                        EditAvatarButton(constraints),
-                                      ],
-                                    ),
-                                    const VSpacer(),
-                                    SizedBox(
-                                      width: constraints.maxWidth,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                        Stack(
                                           children: [
-                                            Flexible(
-                                              child: Text(
-                                                authController.currentUsername,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: StyleManagement
-                                                    .usernameTextStyle
-                                                    .copyWith(
-                                                        color: Colors.black),
-                                              ),
-                                            ),
-                                            HSpacer(),
-                                            InkWell(
-                                              onTap: () {},
-                                              child: const Icon(
-                                                Icons.edit,
-                                                size: 20,
-                                              ),
-                                            )
+                                            getUserAvatar(constraints),
+                                            EditAvatarButton(constraints),
                                           ],
                                         ),
-                                      ),
+                                        const VSpacer(),
+                                        SizedBox(
+                                          width: constraints.maxWidth,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Flexible(
+                                                  child: Text(
+                                                    authController
+                                                        .currentUsername,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: StyleManagement
+                                                        .usernameTextStyle
+                                                        .copyWith(
+                                                            color:
+                                                                Colors.black),
+                                                  ),
+                                                ),
+                                                HSpacer(),
+                                                InkWell(
+                                                  onTap: updateDisplayName,
+                                                  child: const Icon(
+                                                    Icons.edit,
+                                                    size: 20,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
-                              ],
+                              ),
                             ),
                             const VSpacer(),
                             UserStatsWidget(constraints),
@@ -113,7 +122,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  getUserProfile(BoxConstraints constraints) {
+  getUserAvatar(BoxConstraints constraints) {
     if (authController.currentUserAvatar != null) {
       return ClipOval(
         child: Container(
@@ -146,6 +155,55 @@ class ProfileScreen extends StatelessWidget {
         color: Colors.white,
       ),
     );
+  }
+
+  void updateDisplayName() async {
+    Map<String, dynamic> data = await showDialog(
+      context: navigatorKey.currentState!.context,
+      builder: (context) => UsernameDialog(),
+    );
+    if (!data['status']) {
+      return;
+    }
+    showDialog(
+      barrierDismissible: false,
+      context: navigatorKey.currentState!.context,
+      builder: (context) => const LoadingDialog(
+        message: 'updating-text',
+      ),
+    );
+    await userController
+        .updateDisplayName(data["username"])
+        .then((result) async {
+      Navigator.pop(navigatorKey.currentState!.context);
+      if (result['success']) {
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => SuccessDialog(
+            'update-display-name-success-text',
+            'update-display-name-success-description',
+            () {},
+            showActions: false,
+          ),
+        );
+        await Future.delayed(const Duration(seconds: 1));
+        Navigator.of(navigatorKey.currentState!.context).pop();
+      } else {
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => ErrorDialog(result['err']),
+        );
+      }
+    }).catchError((err) {
+      Navigator.pop(navigatorKey.currentState!.context);
+      showDialog(
+        barrierDismissible: false,
+        context: navigatorKey.currentState!.context,
+        builder: (context) => ErrorDialog(err),
+      );
+    });
   }
 }
 

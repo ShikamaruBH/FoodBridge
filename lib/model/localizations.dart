@@ -466,9 +466,21 @@ Map<String, dynamic> appLocalizations = {
     "en": "Welcome back !",
     "vi": "Chào mừng quay lại !",
   },
+  "update-display-name-success-text": {
+    "en": "Username updated",
+    "vi": "Đã cập nhật tên",
+  },
+  "update-display-name-success-description": {
+    "en": "Update username success",
+    "vi": "Cập nhật tên người dùng thành công",
+  },
   "updating-text": {
     "en": "Updating...",
     "vi": "Đang cập nhật...",
+  },
+  "edit-username-title": {
+    "en": "Edit username",
+    "vi": "Cập nhật tên người dùng",
   },
   "donations-stats-label": {
     "en": "DONATIONS",

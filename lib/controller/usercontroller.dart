@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:food_bridge/controller/firebasecontroller.dart';
 import 'package:image_picker/image_picker.dart';
 
 class UserController extends ChangeNotifier {
@@ -19,6 +18,20 @@ class UserController extends ChangeNotifier {
         .ref('${FirebaseAuth.instance.currentUser!.uid}/avatar.jpg');
     await imgRef.putFile(File(image.path));
     String photoURL = await imgRef.getDownloadURL();
-    return callCloudFunction({"photoURL": photoURL}, "user-updateUserAvatar");
+    try {
+      await FirebaseAuth.instance.currentUser!.updatePhotoURL(photoURL);
+      return {"success": true};
+    } catch (err) {
+      return {"success": false, "err": err};
+    }
+  }
+
+  Future<Map<String, dynamic>> updateDisplayName(String name) async {
+    try {
+      await FirebaseAuth.instance.currentUser!.updateDisplayName(name);
+      return {"success": true};
+    } catch (err) {
+      return {"success": false, "err": err};
+    }
   }
 }

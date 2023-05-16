@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
+import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
+import 'package:food_bridge/view/widgets/spacer.dart';
 
 class LoadingDialog extends StatelessWidget {
   final String message;
@@ -52,7 +55,7 @@ class ConfirmDialog extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context, false);
           },
-          style: StyleManagement.textButtonStyle.copyWith(),
+          style: StyleManagement.textButtonStyle,
           child: Text(localeController.getTranslate('cancel-text')),
         ),
         TextButton(
@@ -242,7 +245,7 @@ class ReviewDialog extends StatelessWidget {
                   onPressed: () {
                     Navigator.pop(context, false);
                   },
-                  style: StyleManagement.textButtonStyle.copyWith(),
+                  style: StyleManagement.textButtonStyle,
                   child: Text(localeController.getTranslate('cancel-text')),
                 ),
                 TextButton(
@@ -255,6 +258,81 @@ class ReviewDialog extends StatelessWidget {
                 ),
               ],
             )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class UsernameDialog extends StatelessWidget {
+  final _formKey = GlobalKey<FormBuilderState>();
+  UsernameDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: Text(
+                    localeController.getTranslate('edit-username-title'),
+                    style: StyleManagement.settingsLabelTextStyle,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+            const VSpacer(),
+            FormBuilder(
+              key: _formKey,
+              child: FormBuilderTextField(
+                name: 'username',
+                initialValue: authController.currentUsername,
+                textAlign: TextAlign.center,
+                decoration:
+                    DecoratorManagement.defaultTextFieldDecoratorDark("", null),
+                validator: CustomValidator.required,
+              ),
+            ),
+            const VSpacer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, {'status': false});
+                  },
+                  style: StyleManagement.textButtonStyle,
+                  child: Text(localeController.getTranslate('cancel-text')),
+                ),
+                TextButton(
+                  onPressed: () {
+                    _formKey.currentState!.save();
+                    if (_formKey.currentState!.validate()) {
+                      Map<String, dynamic> data = _formKey.currentState!.value;
+                      Navigator.pop(context, {
+                        "status": true,
+                        'username': data['username'].trim(),
+                      });
+                    }
+                  },
+                  style: StyleManagement.textButtonStyle,
+                  child: Text(
+                      localeController.getTranslate('confirm-button-title')),
+                ),
+              ],
+            ),
           ],
         ),
       ),

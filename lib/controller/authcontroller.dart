@@ -1,19 +1,32 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
 import 'package:food_bridge/model/userrole.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class AuthController {
+class AuthController extends ChangeNotifier {
   static final AuthController _instance = AuthController._internal();
   String currentUsername = 'No username';
   Role currentUserRole = Role.none;
   String? currentUserAvatar;
 
-  AuthController._internal();
+  AuthController._internal() {
+    listenToAuthState();
+  }
 
   factory AuthController() {
     return _instance;
+  }
+
+  void listenToAuthState() {
+    FirebaseAuth.instance.userChanges().listen((user) {
+      if (user != null) {
+        currentUsername = user.displayName!;
+        currentUserAvatar = user.photoURL;
+        notifyListeners();
+      }
+    });
   }
 
   Future<Map<String, dynamic>> register(Map<String, dynamic> data) async {
