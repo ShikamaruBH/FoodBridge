@@ -347,4 +347,19 @@ class DonationController extends ChangeNotifier {
     total /= count;
     return total.toStringAsFixed(1);
   }
+
+  num getTotalDonationThisMonth() {
+    return getTotalDonationThisMonthOf(donations);
+  }
+
+  num getTotalReceivedDonationThisMonth() {
+    return getTotalDonationThisMonthOf(receivedDonations);
+  }
+
+  num getTotalDonationThisMonthOf(List<Donation> source) {
+    int thisMonth = DateTime.now().month;
+    return source
+        .where((donation) => donation.createAt.month == thisMonth)
+        .length;
+  }
 }

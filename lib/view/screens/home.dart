@@ -172,12 +172,12 @@ class HomeScreen extends StatelessWidget {
     switch (authController.currentUserRole) {
       case Role.donor:
         return MonthlyDescriptionTextWidget(
-          5,
+          donationController.getTotalDonationThisMonth(),
           'monthly-donation-text-donor',
         );
       case Role.recipient:
         return MonthlyDescriptionTextWidget(
-          2,
+          donationController.getTotalReceivedDonationThisMonth(),
           'monthly-donation-text-recipient',
         );
       default:
