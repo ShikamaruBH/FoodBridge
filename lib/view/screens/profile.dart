@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/authcontroller.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
+import 'package:food_bridge/controller/donationcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
@@ -392,25 +393,30 @@ class UserStatsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          StatsBoxWidget(
-            "12000",
-            'donations-stats-label',
-            constraints: constraints,
+      child: ChangeNotifierProvider.value(
+        value: donationController,
+        child: Consumer<DonationController>(
+          builder: (_, donationController, __) => Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              StatsBoxWidget(
+                donationController.getTotalDonation(),
+                'donations-stats-label',
+                constraints: constraints,
+              ),
+              StatsBoxWidget(
+                donationController.getTotalRecipient(),
+                'recipients-stats-label',
+                constraints: constraints,
+              ),
+              StatsBoxWidget(
+                donationController.getRating(),
+                'rating-stats-label',
+                constraints: constraints,
+              ),
+            ],
           ),
-          StatsBoxWidget(
-            "352",
-            'recipients-stats-label',
-            constraints: constraints,
-          ),
-          StatsBoxWidget(
-            "4.5",
-            'rating-stats-label',
-            constraints: constraints,
-          ),
-        ],
+        ),
       ),
     );
   }

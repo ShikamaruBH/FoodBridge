@@ -4,7 +4,6 @@ import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
 import 'package:food_bridge/view/screens/home.dart';
 import 'package:food_bridge/view/screens/login.dart';
-import 'package:food_bridge/view/screens/profile.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 

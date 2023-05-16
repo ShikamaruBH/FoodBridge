@@ -319,4 +319,32 @@ class DonationController extends ChangeNotifier {
       return '';
     }
   }
+
+  String getTotalDonation() {
+    return donations.length.toString();
+  }
+
+  String getTotalRecipient() {
+    Set<String> recipients = {};
+    for (var donation in donations) {
+      recipients.addAll(donation.recipients.keys);
+    }
+    return recipients.length.toString();
+  }
+
+  String getRating() {
+    double total = 0;
+    int count = 0;
+    for (var donation in donations) {
+      donation.reviews.forEach((_, review) {
+        total += review['rating'];
+        count++;
+      });
+    }
+    if (count == 0) {
+      return '0';
+    }
+    total /= count;
+    return total.toStringAsFixed(1);
+  }
 }
