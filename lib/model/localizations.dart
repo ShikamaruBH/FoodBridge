@@ -194,6 +194,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "Show on map",
     "vi": "Xem trên bản đồ",
   },
+  "order-by-text": {
+    "en": "Order by",
+    "vi": "Sắp xếp theo",
+  },
   "no-image-text": {
     "en": "This donation has no image",
     "vi": "Quyên góp này không có hình ảnh",
@@ -269,6 +273,10 @@ Map<String, dynamic> appLocalizations = {
   "radius-title": {
     "en": "Radius",
     "vi": "Bán kính",
+  },
+  "distance-title": {
+    "en": "Distance",
+    "vi": "Khoảng cách",
   },
   "find-donation-title": {
     "en": "Find donation",

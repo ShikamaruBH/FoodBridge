@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/datetimepickercontroller.dart';
 import 'package:food_bridge/controller/distanceslidercontroller.dart';
@@ -9,6 +10,8 @@ import 'package:food_bridge/controller/foodtypecheckboxcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/model/donation.dart';
+import 'package:food_bridge/model/donationsort.dart';
+import 'package:food_bridge/model/donationsortdropdownitem.dart';
 import 'package:food_bridge/view/screens/donationdetail.dart';
 import 'package:food_bridge/view/widgets/donationdatetimepicker.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
@@ -75,7 +78,9 @@ class FindDonationScreen extends StatelessWidget {
                                       ),
                                     ),
                                     AvailableDonationWidget(
-                                        'available-donation-text')
+                                      'available-donation-text',
+                                      constraints,
+                                    ),
                                   ],
                                 ),
                               ),
@@ -181,9 +186,11 @@ class FindDonationScreen extends StatelessWidget {
 
 class AvailableDonationWidget extends StatelessWidget {
   final String text;
+  final BoxConstraints constraints;
   // ignore: prefer_const_constructors_in_immutables
   AvailableDonationWidget(
-    this.text, {
+    this.text,
+    this.constraints, {
     super.key,
   });
 
@@ -224,6 +231,31 @@ class AvailableDonationWidget extends StatelessWidget {
                               )
                             ]),
                       ),
+                      HSpacer(),
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            SizedBox(
+                              width: constraints.maxWidth * .3,
+                              child: FormBuilderDropdown(
+                                name: "sort",
+                                decoration:
+                                    DecoratorManagement.dropdownButtonDecorator,
+                                initialValue: DonationSort.NONE,
+                                borderRadius: BorderRadius.circular(8),
+                                selectedItemBuilder: (context) => dropdownItems
+                                    .map((option) => Text(
+                                          option.value!.value,
+                                          overflow: TextOverflow.ellipsis,
+                                        ))
+                                    .toList(),
+                                items: dropdownItems,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 ),

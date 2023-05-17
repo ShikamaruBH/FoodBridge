@@ -175,6 +175,13 @@ class StyleManagement {
 }
 
 class DecoratorManagement {
+  static const dropdownButtonDecorator = InputDecoration(
+    isDense: true,
+    contentPadding: EdgeInsets.symmetric(horizontal: 5),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(6)),
+    ),
+  );
   static defaultTextFieldDecoratorDark(String hint, hintStyle) =>
       InputDecoration(
         isDense: true,
