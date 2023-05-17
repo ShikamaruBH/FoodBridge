@@ -150,14 +150,15 @@ Map<String, dynamic> appLocalizations = {
       }
       if (hours > 0) {
         rs += pad(hours, 'hour');
+        return hours;
       }
       if (minutes > 0) {
         rs += pad(minutes, 'minute');
       }
-      if (seconds > 0) {
+      if (seconds > 0 || minutes > 0) {
         rs += pad(seconds, 'second');
       }
-      return rs;
+      return rs.isEmpty ? "Donation has ended" : rs;
     },
     "vi": (days, hours, minutes, seconds) {
       String rs = '';
@@ -170,19 +171,28 @@ Map<String, dynamic> appLocalizations = {
       }
       if (hours > 0) {
         rs += pad(hours, 'giờ');
+        return hours;
       }
       if (minutes > 0) {
         rs += pad(minutes, 'phút');
       }
-      if (seconds > 0) {
+      if (seconds > 0 || minutes > 0) {
         rs += pad(seconds, 'giây');
       }
-      return rs;
+      return rs.isEmpty ? "Donation has ended" : rs;
     },
   },
   "food-start-date-title": {
     "en": "Start",
     "vi": "Bắt đầu",
+  },
+  "no-image-text": {
+    "en": "This donation has no image",
+    "vi": "Quyên góp này không có hình ảnh",
+  },
+  "donation-has-not-start-yet-text": {
+    "en": "The donation hasn't started yet",
+    "vi": "Quyên góp chưa bắt đầu",
   },
   "address-title": {
     "en": "Address",
@@ -244,9 +254,9 @@ Map<String, dynamic> appLocalizations = {
     "en": "Pick or seach for your location on the map",
     "vi": "Chọn hoặc tìm địa chỉ của bạn trên bản đồ",
   },
-  "distance-title": {
-    "en": "Distance",
-    "vi": "Khoảng cách",
+  "radius-title": {
+    "en": "Radius",
+    "vi": "Bán kính",
   },
   "find-donation-title": {
     "en": "Find donation",

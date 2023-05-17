@@ -16,7 +16,6 @@ import 'package:food_bridge/view/screens/profile.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:provider/provider.dart';
-import 'package:timer_count_down/timer_count_down.dart';
 
 class DonationDetailScreen extends StatelessWidget {
   final Donation donation;
@@ -109,54 +108,7 @@ class DonationDetailScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Flexible(
-                            child: CarouselSlider.builder(
-                              itemCount: donation.imgs.length,
-                              itemBuilder: (context, index, realIndex) =>
-                                  ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: FutureBuilder(
-                                  future: donationController.getUrl(
-                                      donation.donor, donation.imgs[index]),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                            ConnectionState.waiting ||
-                                        snapshot.data == null) {
-                                      return const Center(
-                                        child: SizedBox(
-                                          width: 30,
-                                          height: 30,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                    return CachedNetworkImage(
-                                      imageUrl: snapshot.data!,
-                                      fit: BoxFit.cover,
-                                      width: constraints.maxWidth,
-                                      placeholder: (context, url) =>
-                                          const Center(
-                                        child: SizedBox(
-                                          width: 30,
-                                          height: 30,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                          ),
-                                        ),
-                                      ),
-                                      errorWidget: (context, url, error) =>
-                                          const Icon(Icons.error),
-                                    );
-                                  },
-                                ),
-                              ),
-                              options: CarouselOptions(
-                                height: constraints.maxHeight * .25,
-                                enableInfiniteScroll: false,
-                                enlargeCenterPage: true,
-                              ),
-                            ),
+                            child: getImageDisplayer(constraints),
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8),
@@ -203,7 +155,7 @@ class DonationDetailScreen extends StatelessWidget {
                           const VSpacer(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
-                            children: [getDurationUntilEnd(donation.end)],
+                            children: [donation.getTimeRemaining()],
                           ),
                           const VSpacer(),
                           Row(
@@ -289,6 +241,71 @@ class DonationDetailScreen extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  getImageDisplayer(BoxConstraints constraints) {
+    if (donation.imgs.isEmpty) {
+      return Container(
+        width: constraints.maxWidth,
+        height: constraints.maxHeight * .25,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.no_food),
+            const VSpacer(),
+            Text(localeController.getTranslate('no-image-text')),
+          ],
+        ),
+      );
+    }
+    return CarouselSlider.builder(
+      itemCount: donation.imgs.length,
+      itemBuilder: (context, index, realIndex) => ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: FutureBuilder(
+          future:
+              donationController.getUrl(donation.donor, donation.imgs[index]),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting ||
+                snapshot.data == null) {
+              return const Center(
+                child: SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                  ),
+                ),
+              );
+            }
+            return CachedNetworkImage(
+              imageUrl: snapshot.data!,
+              fit: BoxFit.cover,
+              width: constraints.maxWidth,
+              placeholder: (context, url) => const Center(
+                child: SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                  ),
+                ),
+              ),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
+            );
+          },
+        ),
+      ),
+      options: CarouselOptions(
+        height: constraints.maxHeight * .25,
+        enableInfiniteScroll: false,
+        enlargeCenterPage: true,
       ),
     );
   }
@@ -566,63 +583,6 @@ class DonationDetailScreen extends StatelessWidget {
       default:
         return [];
     }
-  }
-
-  List<dynamic> getDayHourMinute(double seconds) {
-    Duration duration = Duration(seconds: seconds.toInt());
-    return [
-      duration.inDays,
-      duration.inHours.remainder(24),
-      duration.inMinutes.remainder(60),
-      duration.inSeconds.remainder(60)
-    ];
-  }
-
-  getDurationUntilEnd(DateTime end) {
-    if (DateTime.now().isAfter(end)) {
-      return RichText(
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text:
-                  "${localeController.getTranslate('time-remaining-title')}: ",
-              style: StyleManagement.newDonationFieldTitleTextStyle,
-            ),
-            TextSpan(
-              text: localeController.getTranslate('donation-ended-text'),
-              style: StyleManagement.notificationTitleBold.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-    Duration duration = end.difference(DateTime.now());
-    return Countdown(
-      seconds: duration.inSeconds,
-      interval: const Duration(seconds: 1),
-      build: (_, seconds) => RichText(
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text:
-                  "${localeController.getTranslate('time-remaining-title')}: ",
-              style: StyleManagement.newDonationFieldTitleTextStyle,
-            ),
-            TextSpan(
-              text: Function.apply(
-                localeController.getTranslate("time-remaining-text"),
-                getDayHourMinute(seconds),
-              ),
-              style: StyleManagement.notificationTitleBold.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   getUserAvatar(BoxConstraints constraints, DonorInfo donorInfo) {

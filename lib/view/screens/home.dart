@@ -456,39 +456,7 @@ class DonationTileWidget extends StatelessWidget {
                 child: SizedBox(
                   width: 71,
                   height: 85,
-                  child: FutureBuilder(
-                    future: donationController.getUrl(
-                        donation.donor, donation.imgs.first),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting ||
-                          snapshot.data == null) {
-                        return const Center(
-                          child: SizedBox(
-                            width: 30,
-                            height: 30,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
-                          ),
-                        );
-                      }
-                      return CachedNetworkImage(
-                        imageUrl: snapshot.data!,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => const Center(
-                          child: SizedBox(
-                            width: 30,
-                            height: 30,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
-                          ),
-                        ),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
-                      );
-                    },
-                  ),
+                  child: getDonationThumbnail(donation),
                 ),
               ),
               Expanded(
@@ -540,6 +508,46 @@ class DonationTileWidget extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  getDonationThumbnail(Donation donation) {
+    if (donation.imgs.isEmpty) {
+      return Container(
+        color: Colors.grey.shade300,
+        child: const Icon(Icons.no_food),
+      );
+    }
+    return FutureBuilder(
+      future: donationController.getUrl(donation.donor, donation.imgs.first),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting ||
+            snapshot.data == null) {
+          return const Center(
+            child: SizedBox(
+              width: 30,
+              height: 30,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+              ),
+            ),
+          );
+        }
+        return CachedNetworkImage(
+          imageUrl: snapshot.data!,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => const Center(
+            child: SizedBox(
+              width: 30,
+              height: 30,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+              ),
+            ),
+          ),
+          errorWidget: (context, url, error) => const Icon(Icons.error),
+        );
+      },
     );
   }
 }

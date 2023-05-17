@@ -208,15 +208,18 @@ class DonationController extends ChangeNotifier {
   }
 
   bool distanceFilter(double latitude, double longitude) {
+    final double km = calculateDistance(latitude, longitude) / 1000;
+    debugPrint("Distance: $km Km");
+    return km <= DistanceSliderController().value;
+  }
+
+  double calculateDistance(double latitude, double longitude) {
     final LatLng userLatLng = LatLng(
       mapController.currentLatLng.latitude,
       mapController.currentLatLng.longitude,
     );
     final LatLng donationLatLng = LatLng(latitude, longitude);
-    final double km = distance(donationLatLng, userLatLng) / 1000;
-    debugPrint(
-        "Donation latlng: $donationLatLng, User latlng: $userLatLng, distance: $km");
-    return km <= DistanceSliderController().value;
+    return distance(donationLatLng, userLatLng);
   }
 
   void addImage(XFile image) {

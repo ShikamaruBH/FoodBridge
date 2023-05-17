@@ -62,12 +62,6 @@ class LoginScreen extends StatelessWidget {
     await authController.loginGoogle().then((result) {
       if (result['success']) {
         navigate();
-      } else {
-        showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (context) => ErrorDialog(result['err']),
-        );
       }
     }).catchError((err) {
       Navigator.pop(context);
