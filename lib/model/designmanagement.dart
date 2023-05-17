@@ -97,6 +97,11 @@ class StyleManagement {
     fontSize: 14,
     fontWeight: FontWeight.w500,
   );
+  static const donationDetailTextStyle = TextStyle(
+    color: Color(0xff16697A),
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+  );
   static const notificationTitleBold = TextStyle(
     color: Color(0xff489FB5),
     fontSize: 14,

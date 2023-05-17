@@ -463,23 +463,20 @@ class StatsBoxWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: constraints.maxWidth / 4,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            value,
-            style: StyleManagement.statsTextStyle,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          value,
+          style: StyleManagement.statsTextStyle,
+        ),
+        Text(
+          localeController.getTranslate(label),
+          style: StyleManagement.settingsItemTextStyle.copyWith(
+            color: Colors.black.withOpacity(.66),
           ),
-          Text(
-            localeController.getTranslate(label),
-            style: StyleManagement.settingsItemTextStyle.copyWith(
-              color: Colors.black.withOpacity(.66),
-            ),
-          )
-        ],
-      ),
+        )
+      ],
     );
   }
 }

@@ -67,9 +67,7 @@ class Donation {
     if (DateTime.now().isBefore(start)) {
       return Text(
         localeController.getTranslate('donation-has-not-start-yet-text'),
-        style: StyleManagement.notificationTitleBold.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
+        style: StyleManagement.donationDetailTextStyle,
       );
     }
     if (DateTime.now().isAfter(end)) {
@@ -83,9 +81,7 @@ class Donation {
             ),
             TextSpan(
               text: localeController.getTranslate('donation-ended-text'),
-              style: StyleManagement.notificationTitleBold.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: StyleManagement.donationDetailTextStyle,
             ),
           ],
         ),

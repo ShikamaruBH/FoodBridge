@@ -190,6 +190,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "View route",
     "vi": "Xem lộ trình",
   },
+  "show-on-map-text": {
+    "en": "Show on map",
+    "vi": "Xem trên bản đồ",
+  },
   "no-image-text": {
     "en": "This donation has no image",
     "vi": "Quyên góp này không có hình ảnh",

@@ -45,7 +45,11 @@ class MyApp extends StatelessWidget {
               body: Center(
                 child: Column(
                   children: [
-                    Image.asset("assets/icons/logo.png"),
+                    Image.asset(
+                      "assets/icons/logo.png",
+                      width: 100,
+                      height: 100,
+                    ),
                     const SizedBox(
                       width: 30,
                       height: 30,

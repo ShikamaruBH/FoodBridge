@@ -58,14 +58,18 @@ class DonationDetailScreen extends StatelessWidget {
                           if (snapshot.connectionState ==
                                   ConnectionState.waiting ||
                               snapshot.data == null) {
-                            return const Center(
-                              child: SizedBox(
-                                width: 30,
-                                height: 30,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                HSpacer(),
+                                const SizedBox(
+                                  width: 30,
+                                  height: 30,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
                                 ),
-                              ),
+                              ],
                             );
                           }
                           final donorInfo =
@@ -119,7 +123,8 @@ class DonationDetailScreen extends StatelessWidget {
                                 Flexible(
                                   child: Text(
                                     donation.title,
-                                    style: StyleManagement.menuTextStyle,
+                                    style: StyleManagement.menuTextStyle
+                                        .copyWith(fontSize: 17),
                                   ),
                                 ),
                               ],
@@ -143,10 +148,7 @@ class DonationDetailScreen extends StatelessWidget {
                                           donation.getQuantityLeft(),
                                           donation.unit),
                                       style: StyleManagement
-                                          .notificationTitleBold
-                                          .copyWith(
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                          .donationDetailTextStyle,
                                     ),
                                   ],
                                 ),
@@ -179,14 +181,7 @@ class DonationDetailScreen extends StatelessWidget {
                                   child: Consumer<MapController>(
                                     builder: (_, mapController, __) => InkWell(
                                       onTap: () => showRoute(context),
-                                      child: Text(
-                                        mapController.currentAddress,
-                                        style: StyleManagement
-                                            .notificationTitleBold
-                                            .copyWith(
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
+                                      child: getCurrentAddressTextWidget(),
                                     ),
                                   ),
                                 ),
@@ -212,10 +207,8 @@ class DonationDetailScreen extends StatelessWidget {
                               Flexible(
                                 child: Text(
                                   donation.note,
-                                  style: StyleManagement.notificationTitleBold
-                                      .copyWith(
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                  style:
+                                      StyleManagement.donationDetailTextStyle,
                                 ),
                               ),
                             ],
@@ -249,13 +242,35 @@ class DonationDetailScreen extends StatelessWidget {
     );
   }
 
+  getCurrentAddressTextWidget() {
+    if (mapController.isLoading) {
+      return Text(
+        localeController.getTranslate('loading-text'),
+        style: StyleManagement.donationDetailTextStyle,
+      );
+    }
+    return RichText(
+      text: TextSpan(style: StyleManagement.donationDetailTextStyle, children: [
+        TextSpan(text: mapController.currentAddress),
+        const TextSpan(text: ". "),
+        TextSpan(
+          text: localeController.getTranslate('show-on-map-text'),
+          style: StyleManagement.notificationTitleBold.copyWith(
+            fontWeight: FontWeight.w600,
+            decoration: TextDecoration.underline,
+          ),
+        ),
+      ]),
+    );
+  }
+
   getImageDisplayer(BoxConstraints constraints) {
     if (donation.imgs.isEmpty) {
       return Container(
         width: constraints.maxWidth,
         height: constraints.maxHeight * .25,
         decoration: BoxDecoration(
-          color: Colors.grey.shade100,
+          color: Colors.grey.shade300,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(

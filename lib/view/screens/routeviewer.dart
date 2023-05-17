@@ -41,6 +41,9 @@ class ViewRouteScreen extends StatelessWidget {
                       zoom: 15,
                     ),
                     myLocationEnabled: true,
+                    buildingsEnabled: false,
+                    rotateGesturesEnabled: false,
+                    tiltGesturesEnabled: false,
                     onMapCreated: (controller) async {
                       mapController.controller = controller;
                       showDialog(
