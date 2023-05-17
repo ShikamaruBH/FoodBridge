@@ -13,6 +13,7 @@ import 'package:food_bridge/model/donorinfo.dart';
 import 'package:food_bridge/model/userrole.dart';
 import 'package:food_bridge/view/screens/neworupdatedonation.dart';
 import 'package:food_bridge/view/screens/profile.dart';
+import 'package:food_bridge/view/screens/routeviewer.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:provider/provider.dart';
@@ -176,12 +177,15 @@ class DonationDetailScreen extends StatelessWidget {
                                 child: ChangeNotifierProvider.value(
                                   value: mapController,
                                   child: Consumer<MapController>(
-                                    builder: (_, mapController, __) => Text(
-                                      mapController.currentAddress,
-                                      style: StyleManagement
-                                          .notificationTitleBold
-                                          .copyWith(
-                                        fontWeight: FontWeight.w600,
+                                    builder: (_, mapController, __) => InkWell(
+                                      onTap: () => showRoute(context),
+                                      child: Text(
+                                        mapController.currentAddress,
+                                        style: StyleManagement
+                                            .notificationTitleBold
+                                            .copyWith(
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -615,6 +619,13 @@ class DonationDetailScreen extends StatelessWidget {
         color: Colors.white,
       ),
     );
+  }
+
+  void showRoute(context) async {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) =>
+          ViewRouteScreen(donation.latlng.latitude, donation.latlng.longitude),
+    ));
   }
 }
 

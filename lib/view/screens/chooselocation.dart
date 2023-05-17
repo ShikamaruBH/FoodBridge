@@ -90,8 +90,10 @@ class ChooseLocationScreen extends StatelessWidget {
                           zoom: 15,
                         ),
                         myLocationEnabled: true,
-                        onMapCreated: (controller) {
+                        onMapCreated: (controller) async {
                           mapController.controller = controller;
+                          mapController.addMarker(
+                              await mapController.getCurrentLocation());
                         },
                         markers: mapController.markers,
                         onTap: (argument) async =>

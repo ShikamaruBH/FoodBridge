@@ -186,9 +186,17 @@ Map<String, dynamic> appLocalizations = {
     "en": "Start",
     "vi": "Bắt đầu",
   },
+  "donation-route-title": {
+    "en": "View route",
+    "vi": "Xem lộ trình",
+  },
   "no-image-text": {
     "en": "This donation has no image",
     "vi": "Quyên góp này không có hình ảnh",
+  },
+  "loading-route-text": {
+    "en": "Loading route...",
+    "vi": "Đang tạo lộ trình...",
   },
   "donation-has-not-start-yet-text": {
     "en": "The donation hasn't started yet",

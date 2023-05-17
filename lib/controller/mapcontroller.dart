@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:open_route_service/open_route_service.dart';
 
@@ -9,6 +12,7 @@ class MapController extends ChangeNotifier {
   static final OpenRouteService openrouteservice = OpenRouteService(
       apiKey: '5b3ce3597851110001cf6248df3273ba3d46409d8f718de0d4746d28');
   Set<Marker> markers = {};
+  Set<Polyline> currentRoute = {};
   LatLng currentLatLng = const LatLng(45.521563, -122.677433);
   late GoogleMapController? controller;
   String currentAddress = '';
@@ -97,5 +101,85 @@ class MapController extends ChangeNotifier {
     }
     final collections = await openrouteservice.geocodeAutoCompleteGet(text: s);
     return collections.features;
+  }
+
+  Future<LatLng> getCurrentLocation() async {
+    // await Geolocator.requestPermission()
+    //     .then((value) {})
+    //     .onError((error, stackTrace) async {
+    //   await Geolocator.requestPermission();
+    //   debugPrint("ERROR $error");
+    // });
+    final position = await Geolocator.getCurrentPosition();
+    return LatLng(position.latitude, position.longitude);
+  }
+
+  Future<void> getRoute(double latitude, double longitude) async {
+    currentRoute.clear();
+    markers.clear();
+    double minLat = double.infinity;
+    double maxLat = -double.infinity;
+    double minLng = double.infinity;
+    double maxLng = -double.infinity;
+    currentLatLng = await getCurrentLocation();
+    markers.add(
+      Marker(
+        markerId: const MarkerId('start'),
+        position: currentLatLng,
+      ),
+    );
+    markers.add(
+      Marker(
+        markerId: const MarkerId('end'),
+        position: LatLng(latitude, longitude),
+      ),
+    );
+
+    final route = await openrouteservice.directionsRouteCoordsGet(
+      startCoordinate: ORSCoordinate(
+        latitude: currentLatLng.latitude,
+        longitude: currentLatLng.longitude,
+      ),
+      endCoordinate: ORSCoordinate(
+        latitude: latitude,
+        longitude: longitude,
+      ),
+      profileOverride: ORSProfile.drivingCar,
+    );
+    final result = route
+        .map((orsCoordinate) => LatLng(
+              orsCoordinate.latitude,
+              orsCoordinate.longitude,
+            ))
+        .toList();
+    currentRoute.add(
+      Polyline(
+        polylineId: PolylineId(result.toString()),
+        points: result,
+        color: Colors.blue.withOpacity(.8),
+        startCap: Cap.roundCap,
+        endCap: Cap.roundCap,
+        jointType: JointType.round,
+      ),
+    );
+    for (LatLng position in result) {
+      minLat = min(minLat, position.latitude);
+      maxLat = max(maxLat, position.latitude);
+      minLng = min(minLng, position.longitude);
+      maxLng = max(maxLng, position.longitude);
+    }
+
+    LatLng southwest = LatLng(minLat, minLng);
+    LatLng northeast = LatLng(maxLat, maxLng);
+
+    controller?.animateCamera(
+      CameraUpdate.newLatLngBounds(
+          LatLngBounds(
+            southwest: southwest,
+            northeast: northeast,
+          ),
+          50),
+    );
+    notifyListeners();
   }
 }
