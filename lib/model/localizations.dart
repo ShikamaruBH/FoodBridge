@@ -194,6 +194,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "View route",
     "vi": "Xem lộ trình",
   },
+  "loading-user-info-text": {
+    "en": "Loading info...",
+    "vi": "Đang tải thông tin...",
+  },
   "no-review-text": {
     "en": "No review yet",
     "vi": "Chưa có đánh giá nào",

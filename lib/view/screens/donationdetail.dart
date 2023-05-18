@@ -13,6 +13,7 @@ import 'package:food_bridge/model/donation.dart';
 import 'package:food_bridge/model/userinfo.dart';
 import 'package:food_bridge/model/userrole.dart';
 import 'package:food_bridge/view/screens/neworupdatedonation.dart';
+import 'package:food_bridge/view/screens/profile.dart';
 import 'package:food_bridge/view/screens/routeviewer.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
@@ -83,15 +84,7 @@ class DonationDetailScreen extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.only(top: 10),
                                 child: InkWell(
-                                  onTap: () => {
-                                    // Navigator.of(context).push(
-                                    //   MaterialPageRoute(
-                                    //     builder: (context) =>
-                                    //         DonorProfileScreen(
-                                    //             donorUid: donation.donor),
-                                    //   ),
-                                    // )
-                                  },
+                                  onTap: () => openDonorProfile(context),
                                   child: Text(
                                     userInfo.displayName,
                                     style:
@@ -912,6 +905,40 @@ class DonationDetailScreen extends StatelessWidget {
         color: Colors.white,
       ),
     );
+  }
+
+  openDonorProfile(BuildContext context) async {
+    showDialog(
+      barrierDismissible: false,
+      context: navigatorKey.currentState!.context,
+      builder: (context) => const LoadingDialog(
+        message: 'loading-user-info-text',
+      ),
+    );
+    await userController.getDonorInfo(donation.donor).then((result) {
+      Navigator.pop(navigatorKey.currentState!.context);
+      if (result['success']) {
+        DonorInfo donorInfo = DonorInfo.fromJson(result["result"].data);
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => DonorProfileScreen(donorInfo: donorInfo),
+          ),
+        );
+      } else {
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => ErrorDialog(result['err']),
+        );
+      }
+    }).catchError((err) {
+      Navigator.pop(navigatorKey.currentState!.context);
+      showDialog(
+        barrierDismissible: false,
+        context: navigatorKey.currentState!.context,
+        builder: (context) => ErrorDialog(err),
+      );
+    });
   }
 }
 
