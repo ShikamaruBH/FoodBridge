@@ -104,13 +104,13 @@ class MapController extends ChangeNotifier {
   }
 
   Future<LatLng> getCurrentLocation() async {
-    // await Geolocator.requestPermission()
-    //     .then((value) {})
-    //     .onError((error, stackTrace) async {
-    //   await Geolocator.requestPermission();
-    //   debugPrint("ERROR $error");
-    // });
+    isLoading = true;
+    currentAddress =
+        localeController.getTranslate('getting-current-location-text');
+    notifyListeners();
     final position = await Geolocator.getCurrentPosition();
+    isLoading = false;
+    notifyListeners();
     return LatLng(position.latitude, position.longitude);
   }
 

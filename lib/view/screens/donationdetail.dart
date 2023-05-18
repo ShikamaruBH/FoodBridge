@@ -518,34 +518,28 @@ class DonationDetailScreen extends StatelessWidget {
                 ),
               ),
             ),
+            getReviewsButton(constraints, context),
           ];
         }
         return [
-          Flexible(
-            child: ElevatedButton(
-              onPressed: () {
-                foodCategoryController.update(donation.categories);
-                donationController.urls = List.from(donation.imgs);
-                donationController.images.clear();
-                dateTimePickerController.setStart(donation.start);
-                dateTimePickerController.setEnd(donation.end);
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => NewOrUpdateDonationScreen(donation),
-                  ),
-                );
-              },
-              style: StyleManagement.elevatedButtonStyle.copyWith(
-                backgroundColor: MaterialStatePropertyAll(
-                  Theme.of(context).colorScheme.secondary,
+          IconTextButton(
+            constraints,
+            () {
+              foodCategoryController.update(donation.categories);
+              donationController.urls = List.from(donation.imgs);
+              donationController.images.clear();
+              dateTimePickerController.setStart(donation.start);
+              dateTimePickerController.setEnd(donation.end);
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => NewOrUpdateDonationScreen(donation),
                 ),
-              ),
-              child: Text(
-                localeController.getTranslate('edit-button-title'),
-                style: const TextStyle(fontSize: 20),
-              ),
-            ),
+              );
+            },
+            Icons.edit_square,
+            'edit-button-title',
           ),
+          getReviewsButton(constraints, context),
         ];
       case Role.recipient:
         if (donation.recipients
@@ -580,7 +574,7 @@ class DonationDetailScreen extends StatelessWidget {
               ),
             ),
             HSpacer(),
-            showReviewsButton(context, constraints),
+            getReviewsButton(constraints, context),
           ];
         }
         return [
@@ -668,7 +662,7 @@ class DonationDetailScreen extends StatelessWidget {
               ),
             ),
             HSpacer(),
-            showReviewsButton(context, constraints),
+            getReviewsButton(constraints, context),
           ],
         ];
       default:
@@ -676,31 +670,12 @@ class DonationDetailScreen extends StatelessWidget {
     }
   }
 
-  Flexible showReviewsButton(BuildContext context, BoxConstraints constraints) {
-    return Flexible(
-      child: InkWell(
-        onTap: () => showReviews(context, constraints),
-        child: SizedBox(
-          height: constraints.maxWidth * .1,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.mode_comment_outlined,
-                color: ColorManagement.iconColor,
-              ),
-              HSpacer(),
-              Flexible(
-                child: Text(
-                  localeController.getTranslate('review-button-text'),
-                  style: StyleManagement.historyItemTitleTextStyle
-                      .copyWith(color: ColorManagement.iconColor),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
+  getReviewsButton(BoxConstraints constraints, BuildContext context) {
+    return IconTextButton(
+      constraints,
+      () => showReviews(context, constraints),
+      Icons.mode_comment_outlined,
+      'review-button-text',
     );
   }
 
@@ -939,6 +914,50 @@ class DonationDetailScreen extends StatelessWidget {
         builder: (context) => ErrorDialog(err),
       );
     });
+  }
+}
+
+class IconTextButton extends StatelessWidget {
+  final BoxConstraints constraints;
+  final void Function() callback;
+  final IconData icon;
+  final String title;
+  const IconTextButton(
+    this.constraints,
+    this.callback,
+    this.icon,
+    this.title, {
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Flexible(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: callback,
+        child: SizedBox(
+          height: constraints.maxWidth * .1,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                color: ColorManagement.iconColor,
+              ),
+              HSpacer(),
+              Flexible(
+                child: Text(
+                  localeController.getTranslate(title),
+                  style: StyleManagement.historyItemTitleTextStyle
+                      .copyWith(color: ColorManagement.iconColor),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

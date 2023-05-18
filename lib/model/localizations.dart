@@ -198,6 +198,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "Loading info...",
     "vi": "Đang tải thông tin...",
   },
+  "getting-current-location-text": {
+    "en": "Getting current location...",
+    "vi": "Đang tải vị trí hiện tại...",
+  },
   "no-review-text": {
     "en": "No review yet",
     "vi": "Chưa có đánh giá nào",
