@@ -502,172 +502,148 @@ class DonationDetailScreen extends StatelessWidget {
       BuildContext context, BoxConstraints constraints) {
     switch (authController.currentUserRole) {
       case Role.donor:
-        if (donation.deleteAt != null) {
-          return [
-            Flexible(
-              child: ElevatedButton(
-                onPressed: () => restoreDonation(donation.id),
-                style: StyleManagement.elevatedButtonStyle.copyWith(
-                  backgroundColor: MaterialStatePropertyAll(
-                    Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-                child: Text(
-                  localeController.getTranslate('restore-text'),
-                  style: const TextStyle(fontSize: 20),
-                ),
-              ),
-            ),
-            getReviewsButton(constraints, context),
-          ];
-        }
         return [
-          IconTextButton(
-            constraints,
-            () {
-              foodCategoryController.update(donation.categories);
-              donationController.urls = List.from(donation.imgs);
-              donationController.images.clear();
-              dateTimePickerController.setStart(donation.start);
-              dateTimePickerController.setEnd(donation.end);
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => NewOrUpdateDonationScreen(donation),
-                ),
-              );
-            },
-            Icons.edit_square,
-            'edit-button-title',
-          ),
+          if (donation.deleteAt != null)
+            IconTextButton(
+              constraints,
+              () => restoreDonation(donation.id),
+              Icons.restore,
+              'restore-text',
+            )
+          else
+            IconTextButton(
+              constraints,
+              () {
+                foodCategoryController.update(donation.categories);
+                donationController.urls = List.from(donation.imgs);
+                donationController.images.clear();
+                dateTimePickerController.setStart(donation.start);
+                dateTimePickerController.setEnd(donation.end);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => NewOrUpdateDonationScreen(donation),
+                  ),
+                );
+              },
+              Icons.edit_square,
+              'edit-button-title',
+            ),
           getReviewsButton(constraints, context),
         ];
       case Role.recipient:
         if (donation.recipients
             .containsKey(FirebaseAuth.instance.currentUser!.uid)) {
           return [
-            Flexible(
-              child: ElevatedButton(
-                onPressed: () async {
-                  var uid = FirebaseAuth.instance.currentUser!.uid;
-                  if (donation.reviews.containsKey(uid)) {
-                    reviewController.rating =
-                        donation.reviews[uid]!["rating"].toDouble();
-                    reviewController.review = donation.reviews[uid]!["review"];
-                  }
-                  bool rs = await showDialog(
-                    context: navigatorKey.currentState!.context,
-                    builder: (context) => const ReviewDialog(),
-                  );
-                  if (rs) {
-                    reviewDonation(donation.id);
-                  }
-                },
-                style: StyleManagement.elevatedButtonStyle.copyWith(
-                  backgroundColor: MaterialStatePropertyAll(
-                    Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-                child: Text(
-                  localeController.getTranslate('review-button-title'),
-                  style: const TextStyle(fontSize: 20),
-                ),
-              ),
+            IconTextButton(
+              constraints,
+              () async {
+                var uid = FirebaseAuth.instance.currentUser!.uid;
+                if (donation.reviews.containsKey(uid)) {
+                  reviewController.rating =
+                      donation.reviews[uid]!["rating"].toDouble();
+                  reviewController.review = donation.reviews[uid]!["review"];
+                }
+                bool rs = await showDialog(
+                  context: navigatorKey.currentState!.context,
+                  builder: (context) => const ReviewDialog(),
+                );
+                if (rs) {
+                  reviewDonation(donation.id);
+                }
+              },
+              Icons.rate_review,
+              'review-button-title',
             ),
             HSpacer(),
             getReviewsButton(constraints, context),
           ];
         }
+        if (bottomButtonController.isQuantityOpen) {
+          return [
+            getQuantityButton(constraints, context),
+          ];
+        }
         return [
-          if (bottomButtonController.isQuantityOpen)
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FoodQuantityButton(
-                    constraints,
-                    Icons.remove,
-                    quantityController.decrease,
-                    const BorderRadius.only(
-                      topLeft: Radius.circular(6),
-                      bottomLeft: Radius.circular(6),
-                    ),
-                  ),
-                  Container(
-                    width: constraints.maxWidth * .1,
-                    height: constraints.maxWidth * .12,
-                    decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        border: Border.symmetric(
-                            horizontal: BorderSide(
-                                color:
-                                    Theme.of(context).colorScheme.secondary))),
-                    child: ChangeNotifierProvider.value(
-                      value: quantityController,
-                      child: Consumer<QuantityController>(
-                        builder: (_, quantityController, __) => TextField(
-                          controller: quantityController.controller,
-                          onChanged: quantityController.setValue,
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.number,
-                          style: StyleManagement.quantityTextStyle,
-                          decoration:
-                              const InputDecoration(border: InputBorder.none),
-                        ),
-                      ),
-                    ),
-                  ),
-                  HSpacer(
-                    offset: -9.9,
-                  ),
-                  FoodQuantityButton(
-                    constraints,
-                    Icons.add,
-                    quantityController.increase,
-                    const BorderRadius.only(
-                      topRight: Radius.circular(6),
-                      bottomRight: Radius.circular(6),
-                    ),
-                  ),
-                  HSpacer(),
-                  IconButton(
-                    onPressed: () => receiveDonation(donation.id),
-                    icon: const Icon(
-                      Icons.done,
-                      color: Colors.green,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: bottomButtonController.switchQuantity,
-                    icon: const Icon(
-                      Icons.close,
-                      color: Colors.red,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          if (!bottomButtonController.isQuantityOpen) ...[
-            Flexible(
-              child: ElevatedButton(
-                onPressed: () => bottomButtonController.switchQuantity(),
-                style: StyleManagement.elevatedButtonStyle.copyWith(
-                  backgroundColor: MaterialStatePropertyAll(
-                    Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-                child: Text(
-                  localeController.getTranslate('receive-text'),
-                  style: const TextStyle(fontSize: 20),
-                ),
-              ),
-            ),
-            HSpacer(),
-            getReviewsButton(constraints, context),
-          ],
+          IconTextButton(
+            constraints,
+            () => bottomButtonController.switchQuantity(),
+            Icons.card_giftcard,
+            'receive-text',
+          ),
+          HSpacer(),
+          getReviewsButton(constraints, context),
         ];
       default:
         return [];
     }
+  }
+
+  getQuantityButton(BoxConstraints constraints, BuildContext context) {
+    return Expanded(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          FoodQuantityButton(
+            constraints,
+            Icons.remove,
+            quantityController.decrease,
+            const BorderRadius.only(
+              topLeft: Radius.circular(6),
+              bottomLeft: Radius.circular(6),
+            ),
+          ),
+          Container(
+            width: constraints.maxWidth * .1,
+            height: constraints.maxWidth * .12,
+            decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                border: Border.symmetric(
+                    horizontal: BorderSide(
+                        color: Theme.of(context).colorScheme.secondary))),
+            child: ChangeNotifierProvider.value(
+              value: quantityController,
+              child: Consumer<QuantityController>(
+                builder: (_, quantityController, __) => TextField(
+                  controller: quantityController.controller,
+                  onChanged: quantityController.setValue,
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  style: StyleManagement.quantityTextStyle,
+                  decoration: const InputDecoration(border: InputBorder.none),
+                ),
+              ),
+            ),
+          ),
+          HSpacer(
+            offset: -9.9,
+          ),
+          FoodQuantityButton(
+            constraints,
+            Icons.add,
+            quantityController.increase,
+            const BorderRadius.only(
+              topRight: Radius.circular(6),
+              bottomRight: Radius.circular(6),
+            ),
+          ),
+          HSpacer(),
+          IconButton(
+            onPressed: () => receiveDonation(donation.id),
+            icon: const Icon(
+              Icons.done,
+              color: Colors.green,
+            ),
+          ),
+          IconButton(
+            onPressed: bottomButtonController.switchQuantity,
+            icon: const Icon(
+              Icons.close,
+              color: Colors.red,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   getReviewsButton(BoxConstraints constraints, BuildContext context) {

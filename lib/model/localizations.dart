@@ -116,8 +116,8 @@ Map<String, dynamic> appLocalizations = {
     "vi": "Chỉnh sửa",
   },
   "review-button-title": {
-    "en": "Review",
-    "vi": "Đánh giá",
+    "en": "Write review",
+    "vi": "Viết đánh giá",
   },
   "review-button-text": {
     "en": "Reviews",
