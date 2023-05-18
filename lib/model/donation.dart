@@ -77,11 +77,12 @@ class Donation {
             TextSpan(
               text:
                   "${localeController.getTranslate('time-remaining-title')}: ",
-              style: StyleManagement.newDonationFieldTitleTextStyle,
+              style: StyleManagement.donationDetailTextStyle,
             ),
             TextSpan(
               text: localeController.getTranslate('donation-ended-text'),
-              style: StyleManagement.donationDetailTextStyle,
+              style: StyleManagement.notificationTitleMedium
+                  .copyWith(fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -97,16 +98,15 @@ class Donation {
             TextSpan(
               text:
                   "${localeController.getTranslate('time-remaining-title')}: ",
-              style: StyleManagement.newDonationFieldTitleTextStyle,
+              style: StyleManagement.donationDetailTextStyle,
             ),
             TextSpan(
               text: Function.apply(
                 localeController.getTranslate("time-remaining-text"),
                 getDayHourMinute(seconds),
               ),
-              style: StyleManagement.notificationTitleBold.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: StyleManagement.notificationTitleMedium
+                  .copyWith(fontWeight: FontWeight.w600),
             ),
           ],
         ),

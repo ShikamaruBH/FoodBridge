@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:food_bridge/controller/bottombuttoncontroller.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/mapcontroller.dart';
@@ -9,10 +10,9 @@ import 'package:food_bridge/controller/quantitycontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/model/donation.dart';
-import 'package:food_bridge/model/donorinfo.dart';
+import 'package:food_bridge/model/userinfo.dart';
 import 'package:food_bridge/model/userrole.dart';
 import 'package:food_bridge/view/screens/neworupdatedonation.dart';
-import 'package:food_bridge/view/screens/profile.dart';
 import 'package:food_bridge/view/screens/routeviewer.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
@@ -24,6 +24,7 @@ class DonationDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    quantityController.reset();
     return LayoutBuilder(
       builder: (_, constraints) => ChangeNotifierProvider.value(
         value: localeController,
@@ -50,10 +51,9 @@ class DonationDetailScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: FutureBuilder(
-                        future: userController.getDonorInfo(donation.donor),
+                        future: userController.getUserInfo(donation.donor),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                                   ConnectionState.waiting ||
@@ -72,28 +72,28 @@ class DonationDetailScreen extends StatelessWidget {
                               ],
                             );
                           }
-                          final donorInfo =
-                              DonorInfo.fromJson(snapshot.data!['result'].data);
+                          final userInfo = AppUserInfo.fromJson(
+                              snapshot.data!['result'].data);
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              getUserAvatar(constraints, donorInfo),
+                              getUserAvatar(constraints, userInfo),
                               HSpacer(),
                               Padding(
                                 padding: const EdgeInsets.only(top: 10),
                                 child: InkWell(
                                   onTap: () => {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            DonorProfileScreen(
-                                                donorInfo: donorInfo),
-                                      ),
-                                    )
+                                    // Navigator.of(context).push(
+                                    //   MaterialPageRoute(
+                                    //     builder: (context) =>
+                                    //         DonorProfileScreen(
+                                    //             donorUid: donation.donor),
+                                    //   ),
+                                    // )
                                   },
                                   child: Text(
-                                    donorInfo.displayName,
+                                    userInfo.displayName,
                                     style:
                                         StyleManagement.menuTextStyle.copyWith(
                                       color:
@@ -106,130 +106,169 @@ class DonationDetailScreen extends StatelessWidget {
                           );
                         }),
                   ),
+                  const VSpacer(),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(15),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Flexible(
                             child: getImageDisplayer(constraints),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    donation.title,
-                                    style: StyleManagement.menuTextStyle
-                                        .copyWith(fontSize: 17),
+                          Divider(color: ColorManagement.hintTextColorDark),
+                          Expanded(
+                            child: Card(
+                              color: Colors.grey.shade200,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              margin: EdgeInsets.zero,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.vertical,
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Flexible(
+                                              child: Text(
+                                                donation.title,
+                                                style: StyleManagement
+                                                    .menuTextStyle
+                                                    .copyWith(fontSize: 17),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          RichText(
+                                            text: TextSpan(
+                                              children: [
+                                                TextSpan(
+                                                  text:
+                                                      "${localeController.getTranslate('food-quantity-title')}: ",
+                                                  style: StyleManagement
+                                                      .donationDetailTextStyle,
+                                                ),
+                                                TextSpan(
+                                                  text: localeController
+                                                          .getTranslate(
+                                                              "quantity-left-text")(
+                                                      donation
+                                                          .getQuantityLeft(),
+                                                      donation.unit),
+                                                  style: StyleManagement
+                                                      .notificationTitleMedium
+                                                      .copyWith(
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const VSpacer(),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [donation.getTimeRemaining()],
+                                      ),
+                                      const VSpacer(),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            localeController.getTranslate(
+                                                    'address-title') +
+                                                ': ',
+                                            style: StyleManagement
+                                                .donationDetailTextStyle,
+                                          )
+                                        ],
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Flexible(
+                                            child: ChangeNotifierProvider.value(
+                                              value: mapController,
+                                              child: Consumer<MapController>(
+                                                builder:
+                                                    (_, mapController, __) =>
+                                                        InkWell(
+                                                  onTap: () =>
+                                                      showRoute(context),
+                                                  child:
+                                                      getCurrentAddressTextWidget(),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const VSpacer(),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            localeController.getTranslate(
+                                                    'pickup-instruction-text') +
+                                                ': ',
+                                            style: StyleManagement
+                                                .donationDetailTextStyle,
+                                          )
+                                        ],
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Flexible(
+                                            child: Text(
+                                              donation.note,
+                                              style: StyleManagement
+                                                  .notificationTitleMedium
+                                                  .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              RichText(
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text:
-                                          "${localeController.getTranslate('food-quantity-title')}: ",
-                                      style: StyleManagement
-                                          .newDonationFieldTitleTextStyle,
-                                    ),
-                                    TextSpan(
-                                      text: localeController.getTranslate(
-                                              "quantity-left-text")(
-                                          donation.getQuantityLeft(),
-                                          donation.unit),
-                                      style: StyleManagement
-                                          .donationDetailTextStyle,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const VSpacer(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [donation.getTimeRemaining()],
-                          ),
-                          const VSpacer(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                localeController.getTranslate('address-title') +
-                                    ': ',
-                                style: StyleManagement
-                                    .newDonationFieldTitleTextStyle,
-                              )
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Flexible(
-                                child: ChangeNotifierProvider.value(
-                                  value: mapController,
-                                  child: Consumer<MapController>(
-                                    builder: (_, mapController, __) => InkWell(
-                                      onTap: () => showRoute(context),
-                                      child: getCurrentAddressTextWidget(),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const VSpacer(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                localeController.getTranslate(
-                                        'pickup-instruction-text') +
-                                    ': ',
-                                style: StyleManagement
-                                    .newDonationFieldTitleTextStyle,
-                              )
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  donation.note,
-                                  style:
-                                      StyleManagement.donationDetailTextStyle,
-                                ),
-                              ),
-                            ],
                           ),
                         ],
                       ),
                     ),
                   ),
-                  Card(
-                    color: Theme.of(context).colorScheme.primary,
-                    margin: EdgeInsets.zero,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(13),
-                        topRight: Radius.circular(13),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: getBottomButton(context),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ChangeNotifierProvider.value(
+                      value: bottomButtonController,
+                      child: Consumer<BottomButtonController>(
+                        builder: (_, bottomButtonController, __) => Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: getBottomButton(context, constraints),
+                        ),
                       ),
                     ),
                   ),
@@ -246,21 +285,25 @@ class DonationDetailScreen extends StatelessWidget {
     if (mapController.isLoading) {
       return Text(
         localeController.getTranslate('loading-text'),
-        style: StyleManagement.donationDetailTextStyle,
+        style: StyleManagement.notificationTitleMedium
+            .copyWith(fontWeight: FontWeight.w600),
       );
     }
     return RichText(
-      text: TextSpan(style: StyleManagement.donationDetailTextStyle, children: [
-        TextSpan(text: mapController.currentAddress),
-        const TextSpan(text: ". "),
-        TextSpan(
-          text: localeController.getTranslate('show-on-map-text'),
-          style: StyleManagement.notificationTitleBold.copyWith(
-            fontWeight: FontWeight.w600,
-            decoration: TextDecoration.underline,
-          ),
-        ),
-      ]),
+      text: TextSpan(
+          style: StyleManagement.notificationTitleMedium
+              .copyWith(fontWeight: FontWeight.w600),
+          children: [
+            TextSpan(text: mapController.currentAddress),
+            const TextSpan(text: ". "),
+            TextSpan(
+              text: localeController.getTranslate('show-on-map-text'),
+              style: StyleManagement.notificationTitleBold.copyWith(
+                fontWeight: FontWeight.w600,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ]),
     );
   }
 
@@ -462,7 +505,8 @@ class DonationDetailScreen extends StatelessWidget {
     });
   }
 
-  List<Widget> getBottomButton(BuildContext context) {
+  List<Widget> getBottomButton(
+      BuildContext context, BoxConstraints constraints) {
     switch (authController.currentUserRole) {
       case Role.donor:
         if (donation.deleteAt != null) {
@@ -542,73 +586,136 @@ class DonationDetailScreen extends StatelessWidget {
                 ),
               ),
             ),
+            HSpacer(),
+            showReviewsButton(context, constraints),
           ];
         }
         return [
-          FoodQuantityButton(
-            Icons.remove,
-            quantityController.decrease,
-            const BorderRadius.only(
-              topLeft: Radius.circular(6),
-              bottomLeft: Radius.circular(6),
+          if (bottomButtonController.isQuantityOpen)
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FoodQuantityButton(
+                    constraints,
+                    Icons.remove,
+                    quantityController.decrease,
+                    const BorderRadius.only(
+                      topLeft: Radius.circular(6),
+                      bottomLeft: Radius.circular(6),
+                    ),
+                  ),
+                  Container(
+                    width: constraints.maxWidth * .1,
+                    height: constraints.maxWidth * .12,
+                    decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        border: Border.symmetric(
+                            horizontal: BorderSide(
+                                color:
+                                    Theme.of(context).colorScheme.secondary))),
+                    child: ChangeNotifierProvider.value(
+                      value: quantityController,
+                      child: Consumer<QuantityController>(
+                        builder: (_, quantityController, __) => TextField(
+                          controller: quantityController.controller,
+                          onChanged: quantityController.setValue,
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          style: StyleManagement.quantityTextStyle,
+                          decoration:
+                              const InputDecoration(border: InputBorder.none),
+                        ),
+                      ),
+                    ),
+                  ),
+                  HSpacer(
+                    offset: -9.9,
+                  ),
+                  FoodQuantityButton(
+                    constraints,
+                    Icons.add,
+                    quantityController.increase,
+                    const BorderRadius.only(
+                      topRight: Radius.circular(6),
+                      bottomRight: Radius.circular(6),
+                    ),
+                  ),
+                  HSpacer(),
+                  IconButton(
+                    onPressed: () => receiveDonation(donation.id),
+                    icon: const Icon(
+                      Icons.done,
+                      color: Colors.green,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: bottomButtonController.switchQuantity,
+                    icon: const Icon(
+                      Icons.close,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          HSpacer(
-            offset: -9.5,
-          ),
-          Container(
-            color: Colors.white,
-            width: 40,
-            child: ChangeNotifierProvider.value(
-              value: quantityController,
-              child: Consumer<QuantityController>(
-                builder: (_, quantityController, __) => TextField(
-                  controller: quantityController.controller,
-                  onChanged: quantityController.setValue,
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  style: StyleManagement.quantityTextStyle,
+          if (!bottomButtonController.isQuantityOpen) ...[
+            Flexible(
+              child: ElevatedButton(
+                onPressed: () => bottomButtonController.switchQuantity(),
+                style: StyleManagement.elevatedButtonStyle.copyWith(
+                  backgroundColor: MaterialStatePropertyAll(
+                    Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+                child: Text(
+                  localeController.getTranslate('receive-text'),
+                  style: const TextStyle(fontSize: 20),
                 ),
               ),
             ),
-          ),
-          HSpacer(
-            offset: -9.9,
-          ),
-          FoodQuantityButton(
-            Icons.add,
-            quantityController.increase,
-            const BorderRadius.only(
-              topRight: Radius.circular(6),
-              bottomRight: Radius.circular(6),
-            ),
-          ),
-          HSpacer(),
-          Flexible(
-            child: ElevatedButton(
-              onPressed: () => receiveDonation(donation.id),
-              style: StyleManagement.elevatedButtonStyle.copyWith(
-                backgroundColor: MaterialStatePropertyAll(
-                  Theme.of(context).colorScheme.secondary,
-                ),
-              ),
-              child: Text(
-                localeController.getTranslate('receive-text'),
-                style: const TextStyle(fontSize: 20),
-              ),
-            ),
-          ),
+            HSpacer(),
+            showReviewsButton(context, constraints),
+          ],
         ];
       default:
         return [];
     }
   }
 
-  getUserAvatar(BoxConstraints constraints, DonorInfo donorInfo) {
-    if (donorInfo.photoURL != null) {
+  Flexible showReviewsButton(BuildContext context, BoxConstraints constraints) {
+    return Flexible(
+      child: InkWell(
+        onTap: () => showReviews(context, constraints),
+        child: SizedBox(
+          height: constraints.maxWidth * .1,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.mode_comment_outlined,
+                color: ColorManagement.iconColor,
+              ),
+              HSpacer(),
+              Flexible(
+                child: Text(
+                  localeController.getTranslate('review-button-text'),
+                  style: StyleManagement.historyItemTitleTextStyle
+                      .copyWith(color: ColorManagement.iconColor),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  getUserAvatar(BoxConstraints constraints, AppUserInfo userInfo) {
+    if (userInfo.photoURL != null) {
       return ClipOval(
         child: CachedNetworkImage(
-          imageUrl: donorInfo.photoURL!,
+          imageUrl: userInfo.photoURL!,
           width: constraints.maxWidth / 7,
           height: constraints.maxWidth / 7,
           fit: BoxFit.cover,
@@ -642,10 +749,175 @@ class DonationDetailScreen extends StatelessWidget {
           ViewRouteScreen(donation.latlng.latitude, donation.latlng.longitude),
     ));
   }
+
+  void showReviews(context, BoxConstraints constraints) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        height: constraints.maxHeight * .9,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10),
+            topRight: Radius.circular(10),
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.arrow_back_ios))
+              ],
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: getReviewListView(constraints),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  getReviewListView(BoxConstraints constraints) {
+    if (donation.reviews.isEmpty) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(localeController.getTranslate('no-review-text')),
+        ],
+      );
+    }
+    return ListView.builder(
+      itemCount: donation.reviews.length,
+      itemBuilder: (context, index) {
+        return reviewListTitle(index, constraints);
+      },
+    );
+  }
+
+  reviewListTitle(int index, BoxConstraints constraints) {
+    return FutureBuilder(
+      future: userController.getUserInfo(donation.reviews.keys.toList()[index]),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting ||
+            snapshot.data == null) {
+          return const Center(
+            child: SizedBox(
+              width: 30,
+              height: 30,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+              ),
+            ),
+          );
+        }
+        final userInfo = AppUserInfo.fromJson(snapshot.data!["result"].data);
+        return Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                getReviewerAvatar(constraints, userInfo),
+                HSpacer(),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          onTap: () => {},
+                          child: Text(
+                            userInfo.displayName,
+                            style: StyleManagement.menuTextStyle.copyWith(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(donation.reviews.values
+                            .toList()[index]["rating"]
+                            .toString()),
+                        HSpacer(),
+                        const Icon(
+                          Icons.star,
+                          color: Colors.yellow,
+                          size: 20,
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const VSpacer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Flexible(
+                  child: Text(
+                    donation.reviews.values.toList()[index]["review"],
+                  ),
+                ),
+              ],
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  getReviewerAvatar(BoxConstraints constraints, AppUserInfo userInfo) {
+    if (userInfo.photoURL != null) {
+      return ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: userInfo.photoURL!,
+          width: constraints.maxWidth / 10,
+          height: constraints.maxWidth / 10,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => Center(
+            child: SizedBox(
+              width: constraints.maxWidth / 10,
+              height: constraints.maxWidth / 10,
+              child: const CircularProgressIndicator(
+                strokeWidth: 2,
+              ),
+            ),
+          ),
+          errorWidget: (context, url, error) => const Icon(Icons.error),
+        ),
+      );
+    }
+    return CircleAvatar(
+      backgroundColor: Colors.grey.shade300,
+      radius: constraints.maxWidth / 20,
+      child: Icon(
+        Icons.person,
+        size: constraints.maxWidth / 20,
+        color: Colors.white,
+      ),
+    );
+  }
 }
 
 // ignore: must_be_immutable
 class FoodQuantityButton extends StatelessWidget {
+  final BoxConstraints constraints;
   final IconData icon;
   final Function callback;
   final BorderRadius borderRadius;
@@ -653,6 +925,7 @@ class FoodQuantityButton extends StatelessWidget {
   int delay = 500;
   int minDelay = 10;
   FoodQuantityButton(
+    this.constraints,
     this.icon,
     this.callback,
     this.borderRadius, {
@@ -692,17 +965,17 @@ class FoodQuantityButton extends StatelessWidget {
       onTapCancel: () => stopCallbackLoop(1),
       borderRadius: borderRadius,
       child: Ink(
-        width: 40,
+        width: constraints.maxWidth * .1,
         height: 47,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.secondary,
           borderRadius: borderRadius,
         ),
         child: Padding(
           padding: const EdgeInsets.all(6),
           child: Icon(
             icon,
-            color: Theme.of(context).colorScheme.secondary,
+            color: Colors.white,
             size: 30,
           ),
         ),

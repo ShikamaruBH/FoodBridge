@@ -36,6 +36,10 @@ class UserController extends ChangeNotifier {
     }
   }
 
+  Future<Map<String, dynamic>> getUserInfo(String uid) async {
+    return callCloudFunction({"uid": uid}, "user-getUserInfo");
+  }
+
   Future<Map<String, dynamic>> getDonorInfo(String uid) async {
     return callCloudFunction({"uid": uid}, "user-getDonorInfo");
   }

@@ -1,4 +1,5 @@
 import 'package:food_bridge/controller/authcontroller.dart';
+import 'package:food_bridge/controller/bottombuttoncontroller.dart';
 import 'package:food_bridge/controller/datetimepickercontroller.dart';
 import 'package:food_bridge/controller/donationcontroller.dart';
 import 'package:food_bridge/controller/finddonationfiltercontroller.dart';
@@ -19,3 +20,4 @@ final authController = AuthController();
 final quantityController = QuantityController();
 final reviewController = ReviewDialogController();
 final userController = UserController();
+final bottomButtonController = BottomButtonController();

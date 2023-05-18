@@ -59,3 +59,17 @@ exports.getDonorInfo = functions.https.onCall(async (data, context) => {
     rating,
   };
 });
+
+exports.getUserInfo = functions.https.onCall(async (data, context) => {
+  isAuthenticated(context);
+  return admin
+      .auth()
+      .getUser(data.uid)
+      .then((userRecord) => ({
+        displayName: userRecord.displayName,
+        photoURL: userRecord.photoURL,
+      }))
+      .catch(() => {
+        throw new functions.https.HttpsError("not-found", "not-found");
+      });
+});

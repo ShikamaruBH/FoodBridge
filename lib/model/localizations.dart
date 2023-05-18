@@ -119,6 +119,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "Review",
     "vi": "Đánh giá",
   },
+  "review-button-text": {
+    "en": "Reviews",
+    "vi": "Xem đánh giá",
+  },
   "no-delete-donation-text": {
     "en": "No deleted donation found",
     "vi": "Không có quyên góp nào bị xoá",
@@ -189,6 +193,10 @@ Map<String, dynamic> appLocalizations = {
   "donation-route-title": {
     "en": "View route",
     "vi": "Xem lộ trình",
+  },
+  "no-review-text": {
+    "en": "No review yet",
+    "vi": "Chưa có đánh giá nào",
   },
   "show-on-map-text": {
     "en": "Show on map",

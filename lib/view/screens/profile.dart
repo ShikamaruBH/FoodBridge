@@ -6,7 +6,7 @@ import 'package:food_bridge/controller/donationcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
-import 'package:food_bridge/model/donorinfo.dart';
+import 'package:food_bridge/model/userinfo.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:image_picker/image_picker.dart';
