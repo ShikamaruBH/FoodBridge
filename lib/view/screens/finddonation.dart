@@ -242,7 +242,7 @@ class AvailableDonationWidget extends StatelessWidget {
                                 name: "sort",
                                 decoration:
                                     DecoratorManagement.dropdownButtonDecorator,
-                                initialValue: DonationSort.NONE,
+                                initialValue: donationController.currentSort,
                                 borderRadius: BorderRadius.circular(8),
                                 selectedItemBuilder: (context) => dropdownItems
                                     .map((option) => Text(
@@ -251,6 +251,9 @@ class AvailableDonationWidget extends StatelessWidget {
                                         ))
                                     .toList(),
                                 items: dropdownItems,
+                                onChanged: (value) {
+                                  donationController.setCurrentSort(value!);
+                                },
                               ),
                             ),
                           ],

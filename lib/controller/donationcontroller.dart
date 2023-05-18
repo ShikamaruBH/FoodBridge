@@ -8,6 +8,7 @@ import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/distanceslidercontroller.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
 import 'package:food_bridge/model/donation.dart';
+import 'package:food_bridge/model/donationsort.dart';
 import 'package:food_bridge/model/userrole.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
@@ -24,6 +25,8 @@ class DonationController extends ChangeNotifier {
   List<Donation> deletedDonations = [];
   Map<String, String> imgURLs = {};
   bool isLoading = false;
+  DonationSort currentSort = DonationSort.NONE;
+  bool isSortReveser = false;
   StreamSubscription? donationListener;
   StreamSubscription? receivedDonationListener;
 
@@ -161,6 +164,7 @@ class DonationController extends ChangeNotifier {
             break;
         }
       }
+      sortDonation();
       debugPrint("Filtered donation: $donations");
       isLoading = false;
       notifyListeners();
@@ -205,6 +209,24 @@ class DonationController extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     });
+  }
+
+  void sortDonation() {
+    switch (currentSort) {
+      case DonationSort.DISTANCE:
+        donations.sort(
+          (a, b) => calculateDistance(a.latlng.latitude, a.latlng.longitude)
+              .compareTo(
+                  calculateDistance(b.latlng.latitude, b.latlng.longitude)),
+        );
+        break;
+      case DonationSort.TIME_REMAINING:
+        donations.sort(
+          (a, b) => b.end.compareTo(a.end),
+        );
+        break;
+      default:
+    }
   }
 
   bool distanceFilter(double latitude, double longitude) {
@@ -364,5 +386,11 @@ class DonationController extends ChangeNotifier {
     return source
         .where((donation) => donation.createAt.month == thisMonth)
         .length;
+  }
+
+  void setCurrentSort(DonationSort donationSort) {
+    currentSort = donationSort;
+    sortDonation();
+    notifyListeners();
   }
 }
