@@ -4,6 +4,7 @@ import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
 import 'package:food_bridge/view/screens/home.dart';
 import 'package:food_bridge/view/screens/login.dart';
+import 'package:food_bridge/view/widgets/loadinglogo.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -41,26 +42,7 @@ class MyApp extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting ||
               snapshot.data == null) {
-            return Scaffold(
-              body: Center(
-                child: Column(
-                  children: [
-                    Image.asset(
-                      "assets/icons/logo.png",
-                      width: 100,
-                      height: 100,
-                    ),
-                    const SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
+            return const LoadingLogo();
           }
           if (snapshot.data == true) {
             return const HomeScreen();
