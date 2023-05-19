@@ -7,15 +7,18 @@ import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/model/userinfo.dart';
+import 'package:food_bridge/model/userrole.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-class DonorProfileScreen extends StatelessWidget {
+class UserProfileScreen extends StatelessWidget {
   final DonorInfo? donorInfo;
-  const DonorProfileScreen({
+  final RecipientInfo? recipientInfo;
+  const UserProfileScreen({
     this.donorInfo,
+    this.recipientInfo,
     super.key,
   });
 
@@ -111,6 +114,7 @@ class DonorProfileScreen extends StatelessWidget {
                             UserStatsWidget(
                               constraints,
                               donorInfo: donorInfo,
+                              recipientInfo: recipientInfo,
                             ),
                           ],
                         ),
@@ -140,45 +144,26 @@ class DonorProfileScreen extends StatelessWidget {
   }
 
   getEditAvatarButton(BoxConstraints constraints) {
-    if (donorInfo != null) {
+    if (donorInfo != null || recipientInfo != null) {
       return const Text('');
     }
     return EditAvatarButton(constraints);
   }
 
   getUserAvatar(BoxConstraints constraints) {
-    if (authController.currentUserAvatar != null) {
-      return ClipOval(
-        child: Container(
-          color: Colors.grey.shade100,
-          child: CachedNetworkImage(
-            imageUrl: donorInfo?.photoURL! ?? authController.currentUserAvatar!,
-            width: constraints.maxWidth / 3,
-            height: constraints.maxWidth / 3,
-            fit: BoxFit.cover,
-            placeholder: (context, url) => Center(
-              child: SizedBox(
-                width: constraints.maxWidth / 6,
-                height: constraints.maxWidth / 6,
-                child: const CircularProgressIndicator(
-                  strokeWidth: 2,
-                ),
-              ),
-            ),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
-          ),
-        ),
-      );
+    if (donorInfo != null || recipientInfo != null) {
+      if (donorInfo?.photoURL != null) {
+        return Avatar(donorInfo!.photoURL!, constraints);
+      }
+      if (recipientInfo?.photoURL != null) {
+        return Avatar(recipientInfo!.photoURL!, constraints);
+      }
+      return BlankAvatar(constraints);
     }
-    return CircleAvatar(
-      backgroundColor: Colors.grey.shade300,
-      radius: constraints.maxWidth / 6,
-      child: Icon(
-        Icons.person,
-        size: constraints.maxWidth / 4,
-        color: Colors.white,
-      ),
-    );
+    if (authController.currentUserAvatar != null) {
+      return Avatar(authController.currentUserAvatar!, constraints);
+    }
+    return BlankAvatar(constraints);
   }
 
   void updateDisplayName() async {
@@ -228,6 +213,62 @@ class DonorProfileScreen extends StatelessWidget {
         builder: (context) => ErrorDialog(err),
       );
     });
+  }
+}
+
+class BlankAvatar extends StatelessWidget {
+  final BoxConstraints constraints;
+  const BlankAvatar(
+    this.constraints, {
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CircleAvatar(
+      backgroundColor: Colors.grey.shade300,
+      radius: constraints.maxWidth / 6,
+      child: Icon(
+        Icons.person,
+        size: constraints.maxWidth / 4,
+        color: Colors.white,
+      ),
+    );
+  }
+}
+
+class Avatar extends StatelessWidget {
+  final String photoURL;
+  final BoxConstraints constraints;
+  const Avatar(
+    this.photoURL,
+    this.constraints, {
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipOval(
+      child: Container(
+        color: Colors.grey.shade100,
+        child: CachedNetworkImage(
+          imageUrl: photoURL,
+          width: constraints.maxWidth / 3,
+          height: constraints.maxWidth / 3,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => Center(
+            child: SizedBox(
+              width: constraints.maxWidth / 6,
+              height: constraints.maxWidth / 6,
+              child: const CircularProgressIndicator(
+                strokeWidth: 2,
+              ),
+            ),
+          ),
+          errorWidget: (context, url, error) => const Icon(Icons.error),
+        ),
+      ),
+    );
   }
 }
 
@@ -408,9 +449,11 @@ class ImageSourceButton extends StatelessWidget {
 class UserStatsWidget extends StatelessWidget {
   final BoxConstraints constraints;
   final DonorInfo? donorInfo;
+  final RecipientInfo? recipientInfo;
   const UserStatsWidget(
     this.constraints, {
     this.donorInfo,
+    this.recipientInfo,
     super.key,
   });
 
@@ -425,19 +468,18 @@ class UserStatsWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               StatsBoxWidget(
-                donorInfo?.getTotalDonation() ??
-                    donationController.getTotalDonation(),
-                'donations-stats-label',
+                getDonationStats(),
+                getDonationStatsLabel(),
                 constraints: constraints,
               ),
+              if (shouldShowRecipientStats())
+                StatsBoxWidget(
+                  getRecipientStats(),
+                  'recipients-stats-label',
+                  constraints: constraints,
+                ),
               StatsBoxWidget(
-                donorInfo?.getTotalRecipient() ??
-                    donationController.getTotalRecipient(),
-                'recipients-stats-label',
-                constraints: constraints,
-              ),
-              StatsBoxWidget(
-                donorInfo?.getRating() ?? donationController.getRating(),
+                getRatingStats(),
                 'rating-stats-label',
                 constraints: constraints,
               ),
@@ -446,6 +488,60 @@ class UserStatsWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String getDonationStatsLabel() {
+    if (donorInfo != null) {
+      return 'donations-stats-label';
+    }
+    if (recipientInfo != null) {
+      return 'received-donations-stats-label';
+    }
+    switch (authController.currentUserRole) {
+      case Role.donor:
+        return 'donations-stats-label';
+      case Role.recipient:
+        return 'received-donations-stats-label';
+      default:
+        return '';
+    }
+  }
+
+  String getRatingStats() {
+    if (donorInfo != null) {
+      return donorInfo!.getRating();
+    }
+    if (recipientInfo != null) {
+      return recipientInfo!.getRating();
+    }
+    return donationController.getRating();
+  }
+
+  String getRecipientStats() {
+    if (donorInfo != null) {
+      return donorInfo!.getTotalRecipient();
+    }
+    return donationController.getTotalRecipient();
+  }
+
+  bool shouldShowRecipientStats() {
+    if (donorInfo != null) {
+      return true;
+    }
+    if (recipientInfo != null) {
+      return false;
+    }
+    return authController.currentUserRole == Role.donor;
+  }
+
+  String getDonationStats() {
+    if (donorInfo != null) {
+      return donorInfo!.getTotalDonation();
+    }
+    if (recipientInfo != null) {
+      return recipientInfo!.getTotalDonation();
+    }
+    return donationController.getTotalDonation();
   }
 }
 

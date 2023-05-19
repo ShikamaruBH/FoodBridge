@@ -532,6 +532,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "DONATIONS",
     "vi": "QUYÊN GÓP",
   },
+  "received-donations-stats-label": {
+    "en": "RECEIVED DONATIONS",
+    "vi": "QUYÊN GÓP ĐÃ NHẬN",
+  },
   "update-avatar-success-text": {
     "en": "Updated",
     "vi": "Đã cập nhật",

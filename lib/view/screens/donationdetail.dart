@@ -872,7 +872,7 @@ class DonationDetailScreen extends StatelessWidget {
         DonorInfo donorInfo = DonorInfo.fromJson(result["result"].data);
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => DonorProfileScreen(donorInfo: donorInfo),
+            builder: (context) => UserProfileScreen(donorInfo: donorInfo),
           ),
         );
       } else {

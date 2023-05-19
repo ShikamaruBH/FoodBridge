@@ -46,3 +46,30 @@ class DonorInfo extends AppUserInfo {
     return rating.toStringAsFixed(1);
   }
 }
+
+class RecipientInfo extends AppUserInfo {
+  double totalReceivedDonation;
+  double rating;
+
+  RecipientInfo(
+    displayName,
+    photoURL,
+    this.totalReceivedDonation,
+    this.rating,
+  ) : super(displayName, photoURL);
+
+  factory RecipientInfo.fromJson(Map<String, dynamic> data) => RecipientInfo(
+        data['displayName'],
+        data['photoURL'],
+        data['totalReceivedDonation'].toDouble(),
+        data['rating'].toDouble(),
+      );
+
+  String getTotalDonation() {
+    return totalReceivedDonation.toInt().toString();
+  }
+
+  String getRating() {
+    return rating.toStringAsFixed(1);
+  }
+}
