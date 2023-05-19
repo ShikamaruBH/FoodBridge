@@ -529,10 +529,10 @@ class DonationDetailScreen extends StatelessWidget {
               'edit-button-title',
             ),
           getReviewsButton(constraints, context),
+          getRecipientsButton(constraints, context),
         ];
       case Role.recipient:
-        if (donation.recipients
-            .containsKey(FirebaseAuth.instance.currentUser!.uid)) {
+        if (alreadyReceivedDonation()) {
           return [
             IconTextButton(
               constraints,
@@ -554,8 +554,8 @@ class DonationDetailScreen extends StatelessWidget {
               Icons.rate_review,
               'review-button-title',
             ),
-            HSpacer(),
             getReviewsButton(constraints, context),
+            getRecipientsButton(constraints, context),
           ];
         }
         if (bottomButtonController.isQuantityOpen) {
@@ -570,12 +570,17 @@ class DonationDetailScreen extends StatelessWidget {
             Icons.card_giftcard,
             'receive-text',
           ),
-          HSpacer(),
           getReviewsButton(constraints, context),
+          getRecipientsButton(constraints, context),
         ];
       default:
         return [];
     }
+  }
+
+  bool alreadyReceivedDonation() {
+    return donation.recipients
+        .containsKey(FirebaseAuth.instance.currentUser!.uid);
   }
 
   getQuantityButton(BoxConstraints constraints, BuildContext context) {
@@ -646,10 +651,19 @@ class DonationDetailScreen extends StatelessWidget {
     );
   }
 
+  getRecipientsButton(BoxConstraints constraints, BuildContext context) {
+    return IconTextButton(
+      constraints,
+      () => showRecipients(context, constraints, 'recipients-button-text'),
+      Icons.people_alt,
+      'recipients-button-text',
+    );
+  }
+
   getReviewsButton(BoxConstraints constraints, BuildContext context) {
     return IconTextButton(
       constraints,
-      () => showReviews(context, constraints),
+      () => showReviews(context, constraints, 'review-button-text'),
       Icons.mode_comment_outlined,
       'review-button-text',
     );
@@ -694,7 +708,26 @@ class DonationDetailScreen extends StatelessWidget {
     ));
   }
 
-  void showReviews(context, BoxConstraints constraints) {
+  void showReviews(context, BoxConstraints constraints, String title) {
+    return showBottomPanel(
+      context,
+      constraints,
+      getReviewListView(constraints),
+      title,
+    );
+  }
+
+  void showRecipients(context, BoxConstraints constraints, String title) {
+    return showBottomPanel(
+      context,
+      constraints,
+      getRecipientsListView(constraints),
+      title,
+    );
+  }
+
+  void showBottomPanel(
+      context, BoxConstraints constraints, listview, String title) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -715,14 +748,20 @@ class DonationDetailScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.arrow_back_ios))
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.arrow_back_ios),
+                ),
+                Text(
+                  localeController.getTranslate(title),
+                  style: StyleManagement.historyItemTitleTextStyle
+                      .copyWith(color: ColorManagement.iconColor),
+                ),
               ],
             ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: getReviewListView(constraints),
+                child: listview,
               ),
             )
           ],
@@ -748,9 +787,27 @@ class DonationDetailScreen extends StatelessWidget {
     );
   }
 
+  getRecipientsListView(BoxConstraints constraints) {
+    if (donation.recipients.isEmpty) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(localeController.getTranslate('no-recipient-text')),
+        ],
+      );
+    }
+    return ListView.builder(
+      itemCount: donation.recipients.length,
+      itemBuilder: (context, index) {
+        return recipientListTitle(index, constraints);
+      },
+    );
+  }
+
   reviewListTitle(int index, BoxConstraints constraints) {
     return FutureBuilder(
-      future: userController.getUserInfo(donation.reviews.keys.toList()[index]),
+      future:
+          userController.getUserInfo(donation.recipients.keys.toList()[index]),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting ||
             snapshot.data == null) {
@@ -771,7 +828,7 @@ class DonationDetailScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                getReviewerAvatar(constraints, userInfo),
+                getRecipientAvatar(constraints, userInfo),
                 HSpacer(),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -827,7 +884,61 @@ class DonationDetailScreen extends StatelessWidget {
     );
   }
 
-  getReviewerAvatar(BoxConstraints constraints, AppUserInfo userInfo) {
+  recipientListTitle(int index, BoxConstraints constraints) {
+    return FutureBuilder(
+      future: userController.getUserInfo(donation.reviews.keys.toList()[index]),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting ||
+            snapshot.data == null) {
+          return const Center(
+            child: SizedBox(
+              width: 30,
+              height: 30,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+              ),
+            ),
+          );
+        }
+        final userInfo = AppUserInfo.fromJson(snapshot.data!["result"].data);
+        return Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                getRecipientAvatar(constraints, userInfo),
+                HSpacer(),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          onTap: () => openRecipientProfile(
+                              context, donation.reviews.keys.toList()[index]),
+                          child: Text(
+                            userInfo.displayName,
+                            style: StyleManagement.menuTextStyle.copyWith(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  getRecipientAvatar(BoxConstraints constraints, AppUserInfo userInfo) {
     if (userInfo.photoURL != null) {
       return ClipOval(
         child: CachedNetworkImage(
@@ -958,12 +1069,13 @@ class IconTextButton extends StatelessWidget {
                 icon,
                 color: ColorManagement.iconColor,
               ),
-              HSpacer(),
+              HSpacer(
+                offset: -8,
+              ),
               Flexible(
                 child: Text(
                   localeController.getTranslate(title),
-                  style: StyleManagement.historyItemTitleTextStyle
-                      .copyWith(color: ColorManagement.iconColor),
+                  style: StyleManagement.settingsItemTextStyle,
                 ),
               )
             ],

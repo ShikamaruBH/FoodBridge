@@ -346,7 +346,14 @@ class DonationController extends ChangeNotifier {
   }
 
   String getTotalDonation() {
-    return donations.length.toString();
+    switch (authController.currentUserRole) {
+      case Role.donor:
+        return donations.length.toString();
+      case Role.recipient:
+        return receivedDonations.length.toString();
+      default:
+        return '0';
+    }
   }
 
   String getTotalRecipient() {
@@ -358,6 +365,15 @@ class DonationController extends ChangeNotifier {
   }
 
   String getRating() {
+    switch (authController.currentUserRole) {
+      case Role.donor:
+        return getDonorRating();
+      default:
+        return '0';
+    }
+  }
+
+  String getDonorRating() {
     double total = 0;
     int count = 0;
     for (var donation in donations) {

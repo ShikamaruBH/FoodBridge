@@ -121,7 +121,7 @@ Map<String, dynamic> appLocalizations = {
   },
   "review-button-text": {
     "en": "Reviews",
-    "vi": "Xem đánh giá",
+    "vi": "Đánh giá",
   },
   "no-delete-donation-text": {
     "en": "No deleted donation found",
@@ -528,12 +528,20 @@ Map<String, dynamic> appLocalizations = {
     "en": "Edit username",
     "vi": "Cập nhật tên người dùng",
   },
+  "recipients-button-text": {
+    "en": "Recipients",
+    "vi": "Người nhận",
+  },
+  "no-recipient-text": {
+    "en": "No recipient yet",
+    "vi": "Chưa có người nhận nào",
+  },
   "donations-stats-label": {
     "en": "DONATIONS",
     "vi": "QUYÊN GÓP",
   },
   "received-donations-stats-label": {
-    "en": "RECEIVED DONATIONS",
+    "en": "DONATIONS RECEIVED",
     "vi": "QUYÊN GÓP ĐÃ NHẬN",
   },
   "update-avatar-success-text": {

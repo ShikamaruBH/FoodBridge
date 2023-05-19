@@ -375,7 +375,9 @@ class DonationTileWidget extends StatelessWidget {
                             children: [getDonationDistance(donation)],
                           ),
                           Row(
-                            children: [donation.getTimeRemaining()],
+                            children: [
+                              Flexible(child: donation.getTimeRemaining())
+                            ],
                           ),
                         ],
                       ),
