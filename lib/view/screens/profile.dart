@@ -86,9 +86,7 @@ class UserProfileScreen extends StatelessWidget {
                                               children: [
                                                 Flexible(
                                                   child: Text(
-                                                    donorInfo?.displayName ??
-                                                        authController
-                                                            .currentUsername,
+                                                    getUsername(),
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: StyleManagement
@@ -130,8 +128,18 @@ class UserProfileScreen extends StatelessWidget {
     );
   }
 
-  getEditUsernameButton() {
+  String getUsername() {
     if (donorInfo != null) {
+      return donorInfo!.displayName;
+    }
+    if (recipientInfo != null) {
+      return recipientInfo!.displayName;
+    }
+    return authController.currentUsername;
+  }
+
+  getEditUsernameButton() {
+    if (donorInfo != null || recipientInfo != null) {
       return const Text('');
     }
     return InkWell(

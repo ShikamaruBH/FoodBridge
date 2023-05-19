@@ -781,7 +781,8 @@ class DonationDetailScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         InkWell(
-                          onTap: () => {},
+                          onTap: () => openRecipientProfile(
+                              context, donation.reviews.keys.toList()[index]),
                           child: Text(
                             userInfo.displayName,
                             style: StyleManagement.menuTextStyle.copyWith(
@@ -873,6 +874,42 @@ class DonationDetailScreen extends StatelessWidget {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => UserProfileScreen(donorInfo: donorInfo),
+          ),
+        );
+      } else {
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => ErrorDialog(result['err']),
+        );
+      }
+    }).catchError((err) {
+      Navigator.pop(navigatorKey.currentState!.context);
+      showDialog(
+        barrierDismissible: false,
+        context: navigatorKey.currentState!.context,
+        builder: (context) => ErrorDialog(err),
+      );
+    });
+  }
+
+  openRecipientProfile(BuildContext context, String uid) async {
+    showDialog(
+      barrierDismissible: false,
+      context: navigatorKey.currentState!.context,
+      builder: (context) => const LoadingDialog(
+        message: 'loading-user-info-text',
+      ),
+    );
+    await userController.getRecipientInfo(uid).then((result) {
+      Navigator.pop(navigatorKey.currentState!.context);
+      if (result['success']) {
+        RecipientInfo recipientInfo =
+            RecipientInfo.fromJson(result["result"].data);
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) =>
+                UserProfileScreen(recipientInfo: recipientInfo),
           ),
         );
       } else {

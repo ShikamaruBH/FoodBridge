@@ -73,3 +73,26 @@ exports.getUserInfo = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError("not-found", "not-found");
       });
 });
+
+exports.getRecipientInfo = functions.https.onCall(async (data, context) => {
+  isAuthenticated(context);
+  let userRecord: UserRecord;
+  try {
+    userRecord = await admin.auth().getUser(data.uid);
+  } catch (error) {
+    throw new functions.https.HttpsError("not-found", "not-found");
+  }
+  const displayName = userRecord.displayName;
+  const photoURL = userRecord.photoURL;
+  const donations = await donationsRef
+      .where(`recipients.${data.uid}`, "!=", null)
+      .get();
+  const totalReceivedDonation = donations.docs.length;
+  const rating = 0;
+  return {
+    displayName,
+    photoURL,
+    totalReceivedDonation,
+    rating,
+  };
+});
