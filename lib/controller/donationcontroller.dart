@@ -271,8 +271,8 @@ class DonationController extends ChangeNotifier {
         await imgRef.getData();
       } catch (e) {
         await imgRef.putFile(File(img.path));
-        imgs.add(imgName);
       }
+      imgs.add(imgName);
     }
     imgs.addAll(urls);
     data['imgs'] = imgs;

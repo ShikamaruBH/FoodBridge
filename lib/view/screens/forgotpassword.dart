@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:food_bridge/controller/authcontroller.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
+import 'package:food_bridge/model/loadinghandler.dart';
 import 'package:food_bridge/view/screens/login.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/languageswitch.dart';
@@ -17,47 +17,26 @@ class ForgotPasswordScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormBuilderState>();
   ForgotPasswordScreen({super.key});
 
-  void sendEmail(context) {
+  void sendEmail(context) async {
     _formKey.currentState!.save();
     if (_formKey.currentState!.validate()) {
       Map<String, dynamic> data = _formKey.currentState!.value;
-      showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) => const LoadingDialog(),
-      );
-      AuthController()
-          .sendForgotPasswordEmail(data["email"].trim())
-          .then((result) {
-        Navigator.pop(context);
-        if (result['success']) {
-          showDialog(
-            barrierDismissible: false,
-            context: context,
-            builder: (context) => SuccessDialog(
-                'send-email-success-text',
-                'send-email-success-description',
-                () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => LoginScreen(),
-                      ),
-                    )),
-          );
-        } else {
-          showDialog(
-            barrierDismissible: false,
-            context: context,
-            builder: (context) => ErrorDialog(result['err']),
-          );
-        }
-      }).catchError((err) {
-        Navigator.pop(context);
-        showDialog(
+      await loadingHandler(
+        () => authController.sendForgotPasswordEmail(data["email"].trim()),
+        (_) => showDialog(
           barrierDismissible: false,
           context: context,
-          builder: (context) => ErrorDialog(err),
-        );
-      });
+          builder: (context) => SuccessDialog(
+            'send-email-success-text',
+            'send-email-success-description',
+            () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => LoginScreen(),
+              ),
+            ),
+          ),
+        ),
+      );
     }
   }
 

@@ -8,6 +8,7 @@ import 'package:food_bridge/controller/passwordtextfieldcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
+import 'package:food_bridge/model/loadinghandler.dart';
 import 'package:food_bridge/view/screens/login.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/languageswitch.dart';
@@ -26,43 +27,26 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 
-  void register(context) {
+  void register(context) async {
     _formKey.currentState!.save();
     if (_formKey.currentState!.validate()) {
       Map<String, dynamic> data = _formKey.currentState!.value;
-      showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) => const LoadingDialog(),
-      );
-      authController.register({
-        "fullname": data["fullname"].trim(),
-        "email": data["email"].trim(),
-        "password": data["password"].trim(),
-      }).then((result) {
-        Navigator.pop(context);
-        if (result['success']) {
-          showDialog(
-            barrierDismissible: false,
-            context: context,
-            builder: (context) => SuccessDialog('register-success-text',
-                'register-success-description', toLoginScreen),
-          );
-        } else {
-          showDialog(
-            barrierDismissible: false,
-            context: context,
-            builder: (context) => ErrorDialog(result['err']),
-          );
-        }
-      }).catchError((err) {
-        Navigator.pop(context);
-        showDialog(
+      await loadingHandler(
+        () => authController.register({
+          "fullname": data["fullname"].trim(),
+          "email": data["email"].trim(),
+          "password": data["password"].trim(),
+        }),
+        (_) => showDialog(
           barrierDismissible: false,
           context: context,
-          builder: (context) => ErrorDialog(err),
-        );
-      });
+          builder: (context) => SuccessDialog(
+            'register-success-text',
+            'register-success-description',
+            toLoginScreen,
+          ),
+        ),
+      );
     }
   }
 

@@ -5,7 +5,7 @@ import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/rolebuttoncontroller.dart';
 import 'package:food_bridge/model/designmanagement.dart';
-import 'package:food_bridge/view/widgets/dialogs.dart';
+import 'package:food_bridge/model/loadinghandler.dart';
 import 'package:food_bridge/view/screens/home.dart';
 import 'package:food_bridge/view/widgets/languageswitch.dart';
 import 'package:provider/provider.dart';
@@ -13,37 +13,19 @@ import 'package:provider/provider.dart';
 class ChooseRoleScreen extends StatelessWidget {
   const ChooseRoleScreen({super.key});
 
-  void next(context) {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) => const LoadingDialog(),
-    );
-    authController.chooseRole(
-        {"role": RoleButtonController().currentRole}).then((result) {
-      Navigator.pop(context);
-      if (result['success']) {
+  void next(context) async {
+    await loadingHandler(
+      () => authController
+          .chooseRole({"role": RoleButtonController().currentRole}),
+      (_) {
         authController.listenToAuthState();
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => const HomeScreen(),
           ),
         );
-      } else {
-        showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (context) => ErrorDialog(result['err']),
-        );
-      }
-    }).catchError((err) {
-      Navigator.pop(context);
-      showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) => ErrorDialog(err),
-      );
-    });
+      },
+    );
   }
 
   @override

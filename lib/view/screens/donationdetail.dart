@@ -10,6 +10,7 @@ import 'package:food_bridge/controller/quantitycontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/model/donation.dart';
+import 'package:food_bridge/model/loadinghandler.dart';
 import 'package:food_bridge/model/userinfo.dart';
 import 'package:food_bridge/model/userrole.dart';
 import 'package:food_bridge/view/screens/neworupdatedonation.dart';
@@ -366,16 +367,9 @@ class DonationDetailScreen extends StatelessWidget {
   }
 
   Future<bool> restoreDonation(String id) async {
-    showDialog(
-      barrierDismissible: false,
-      context: navigatorKey.currentState!.context,
-      builder: (context) => const LoadingDialog(
-        message: 'restoring-text',
-      ),
-    );
-    await donationController.restoreDonation({"id": id}).then((result) async {
-      Navigator.pop(navigatorKey.currentState!.context);
-      if (result['success']) {
+    return loadingHandler(
+      () => donationController.restoreDonation({"id": id}),
+      (_) {
         Navigator.pop(navigatorKey.currentState!.context);
         showDialog(
           barrierDismissible: false,
@@ -387,42 +381,19 @@ class DonationDetailScreen extends StatelessWidget {
             showActions: false,
           ),
         );
-        await Future.delayed(const Duration(seconds: 1));
-        Navigator.of(navigatorKey.currentState!.context).pop();
-      } else {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => ErrorDialog(result['err']),
-        );
-      }
-      return true;
-    }).catchError((err) {
-      Navigator.pop(navigatorKey.currentState!.context);
-      showDialog(
-        barrierDismissible: false,
-        context: navigatorKey.currentState!.context,
-        builder: (context) => ErrorDialog(err),
-      );
-      return true;
-    });
-    return false;
+      },
+      loadingText: 'restoring-text',
+      autoClose: true,
+    );
   }
 
   void receiveDonation(String id) async {
-    showDialog(
-      barrierDismissible: false,
-      context: navigatorKey.currentState!.context,
-      builder: (context) => const LoadingDialog(
-        message: 'loading-text',
-      ),
-    );
-    await donationController.receiveDonation({
-      "id": id,
-      "quantity": quantityController.value,
-    }).then((result) async {
-      Navigator.pop(navigatorKey.currentState!.context);
-      if (result['success']) {
+    await loadingHandler(
+      () => donationController.receiveDonation({
+        "id": id,
+        "quantity": quantityController.value,
+      }),
+      (_) {
         Navigator.pop(navigatorKey.currentState!.context);
         showDialog(
           barrierDismissible: false,
@@ -434,41 +405,19 @@ class DonationDetailScreen extends StatelessWidget {
             showActions: false,
           ),
         );
-        await Future.delayed(const Duration(seconds: 1));
-        Navigator.of(navigatorKey.currentState!.context).pop();
-      } else {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => ErrorDialog(result['err']),
-        );
-      }
-    }).catchError((err) {
-      Navigator.pop(navigatorKey.currentState!.context);
-      showDialog(
-        barrierDismissible: false,
-        context: navigatorKey.currentState!.context,
-        builder: (context) => ErrorDialog(err),
-      );
-    });
+      },
+      autoClose: true,
+    );
   }
 
   void reviewDonation(String id) async {
-    showDialog(
-      barrierDismissible: false,
-      context: navigatorKey.currentState!.context,
-      builder: (context) => const LoadingDialog(
-        message: 'loading-text',
-      ),
-    );
-    await donationController.reviewDonation({
-      "id": id,
-      "rating": reviewController.rating,
-      "review": reviewController.review,
-    }).then((result) async {
-      Navigator.pop(navigatorKey.currentState!.context);
-      if (result['success']) {
-        Navigator.pop(navigatorKey.currentState!.context);
+    await loadingHandler(
+      () => donationController.reviewDonation({
+        "id": id,
+        "rating": reviewController.rating,
+        "review": reviewController.review,
+      }),
+      (_) {
         showDialog(
           barrierDismissible: false,
           context: navigatorKey.currentState!.context,
@@ -479,23 +428,9 @@ class DonationDetailScreen extends StatelessWidget {
             showActions: false,
           ),
         );
-        await Future.delayed(const Duration(seconds: 1));
-        Navigator.of(navigatorKey.currentState!.context).pop();
-      } else {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => ErrorDialog(result['err']),
-        );
-      }
-    }).catchError((err) {
-      Navigator.pop(navigatorKey.currentState!.context);
-      showDialog(
-        barrierDismissible: false,
-        context: navigatorKey.currentState!.context,
-        builder: (context) => ErrorDialog(err),
-      );
-    });
+      },
+      autoClose: true,
+    );
   }
 
   List<Widget> getBottomButton(
@@ -971,50 +906,24 @@ class DonationDetailScreen extends StatelessWidget {
   }
 
   openDonorProfile(BuildContext context) async {
-    showDialog(
-      barrierDismissible: false,
-      context: navigatorKey.currentState!.context,
-      builder: (context) => const LoadingDialog(
-        message: 'loading-user-info-text',
-      ),
-    );
-    await userController.getDonorInfo(donation.donor).then((result) {
-      Navigator.pop(navigatorKey.currentState!.context);
-      if (result['success']) {
+    await loadingHandler(
+      () => userController.getDonorInfo(donation.donor),
+      (result) {
         DonorInfo donorInfo = DonorInfo.fromJson(result["result"].data);
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => UserProfileScreen(donorInfo: donorInfo),
           ),
         );
-      } else {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => ErrorDialog(result['err']),
-        );
-      }
-    }).catchError((err) {
-      Navigator.pop(navigatorKey.currentState!.context);
-      showDialog(
-        barrierDismissible: false,
-        context: navigatorKey.currentState!.context,
-        builder: (context) => ErrorDialog(err),
-      );
-    });
+      },
+      loadingText: 'loading-user-info-text',
+    );
   }
 
   openRecipientProfile(BuildContext context, String uid) async {
-    showDialog(
-      barrierDismissible: false,
-      context: navigatorKey.currentState!.context,
-      builder: (context) => const LoadingDialog(
-        message: 'loading-user-info-text',
-      ),
-    );
-    await userController.getRecipientInfo(uid).then((result) {
-      Navigator.pop(navigatorKey.currentState!.context);
-      if (result['success']) {
+    await loadingHandler(
+      () => userController.getRecipientInfo(uid),
+      (result) {
         RecipientInfo recipientInfo =
             RecipientInfo.fromJson(result["result"].data);
         Navigator.of(context).push(
@@ -1023,21 +932,9 @@ class DonationDetailScreen extends StatelessWidget {
                 UserProfileScreen(recipientInfo: recipientInfo),
           ),
         );
-      } else {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => ErrorDialog(result['err']),
-        );
-      }
-    }).catchError((err) {
-      Navigator.pop(navigatorKey.currentState!.context);
-      showDialog(
-        barrierDismissible: false,
-        context: navigatorKey.currentState!.context,
-        builder: (context) => ErrorDialog(err),
-      );
-    });
+      },
+      loadingText: 'loading-user-info-text',
+    );
   }
 }
 

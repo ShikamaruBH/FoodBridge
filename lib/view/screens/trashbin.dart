@@ -7,6 +7,7 @@ import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/model/donation.dart';
+import 'package:food_bridge/model/loadinghandler.dart';
 import 'package:food_bridge/view/screens/donationdetail.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:intl/intl.dart';
@@ -135,46 +136,21 @@ class DonationTileWidget extends StatelessWidget {
     super.key,
   });
   Future<bool> restoreDonation(String id) async {
-    showDialog(
-      barrierDismissible: false,
-      context: navigatorKey.currentState!.context,
-      builder: (context) => const LoadingDialog(
-        message: 'restoring-text',
-      ),
-    );
-    await donationController.restoreDonation({"id": id}).then((result) async {
-      Navigator.pop(navigatorKey.currentState!.context);
-      if (result['success']) {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => SuccessDialog(
-            'restore-donation-success-text',
-            'restore-donation-success-description',
-            () {},
-            showActions: false,
-          ),
-        );
-        await Future.delayed(const Duration(seconds: 1));
-        Navigator.of(navigatorKey.currentState!.context).pop();
-      } else {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => ErrorDialog(result['err']),
-        );
-      }
-      return true;
-    }).catchError((err) {
-      Navigator.pop(navigatorKey.currentState!.context);
-      showDialog(
+    return loadingHandler(
+      () => donationController.restoreDonation({"id": id}),
+      (_) => showDialog(
         barrierDismissible: false,
         context: navigatorKey.currentState!.context,
-        builder: (context) => ErrorDialog(err),
-      );
-      return true;
-    });
-    return false;
+        builder: (context) => SuccessDialog(
+          'restore-donation-success-text',
+          'restore-donation-success-description',
+          () {},
+          showActions: false,
+        ),
+      ),
+      loadingText: 'restoring-text',
+      autoClose: true,
+    );
   }
 
   Future<bool> deleteDonation(String id) async {
@@ -189,46 +165,21 @@ class DonationTileWidget extends StatelessWidget {
     if (!rs) {
       return rs;
     }
-    showDialog(
-      barrierDismissible: false,
-      context: navigatorKey.currentState!.context,
-      builder: (context) => const LoadingDialog(
-        message: 'deleting-text',
-      ),
-    );
-    await donationController.deleteDonation({"id": id}).then((result) async {
-      Navigator.pop(navigatorKey.currentState!.context);
-      if (result['success']) {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => SuccessDialog(
-            'delete-donation-success-text',
-            'delete-donation-success-description',
-            () {},
-            showActions: false,
-          ),
-        );
-        await Future.delayed(const Duration(seconds: 1));
-        Navigator.of(navigatorKey.currentState!.context).pop();
-      } else {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => ErrorDialog(result['err']),
-        );
-      }
-      return true;
-    }).catchError((err) {
-      Navigator.pop(navigatorKey.currentState!.context);
-      showDialog(
+    return loadingHandler(
+      () => donationController.deleteDonation({"id": id}),
+      (_) => showDialog(
         barrierDismissible: false,
         context: navigatorKey.currentState!.context,
-        builder: (context) => ErrorDialog(err),
-      );
-      return true;
-    });
-    return false;
+        builder: (context) => SuccessDialog(
+          'delete-donation-success-text',
+          'delete-donation-success-description',
+          () {},
+          showActions: false,
+        ),
+      ),
+      loadingText: 'deleting-text',
+      autoClose: true,
+    );
   }
 
   @override

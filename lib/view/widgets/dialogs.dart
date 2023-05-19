@@ -7,9 +7,9 @@ import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
 class LoadingDialog extends StatelessWidget {
-  final String message;
+  final String? message;
   const LoadingDialog({
-    this.message = 'loading-text',
+    this.message,
     Key? key,
   }) : super(key: key);
 
@@ -29,7 +29,7 @@ class LoadingDialog extends StatelessWidget {
             const SizedBox(
               height: 15,
             ),
-            Text(localeController.getTranslate(message))
+            Text(localeController.getTranslate(message ?? 'loading-text'))
           ],
         ),
       ),

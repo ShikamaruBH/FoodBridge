@@ -14,6 +14,7 @@ import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/model/donation.dart';
+import 'package:food_bridge/model/loadinghandler.dart';
 import 'package:food_bridge/view/screens/chooselocation.dart';
 import 'package:food_bridge/view/screens/home.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
@@ -32,13 +33,6 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
     _formKey.currentState!.save();
     if (_formKey.currentState!.validate()) {
       Map<String, dynamic> formData = _formKey.currentState!.value;
-      showDialog(
-        barrierDismissible: false,
-        context: navigatorKey.currentState!.context,
-        builder: (context) => const LoadingDialog(
-          message: 'creating-donation-text',
-        ),
-      );
       Map<String, dynamic> data = {
         "latlng": mapController.getLatLng(),
         'note': formData['note']?.trim() ?? "",
@@ -49,37 +43,23 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
         'start': formData['start'].toUtc().toIso8601String(),
         'end': formData['end'].toUtc().toIso8601String(),
       };
-      await donationController.createDonation(data).then((result) {
-        Navigator.pop(navigatorKey.currentState!.context);
-        if (result['success']) {
-          showDialog(
-            barrierDismissible: false,
-            context: navigatorKey.currentState!.context,
-            builder: (context) => SuccessDialog(
-              'new-donation-success-text',
-              'new-donation-success-description',
-              () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const HomeScreen(),
-                ),
-              ),
-            ),
-          );
-        } else {
-          showDialog(
-            barrierDismissible: false,
-            context: navigatorKey.currentState!.context,
-            builder: (context) => ErrorDialog(result['err']),
-          );
-        }
-      }).catchError((err) {
-        Navigator.pop(navigatorKey.currentState!.context);
-        showDialog(
+      loadingHandler(
+        () => donationController.createDonation(data),
+        (_) => showDialog(
           barrierDismissible: false,
           context: navigatorKey.currentState!.context,
-          builder: (context) => ErrorDialog(err),
-        );
-      });
+          builder: (context) => SuccessDialog(
+            'new-donation-success-text',
+            'new-donation-success-description',
+            () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const HomeScreen(),
+              ),
+            ),
+          ),
+        ),
+        loadingText: 'creating-donation-text',
+      );
     }
   }
 
@@ -87,13 +67,6 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
     _formKey.currentState!.save();
     if (_formKey.currentState!.validate()) {
       Map<String, dynamic> formData = _formKey.currentState!.value;
-      showDialog(
-        barrierDismissible: false,
-        context: navigatorKey.currentState!.context,
-        builder: (context) => const LoadingDialog(
-          message: 'updating-donation-text',
-        ),
-      );
       Map<String, dynamic> data = {
         'id': donation!.id,
         "latlng": mapController.getLatLng(),
@@ -105,37 +78,23 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
         'start': formData['start'].toUtc().toIso8601String(),
         'end': formData['end'].toUtc().toIso8601String(),
       };
-      await donationController.updateDonation(data).then((result) {
-        Navigator.pop(navigatorKey.currentState!.context);
-        if (result['success']) {
-          showDialog(
-            barrierDismissible: false,
-            context: navigatorKey.currentState!.context,
-            builder: (context) => SuccessDialog(
-              'update-donation-success-text',
-              'new-donation-success-description',
-              () => Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                    builder: (context) => const HomeScreen(),
-                  ),
-                  (route) => false),
-            ),
-          );
-        } else {
-          showDialog(
-            barrierDismissible: false,
-            context: navigatorKey.currentState!.context,
-            builder: (context) => ErrorDialog(result['err']),
-          );
-        }
-      }).catchError((err) {
-        Navigator.pop(navigatorKey.currentState!.context);
-        showDialog(
+      loadingHandler(
+        () => donationController.updateDonation(data),
+        (_) => showDialog(
           barrierDismissible: false,
           context: navigatorKey.currentState!.context,
-          builder: (context) => ErrorDialog(err),
-        );
-      });
+          builder: (context) => SuccessDialog(
+            'update-donation-success-text',
+            'new-donation-success-description',
+            () => Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (context) => const HomeScreen(),
+                ),
+                (route) => false),
+          ),
+        ),
+        loadingText: 'updating-donation-text',
+      );
     }
   }
 
@@ -151,17 +110,9 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
     if (!result) {
       return;
     }
-    showDialog(
-      barrierDismissible: false,
-      context: navigatorKey.currentState!.context,
-      builder: (context) => const LoadingDialog(
-        message: 'deleting-text',
-      ),
-    );
-    await donationController
-        .softDeleteDonation({"id": id}).then((result) async {
-      Navigator.pop(navigatorKey.currentState!.context);
-      if (result['success']) {
+    loadingHandler(
+      () => donationController.softDeleteDonation({"id": id}),
+      (_) {
         Navigator.of(navigatorKey.currentState!.context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (context) => const HomeScreen(),
@@ -177,27 +128,10 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
             showActions: false,
           ),
         );
-        await delayThenPop();
-      } else {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => ErrorDialog(result['err']),
-        );
-      }
-    }).catchError((err) {
-      Navigator.pop(navigatorKey.currentState!.context);
-      showDialog(
-        barrierDismissible: false,
-        context: navigatorKey.currentState!.context,
-        builder: (context) => ErrorDialog(err),
-      );
-    });
-  }
-
-  Future<void> delayThenPop() async {
-    await Future.delayed(const Duration(seconds: 1));
-    Navigator.of(navigatorKey.currentState!.context).pop();
+      },
+      loadingText: 'deleting-text',
+      autoClose: true,
+    );
   }
 
   @override

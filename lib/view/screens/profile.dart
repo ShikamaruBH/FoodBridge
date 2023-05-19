@@ -8,9 +8,11 @@ import 'package:food_bridge/controller/usercontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
+import 'package:food_bridge/model/loadinghandler.dart';
 import 'package:food_bridge/model/userinfo.dart';
 import 'package:food_bridge/model/userrole.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
+import 'package:food_bridge/view/widgets/divider.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -286,43 +288,21 @@ class UserProfileScreen extends StatelessWidget {
     if (!data['status']) {
       return;
     }
-    showDialog(
-      barrierDismissible: false,
-      context: navigatorKey.currentState!.context,
-      builder: (context) => const LoadingDialog(
-        message: 'updating-text',
-      ),
-    );
-    await userController.updateEmail(data["value"]).then((result) async {
-      Navigator.pop(navigatorKey.currentState!.context);
-      if (result['success']) {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => SuccessDialog(
-            'update-email-success-text',
-            'update-email-success-description',
-            () {},
-            showActions: false,
-          ),
-        );
-        await Future.delayed(const Duration(seconds: 1));
-        Navigator.of(navigatorKey.currentState!.context).pop();
-      } else {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => ErrorDialog(result['err']),
-        );
-      }
-    }).catchError((err) {
-      Navigator.pop(navigatorKey.currentState!.context);
-      showDialog(
+    await loadingHandler(
+      () => userController.updateEmail(data["value"]),
+      (_) => showDialog(
         barrierDismissible: false,
         context: navigatorKey.currentState!.context,
-        builder: (context) => ErrorDialog(err),
-      );
-    });
+        builder: (context) => SuccessDialog(
+          'update-email-success-text',
+          'update-email-success-description',
+          () {},
+          showActions: false,
+        ),
+      ),
+      loadingText: 'updating-text',
+      autoClose: true,
+    );
   }
 
   void updatePhoneNumber() async {
@@ -341,43 +321,21 @@ class UserProfileScreen extends StatelessWidget {
     if (!data['status']) {
       return;
     }
-    showDialog(
-      barrierDismissible: false,
-      context: navigatorKey.currentState!.context,
-      builder: (context) => const LoadingDialog(
-        message: 'updating-text',
-      ),
-    );
-    await userController.updatePhoneNumber(data["value"]).then((result) async {
-      Navigator.pop(navigatorKey.currentState!.context);
-      if (result['success']) {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => SuccessDialog(
-            'update-phone-number-success-text',
-            'update-phone-number-success-description',
-            () {},
-            showActions: false,
-          ),
-        );
-        await Future.delayed(const Duration(seconds: 1));
-        Navigator.of(navigatorKey.currentState!.context).pop();
-      } else {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => ErrorDialog(result['err']),
-        );
-      }
-    }).catchError((err) {
-      Navigator.pop(navigatorKey.currentState!.context);
-      showDialog(
+    await loadingHandler(
+      () => userController.updatePhoneNumber(data["value"]),
+      (_) => showDialog(
         barrierDismissible: false,
         context: navigatorKey.currentState!.context,
-        builder: (context) => ErrorDialog(err),
-      );
-    });
+        builder: (context) => SuccessDialog(
+          'update-phone-number-success-text',
+          'update-phone-number-success-description',
+          () {},
+          showActions: false,
+        ),
+      ),
+      loadingText: 'updating-text',
+      autoClose: true,
+    );
   }
 
   void updateDisplayName() async {
@@ -392,55 +350,20 @@ class UserProfileScreen extends StatelessWidget {
     if (!data['status']) {
       return;
     }
-    showDialog(
-      barrierDismissible: false,
-      context: navigatorKey.currentState!.context,
-      builder: (context) => const LoadingDialog(
-        message: 'updating-text',
-      ),
-    );
-    await userController.updateDisplayName(data["value"]).then((result) async {
-      Navigator.pop(navigatorKey.currentState!.context);
-      if (result['success']) {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => SuccessDialog(
-            'update-display-name-success-text',
-            'update-display-name-success-description',
-            () {},
-            showActions: false,
-          ),
-        );
-        await Future.delayed(const Duration(seconds: 1));
-        Navigator.of(navigatorKey.currentState!.context).pop();
-      } else {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => ErrorDialog(result['err']),
-        );
-      }
-    }).catchError((err) {
-      Navigator.pop(navigatorKey.currentState!.context);
-      showDialog(
+    await loadingHandler(
+      () => userController.updateDisplayName(data["value"]),
+      (_) => showDialog(
         barrierDismissible: false,
         context: navigatorKey.currentState!.context,
-        builder: (context) => ErrorDialog(err),
-      );
-    });
-  }
-}
-
-class GreenDivider extends StatelessWidget {
-  const GreenDivider({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Divider(
-      color: ColorManagement.dividerColor,
+        builder: (context) => SuccessDialog(
+          'update-display-name-success-text',
+          'update-display-name-success-description',
+          () {},
+          showActions: false,
+        ),
+      ),
+      loadingText: 'updating-text',
+      autoClose: true,
     );
   }
 }
@@ -600,43 +523,21 @@ class ImageSourceButton extends StatelessWidget {
   void pickImage(ImageSource source) async {
     XFile? image = await picker.pickImage(source: source);
     if (image == null) return;
-    showDialog(
-      barrierDismissible: false,
-      context: navigatorKey.currentState!.context,
-      builder: (context) => const LoadingDialog(
-        message: 'updating-text',
-      ),
-    );
-    await userController.updateAvatar(image).then((result) async {
-      Navigator.pop(navigatorKey.currentState!.context);
-      if (result['success']) {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => SuccessDialog(
-            'update-avatar-success-text',
-            'update-avatar-success-description',
-            () {},
-            showActions: false,
-          ),
-        );
-        await Future.delayed(const Duration(seconds: 1));
-        Navigator.of(navigatorKey.currentState!.context).pop();
-      } else {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => ErrorDialog(result['err']),
-        );
-      }
-    }).catchError((err) {
-      Navigator.pop(navigatorKey.currentState!.context);
-      showDialog(
+    await loadingHandler(
+      () => userController.updateAvatar(image),
+      (_) => showDialog(
         barrierDismissible: false,
         context: navigatorKey.currentState!.context,
-        builder: (context) => ErrorDialog(err),
-      );
-    });
+        builder: (context) => SuccessDialog(
+          'update-avatar-success-text',
+          'update-avatar-success-description',
+          () {},
+          showActions: false,
+        ),
+      ),
+      loadingText: 'updating-text',
+      autoClose: true,
+    );
   }
 
   @override

@@ -8,6 +8,7 @@ import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/model/donation.dart';
+import 'package:food_bridge/model/loadinghandler.dart';
 import 'package:food_bridge/model/userrole.dart';
 import 'package:food_bridge/view/screens/chooselocation.dart';
 import 'package:food_bridge/view/screens/donationdetail.dart';
@@ -342,47 +343,21 @@ class DonationTileWidget extends StatelessWidget {
     if (!rs) {
       return rs;
     }
-    showDialog(
-      barrierDismissible: false,
-      context: navigatorKey.currentState!.context,
-      builder: (context) => const LoadingDialog(
-        message: 'deleting-text',
-      ),
-    );
-    await donationController
-        .softDeleteDonation({"id": id}).then((result) async {
-      Navigator.pop(navigatorKey.currentState!.context);
-      if (result['success']) {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => SuccessDialog(
-            'delete-donation-success-text',
-            'soft-delete-donation-success-description',
-            () {},
-            showActions: false,
-          ),
-        );
-        await Future.delayed(const Duration(seconds: 1));
-        Navigator.of(navigatorKey.currentState!.context).pop();
-      } else {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => ErrorDialog(result['err']),
-        );
-      }
-      return true;
-    }).catchError((err) {
-      Navigator.pop(navigatorKey.currentState!.context);
-      showDialog(
+    return loadingHandler(
+      () => donationController.softDeleteDonation({"id": id}),
+      (_) => showDialog(
         barrierDismissible: false,
         context: navigatorKey.currentState!.context,
-        builder: (context) => ErrorDialog(err),
-      );
-      return true;
-    });
-    return false;
+        builder: (context) => SuccessDialog(
+          'delete-donation-success-text',
+          'soft-delete-donation-success-description',
+          () {},
+          showActions: false,
+        ),
+      ),
+      loadingText: 'deleting-text',
+      autoClose: true,
+    );
   }
 
   @override
