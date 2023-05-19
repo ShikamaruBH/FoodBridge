@@ -105,7 +105,7 @@ class MapController extends ChangeNotifier {
 
   Future<LatLng> getCurrentLocation() async {
     isLoading = true;
-    currentAddress =
+    addressTextFieldController.text =
         localeController.getTranslate('getting-current-location-text');
     notifyListeners();
     final position = await Geolocator.getCurrentPosition();

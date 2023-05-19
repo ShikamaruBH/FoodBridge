@@ -111,8 +111,8 @@ class DonationController extends ChangeNotifier {
           allDonations.where((element) => element.deleteAt == null).toList();
       deletedDonations =
           allDonations.where((element) => element.deleteAt != null).toList();
-      debugPrint("Donation: $donations");
-      debugPrint("Deleted donation: $deletedDonations");
+      debugPrint("Fetch ${donations.length} donations");
+      debugPrint("Fetch ${deletedDonations.length} deleted donations");
       isLoading = false;
       notifyListeners();
     });
@@ -165,7 +165,7 @@ class DonationController extends ChangeNotifier {
         }
       }
       sortDonation();
-      debugPrint("Filtered donation: $donations");
+      debugPrint("Fetch ${donations.length} filtered donations");
       isLoading = false;
       notifyListeners();
     });
@@ -205,7 +205,7 @@ class DonationController extends ChangeNotifier {
             break;
         }
       }
-      debugPrint("Received donations: $receivedDonations");
+      debugPrint("Fetch ${receivedDonations.length} received donations");
       isLoading = false;
       notifyListeners();
     });

@@ -114,7 +114,7 @@ class HomeScreen extends StatelessWidget {
                             ],
                           ),
                           const VSpacer(),
-                          getMonthlyDescriptionTextWidget(),
+                          getCurrentMonthReportTextWidget(),
                           getDonationHistoryWidget(),
                         ],
                       ),
@@ -168,7 +168,7 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
-  getMonthlyDescriptionTextWidget() {
+  getCurrentMonthReportTextWidget() {
     switch (authController.currentUserRole) {
       case Role.donor:
         return MonthlyDescriptionTextWidget(
@@ -185,7 +185,7 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
-  List<Widget> getDrawerListTitle(BuildContext context) {
+  getDrawerListTitle(BuildContext context) {
     return [
       ChangeNotifierProvider.value(
         value: authController,
@@ -295,16 +295,6 @@ class DonationHistoryWidget extends StatelessWidget {
   }
 
   getHistoryListView(String nodata, List<Donation> source, bool canDelete) {
-    if (source.isEmpty) {
-      return Text(localeController.getTranslate(nodata));
-    }
-    if (source.isNotEmpty && !donationController.isLoading) {
-      return ListView.builder(
-        itemCount: source.length,
-        itemBuilder: (context, index) =>
-            DonationTileWidget(index, source, canDelete),
-      );
-    }
     if (donationController.isLoading) {
       return const Center(
         child: SizedBox(
@@ -314,6 +304,16 @@ class DonationHistoryWidget extends StatelessWidget {
             strokeWidth: 2,
           ),
         ),
+      );
+    }
+    if (source.isEmpty) {
+      return Text(localeController.getTranslate(nodata));
+    }
+    if (source.isNotEmpty && !donationController.isLoading) {
+      return ListView.builder(
+        itemCount: source.length,
+        itemBuilder: (context, index) =>
+            DonationTileWidget(index, source, canDelete),
       );
     }
   }
@@ -397,7 +397,7 @@ class DonationTileWidget extends StatelessWidget {
     );
   }
 
-  Padding getDeleteAbleDonationTile(Donation donation, BuildContext context) {
+  getDeleteAbleDonationTile(Donation donation, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Slidable(
@@ -462,7 +462,11 @@ class DonationTileWidget extends StatelessWidget {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      left: 10, top: 2, bottom: 2, right: 0),
+                    left: 10,
+                    top: 2,
+                    bottom: 2,
+                    right: 0,
+                  ),
                   child: SizedBox(
                     height: 85,
                     child: Column(
