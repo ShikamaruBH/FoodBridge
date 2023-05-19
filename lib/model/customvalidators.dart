@@ -18,4 +18,7 @@ class CustomValidator {
 
   static minLength(value) => FormBuilderValidators.minLength(value,
       errorText: translate('min-length-error-text') + value.toString());
+
+  static maxLength(value) => FormBuilderValidators.maxLength(value,
+      errorText: translate('max-length-error-text') + value.toString());
 }

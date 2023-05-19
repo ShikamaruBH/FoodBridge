@@ -9,12 +9,12 @@ class UserAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (authController.currentUserAvatar != null) {
+    if (authController.currentUserInfo.photoURL != null) {
       return ClipOval(
         child: Container(
           color: Colors.grey.shade100,
           child: CachedNetworkImage(
-            imageUrl: authController.currentUserAvatar!,
+            imageUrl: authController.currentUserInfo.photoURL!,
             width: constraints.maxWidth / 3,
             height: constraints.maxWidth / 3,
             fit: BoxFit.cover,

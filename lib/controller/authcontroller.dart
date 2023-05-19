@@ -1,15 +1,18 @@
+import 'dart:async';
+
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
+import 'package:food_bridge/model/userinfo.dart';
 import 'package:food_bridge/model/userrole.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthController extends ChangeNotifier {
   static final AuthController _instance = AuthController._internal();
-  String currentUsername = 'No username';
+  AppUserInfo currentUserInfo = AppUserInfo("No username", "");
   Role currentUserRole = Role.none;
-  String? currentUserAvatar;
 
   AuthController._internal() {
     listenToAuthState();
@@ -19,12 +22,38 @@ class AuthController extends ChangeNotifier {
     return _instance;
   }
 
-  void listenToAuthState() {
-    FirebaseAuth.instance.userChanges().listen((user) {
+  void listenToAuthState() async {
+    FirebaseAuth.instance.userChanges().listen((user) async {
       if (user != null) {
-        currentUsername = user.displayName!;
-        currentUserAvatar = user.photoURL;
+        // AuthController
+        currentUserInfo.displayName = user.displayName!;
+        currentUserInfo.photoURL = user.photoURL;
         notifyListeners();
+        // DonationController
+        IdTokenResult idTokenResult =
+            await FirebaseAuth.instance.currentUser!.getIdTokenResult();
+        Role currentUserRole =
+            RoleExtension.fromValue(idTokenResult.claims?['role'] ?? '');
+        switch (currentUserRole) {
+          case Role.donor:
+            donationController.listenToUserDonation();
+            debugPrint("User is donor, listen to user donation");
+            break;
+          case Role.recipient:
+            debugPrint("User is recipient, listen to user received donation");
+            donationController.listenToReceivedDonation();
+            break;
+          default:
+            debugPrint("User has no Role");
+        }
+        // UserController
+        userController.listenToUser();
+      }
+      if (user == null) {
+        await donationController.cancelAllListener();
+        await userController.cancelAllListener();
+        debugPrint("User logged out, cancelled all listener");
+        return;
       }
     });
   }
@@ -53,12 +82,13 @@ class AuthController extends ChangeNotifier {
       );
       final userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
-      currentUsername = userCredential.user!.displayName ?? "No display name";
+      currentUserInfo.displayName =
+          userCredential.user!.displayName ?? "No display name";
       IdTokenResult idTokenResult =
           await userCredential.user!.getIdTokenResult();
       currentUserRole =
           RoleExtension.fromValue(idTokenResult.claims?['role'] ?? '');
-      currentUserAvatar = userCredential.user!.photoURL;
+      currentUserInfo.photoURL = userCredential.user!.photoURL;
       return {"success": true};
     } catch (err) {
       return {"success": false, "err": err};
@@ -70,12 +100,13 @@ class AuthController extends ChangeNotifier {
       final userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(
               email: data['email'], password: data['password']);
-      currentUsername = userCredential.user!.displayName ?? "No display name";
+      currentUserInfo.displayName =
+          userCredential.user!.displayName ?? "No display name";
       IdTokenResult idTokenResult =
           await userCredential.user!.getIdTokenResult();
       currentUserRole =
           RoleExtension.fromValue(idTokenResult.claims?['role'] ?? '');
-      currentUserAvatar = userCredential.user!.photoURL;
+      currentUserInfo.photoURL = userCredential.user!.photoURL;
       return {"success": true};
     } on FirebaseFunctionsException catch (err) {
       return {"success": false, "err": err};
@@ -103,11 +134,11 @@ class AuthController extends ChangeNotifier {
   Future<bool> checkUser() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      currentUsername = user.displayName!;
+      currentUserInfo.displayName = user.displayName!;
       IdTokenResult idTokenResult = await user.getIdTokenResult();
       currentUserRole =
           RoleExtension.fromValue(idTokenResult.claims?['role'] ?? '');
-      currentUserAvatar = user.photoURL;
+      currentUserInfo.photoURL = user.photoURL;
       return true;
     }
     return false;

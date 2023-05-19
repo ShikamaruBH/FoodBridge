@@ -96,7 +96,7 @@ class HomeScreen extends StatelessWidget {
                           UserAvatar(constraints),
                           const VSpacer(),
                           Text(
-                            authController.currentUsername,
+                            authController.currentUserInfo.displayName,
                             style: StyleManagement.usernameTextStyle,
                           ),
                           const VSpacer(),
@@ -717,7 +717,7 @@ class AccountHeaderWidget extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 20),
               child: Text(
-                authController.currentUsername,
+                authController.currentUserInfo.displayName,
                 style: StyleManagement.usernameTextStyle,
               ),
             ),

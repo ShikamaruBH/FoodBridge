@@ -3,7 +3,7 @@ import functions = require("firebase-functions");
 import admin = require("firebase-admin");
 import {isAuthenticated} from "./validators";
 import {UserRecord} from "firebase-functions/v1/auth";
-import {donationsRef} from "./references";
+import {donationsRef, userRef} from "./references";
 
 exports.updateUserRole = functions.https.onCall(async (data, context) => {
   isAuthenticated(context);
@@ -29,6 +29,16 @@ exports.getDonorInfo = functions.https.onCall(async (data, context) => {
   }
   const displayName = userRecord.displayName;
   const photoURL = userRecord.photoURL;
+  let email;
+  let phoneNumber;
+  try {
+    const user = await userRef.doc(data.uid).get();
+    email = user.data()?.email;
+    phoneNumber = user.data()?.phoneNumber;
+  } catch (err) {
+    email = "";
+    phoneNumber = "";
+  }
   const donations = await donationsRef.where("donor", "==", data.uid).get();
   const totalDonation = donations.docs.length;
   let rating = 0;
@@ -54,6 +64,8 @@ exports.getDonorInfo = functions.https.onCall(async (data, context) => {
   return {
     displayName,
     photoURL,
+    email,
+    phoneNumber,
     totalDonation,
     totalRecipient,
     rating,
@@ -84,6 +96,16 @@ exports.getRecipientInfo = functions.https.onCall(async (data, context) => {
   }
   const displayName = userRecord.displayName;
   const photoURL = userRecord.photoURL;
+  let email;
+  let phoneNumber;
+  try {
+    const user = await userRef.doc(data.uid).get();
+    email = user.data()?.email;
+    phoneNumber = user.data()?.phoneNumber;
+  } catch (err) {
+    email = "";
+    phoneNumber = "";
+  }
   const donations = await donationsRef
       .where(`recipients.${data.uid}`, "!=", null)
       .get();
@@ -92,7 +114,22 @@ exports.getRecipientInfo = functions.https.onCall(async (data, context) => {
   return {
     displayName,
     photoURL,
+    email,
+    phoneNumber,
     totalReceivedDonation,
     rating,
   };
+});
+
+exports.updateUserInfo = functions.https.onCall(async (data, context) => {
+  isAuthenticated(context);
+  return userRef
+      .doc(context.auth!.uid)
+      .set(
+          data,
+          {merge: true})
+      .then(() => ({"": ""}))
+      .catch((err) => {
+        throw new functions.https.HttpsError(err.code, err.message);
+      });
 });

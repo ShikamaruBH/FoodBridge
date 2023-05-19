@@ -4,7 +4,9 @@ import 'package:food_bridge/controller/authcontroller.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/donationcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
+import 'package:food_bridge/controller/usercontroller.dart';
 import 'package:food_bridge/main.dart';
+import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/model/userinfo.dart';
 import 'package:food_bridge/model/userrole.dart';
@@ -28,7 +30,7 @@ class UserProfileScreen extends StatelessWidget {
       builder: (_, constraints) => ChangeNotifierProvider.value(
         value: localeController,
         child: Consumer<LocalizationController>(
-          builder: (_, localeControllel, __) => Scaffold(
+          builder: (_, localeController, __) => Scaffold(
             appBar: AppBar(
               elevation: 0,
               leading: IconButton(
@@ -114,6 +116,51 @@ class UserProfileScreen extends StatelessWidget {
                               donorInfo: donorInfo,
                               recipientInfo: recipientInfo,
                             ),
+                            const VSpacer(),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Card(
+                                  margin: EdgeInsets.zero,
+                                  color: Colors.grey.shade100,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 10,
+                                    ),
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.vertical,
+                                      child: ChangeNotifierProvider.value(
+                                        value: userController,
+                                        child: Consumer<UserController>(
+                                          builder: (_, userController, __) =>
+                                              Column(
+                                            children: [
+                                              getUserInfoRow(
+                                                Icons.phone,
+                                                getUserPhone(),
+                                                context,
+                                                updatePhoneNumber,
+                                              ),
+                                              const GreenDivider(),
+                                              getUserInfoRow(
+                                                Icons.email,
+                                                getUserEmail(),
+                                                context,
+                                                updateEmail,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -128,14 +175,63 @@ class UserProfileScreen extends StatelessWidget {
     );
   }
 
+  InkWell getUserInfoRow(IconData icon, String content, context, callback) {
+    return InkWell(
+      onTap: (donorInfo == null && recipientInfo == null) ? callback : null,
+      splashColor: ColorManagement.inkwellSplashColor,
+      overlayColor:
+          MaterialStatePropertyAll(ColorManagement.inkwellOverlayColor),
+      borderRadius: BorderRadius.circular(5),
+      child: Padding(
+        padding: const EdgeInsets.all(3),
+        child: Row(
+          children: [
+            Icon(icon),
+            HSpacer(),
+            Text(content),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String getUserPhone() {
+    for (AppUserInfo? userInfo in [
+      donorInfo,
+      recipientInfo,
+      authController.currentUserInfo
+    ]) {
+      if (userInfo != null) {
+        return userInfo.phoneNumber ?? "";
+      }
+    }
+    return "";
+  }
+
+  String getUserEmail() {
+    for (AppUserInfo? userInfo in [
+      donorInfo,
+      recipientInfo,
+      authController.currentUserInfo
+    ]) {
+      if (userInfo != null) {
+        return userInfo.email ?? "";
+      }
+    }
+    return "";
+  }
+
   String getUsername() {
-    if (donorInfo != null) {
-      return donorInfo!.displayName;
+    for (AppUserInfo? userInfo in [
+      donorInfo,
+      recipientInfo,
+      authController.currentUserInfo
+    ]) {
+      if (userInfo != null) {
+        return userInfo.displayName;
+      }
     }
-    if (recipientInfo != null) {
-      return recipientInfo!.displayName;
-    }
-    return authController.currentUsername;
+    return "";
   }
 
   getEditUsernameButton() {
@@ -159,25 +255,33 @@ class UserProfileScreen extends StatelessWidget {
   }
 
   getUserAvatar(BoxConstraints constraints) {
-    if (donorInfo != null || recipientInfo != null) {
-      if (donorInfo?.photoURL != null) {
-        return Avatar(donorInfo!.photoURL!, constraints);
+    for (AppUserInfo? userInfo in [
+      donorInfo,
+      recipientInfo,
+      authController.currentUserInfo
+    ]) {
+      if (userInfo == null) {
+        continue;
       }
-      if (recipientInfo?.photoURL != null) {
-        return Avatar(recipientInfo!.photoURL!, constraints);
+      if (userInfo.photoURL == null) {
+        return BlankAvatar(constraints);
       }
-      return BlankAvatar(constraints);
+      return Avatar(userInfo.photoURL!, constraints);
     }
-    if (authController.currentUserAvatar != null) {
-      return Avatar(authController.currentUserAvatar!, constraints);
-    }
-    return BlankAvatar(constraints);
+    return "";
   }
 
-  void updateDisplayName() async {
+  void updateEmail() async {
     Map<String, dynamic> data = await showDialog(
       context: navigatorKey.currentState!.context,
-      builder: (context) => UsernameDialog(),
+      builder: (context) => UpdateUserDetailDialog(
+        'edit-email-title',
+        authController.currentUserInfo.email ?? "",
+        [
+          CustomValidator.required,
+          CustomValidator.email,
+        ],
+      ),
     );
     if (!data['status']) {
       return;
@@ -189,9 +293,113 @@ class UserProfileScreen extends StatelessWidget {
         message: 'updating-text',
       ),
     );
-    await userController
-        .updateDisplayName(data["username"])
-        .then((result) async {
+    await userController.updateEmail(data["value"]).then((result) async {
+      Navigator.pop(navigatorKey.currentState!.context);
+      if (result['success']) {
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => SuccessDialog(
+            'update-email-success-text',
+            'update-email-success-description',
+            () {},
+            showActions: false,
+          ),
+        );
+        await Future.delayed(const Duration(seconds: 1));
+        Navigator.of(navigatorKey.currentState!.context).pop();
+      } else {
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => ErrorDialog(result['err']),
+        );
+      }
+    }).catchError((err) {
+      Navigator.pop(navigatorKey.currentState!.context);
+      showDialog(
+        barrierDismissible: false,
+        context: navigatorKey.currentState!.context,
+        builder: (context) => ErrorDialog(err),
+      );
+    });
+  }
+
+  void updatePhoneNumber() async {
+    Map<String, dynamic> data = await showDialog(
+      context: navigatorKey.currentState!.context,
+      builder: (context) => UpdateUserDetailDialog(
+        'edit-phone-number-title',
+        authController.currentUserInfo.phoneNumber ?? "",
+        [
+          CustomValidator.required,
+          CustomValidator.numberic,
+          CustomValidator.maxLength(15),
+        ],
+      ),
+    );
+    if (!data['status']) {
+      return;
+    }
+    showDialog(
+      barrierDismissible: false,
+      context: navigatorKey.currentState!.context,
+      builder: (context) => const LoadingDialog(
+        message: 'updating-text',
+      ),
+    );
+    await userController.updatePhoneNumber(data["value"]).then((result) async {
+      Navigator.pop(navigatorKey.currentState!.context);
+      if (result['success']) {
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => SuccessDialog(
+            'update-phone-number-success-text',
+            'update-phone-number-success-description',
+            () {},
+            showActions: false,
+          ),
+        );
+        await Future.delayed(const Duration(seconds: 1));
+        Navigator.of(navigatorKey.currentState!.context).pop();
+      } else {
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => ErrorDialog(result['err']),
+        );
+      }
+    }).catchError((err) {
+      Navigator.pop(navigatorKey.currentState!.context);
+      showDialog(
+        barrierDismissible: false,
+        context: navigatorKey.currentState!.context,
+        builder: (context) => ErrorDialog(err),
+      );
+    });
+  }
+
+  void updateDisplayName() async {
+    Map<String, dynamic> data = await showDialog(
+      context: navigatorKey.currentState!.context,
+      builder: (context) => UpdateUserDetailDialog(
+        'edit-username-title',
+        authController.currentUserInfo.displayName,
+        [CustomValidator.required],
+      ),
+    );
+    if (!data['status']) {
+      return;
+    }
+    showDialog(
+      barrierDismissible: false,
+      context: navigatorKey.currentState!.context,
+      builder: (context) => const LoadingDialog(
+        message: 'updating-text',
+      ),
+    );
+    await userController.updateDisplayName(data["value"]).then((result) async {
       Navigator.pop(navigatorKey.currentState!.context);
       if (result['success']) {
         showDialog(
@@ -221,6 +429,19 @@ class UserProfileScreen extends StatelessWidget {
         builder: (context) => ErrorDialog(err),
       );
     });
+  }
+}
+
+class GreenDivider extends StatelessWidget {
+  const GreenDivider({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Divider(
+      color: ColorManagement.dividerColor,
+    );
   }
 }
 

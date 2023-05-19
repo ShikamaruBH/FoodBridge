@@ -406,6 +406,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "Next",
     "vi": "Tiếp tục",
   },
+  "save-button-title": {
+    "en": "Save",
+    "vi": "Lưu",
+  },
   "donor-text": {
     "en": "Donor",
     "vi": "Người cho",
@@ -457,6 +461,10 @@ Map<String, dynamic> appLocalizations = {
   "min-length-error-text": {
     "en": "Minimum length is ",
     "vi": "Độ dài tối thiểu là ",
+  },
+  "max-length-error-text": {
+    "en": "Maximum length is ",
+    "vi": "Độ dài tối đa là ",
   },
   "wrong-password": {
     "en": "Wrong password",
@@ -520,6 +528,22 @@ Map<String, dynamic> appLocalizations = {
     "en": "Update username success",
     "vi": "Cập nhật tên người dùng thành công",
   },
+  "update-phone-number-success-text": {
+    "en": "Phone number updated",
+    "vi": "Đã cập nhật số điện thoại",
+  },
+  "update-phone-number-success-description": {
+    "en": "Update phone number success",
+    "vi": "Cập nhật số điện thoại thành công",
+  },
+  "update-email-success-text": {
+    "en": "Email updated",
+    "vi": "Đã cập nhật email",
+  },
+  "update-email-success-description": {
+    "en": "Update email success",
+    "vi": "Cập nhật email thành công",
+  },
   "updating-text": {
     "en": "Updating...",
     "vi": "Đang cập nhật...",
@@ -527,6 +551,14 @@ Map<String, dynamic> appLocalizations = {
   "edit-username-title": {
     "en": "Edit username",
     "vi": "Cập nhật tên người dùng",
+  },
+  "edit-phone-number-title": {
+    "en": "Edit phone number",
+    "vi": "Cập nhật số điện thoại",
+  },
+  "edit-email-title": {
+    "en": "Edit email",
+    "vi": "Cập nhật email",
   },
   "recipients-button-text": {
     "en": "Recipients",

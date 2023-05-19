@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
-import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 
 class LoadingDialog extends StatelessWidget {
   final String message;
@@ -277,9 +277,12 @@ class ReviewDialog extends StatelessWidget {
   }
 }
 
-class UsernameDialog extends StatelessWidget {
+class UpdateUserDetailDialog extends StatelessWidget {
   final _formKey = GlobalKey<FormBuilderState>();
-  UsernameDialog({super.key});
+  final String title;
+  final List<String? Function(String?)> validators;
+  final String value;
+  UpdateUserDetailDialog(this.title, this.value, this.validators, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -298,7 +301,7 @@ class UsernameDialog extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    localeController.getTranslate('edit-username-title'),
+                    localeController.getTranslate(title),
                     style: StyleManagement.settingsLabelTextStyle,
                     textAlign: TextAlign.center,
                   ),
@@ -309,12 +312,12 @@ class UsernameDialog extends StatelessWidget {
             FormBuilder(
               key: _formKey,
               child: FormBuilderTextField(
-                name: 'username',
-                initialValue: authController.currentUsername,
+                name: 'value',
+                initialValue: value,
                 textAlign: TextAlign.center,
                 decoration:
                     DecoratorManagement.defaultTextFieldDecoratorDark("", null),
-                validator: CustomValidator.required,
+                validator: FormBuilderValidators.compose(validators),
               ),
             ),
             const VSpacer(),
@@ -335,13 +338,13 @@ class UsernameDialog extends StatelessWidget {
                       Map<String, dynamic> data = _formKey.currentState!.value;
                       Navigator.pop(context, {
                         "status": true,
-                        'username': data['username'].trim(),
+                        'value': data['value'].trim(),
                       });
                     }
                   },
                   style: StyleManagement.textButtonStyle,
-                  child: Text(
-                      localeController.getTranslate('confirm-button-title')),
+                  child:
+                      Text(localeController.getTranslate('save-button-title')),
                 ),
               ],
             ),

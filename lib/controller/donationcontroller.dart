@@ -30,38 +30,10 @@ class DonationController extends ChangeNotifier {
   StreamSubscription? donationListener;
   StreamSubscription? receivedDonationListener;
 
-  DonationController._internal() {
-    listenToUserChange();
-  }
+  DonationController._internal();
 
   factory DonationController() {
     return _instance;
-  }
-
-  void listenToUserChange() async {
-    FirebaseAuth.instance.userChanges().listen((user) async {
-      if (user == null) {
-        await cancelAllListener();
-        debugPrint("User logged out, cancelled all listener");
-        return;
-      }
-      IdTokenResult idTokenResult =
-          await FirebaseAuth.instance.currentUser!.getIdTokenResult();
-      Role currentUserRole =
-          RoleExtension.fromValue(idTokenResult.claims?['role'] ?? '');
-      switch (currentUserRole) {
-        case Role.donor:
-          listenToUserDonation();
-          debugPrint("User is donor, listen to user donation");
-          break;
-        case Role.recipient:
-          debugPrint("User is recipient, listen to user received donation");
-          listenToReceivedDonation();
-          break;
-        default:
-          debugPrint("User has no Role");
-      }
-    });
   }
 
   cancelAllListener() async {

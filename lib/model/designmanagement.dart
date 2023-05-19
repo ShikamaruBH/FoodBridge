@@ -13,6 +13,9 @@ class ColorManagement {
   static final foodTypeCheckBoxCardBackgroundUncheck =
       const Color(0xffD9D9D9).withOpacity(.6);
   static const foodTypeCheckBoxCardBackgroundChecked = Color(0xff489FB5);
+  static final inkwellSplashColor = const Color(0xff489FB5).withOpacity(.3);
+  static final inkwellOverlayColor = const Color(0xff16697A).withOpacity(.3);
+  static final dividerColor = const Color(0xff16697A).withOpacity(.6);
   static final foodTypeCheckBoxCardIconUncheckColorDark =
       Colors.black.withOpacity(.1);
   static final foodTypeCheckBoxCardIconUncheckColorLight =
