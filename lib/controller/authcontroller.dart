@@ -13,6 +13,7 @@ class AuthController extends ChangeNotifier {
   static final AuthController _instance = AuthController._internal();
   AppUserInfo currentUserInfo = AppUserInfo("No username", "");
   Role currentUserRole = Role.none;
+  StreamSubscription? listener;
 
   AuthController._internal() {
     listenToAuthState();
@@ -22,11 +23,12 @@ class AuthController extends ChangeNotifier {
     return _instance;
   }
 
-  void listenToAuthState() async {
-    FirebaseAuth.instance.userChanges().listen((user) async {
+  Future<void> listenToAuthState() async {
+    await listener?.cancel();
+    listener = FirebaseAuth.instance.userChanges().listen((user) async {
       if (user != null) {
         // AuthController
-        currentUserInfo.displayName = user.displayName!;
+        currentUserInfo.displayName = user.displayName ?? "";
         currentUserInfo.photoURL = user.photoURL;
         notifyListeners();
         // DonationController
@@ -36,23 +38,26 @@ class AuthController extends ChangeNotifier {
             RoleExtension.fromValue(idTokenResult.claims?['role'] ?? '');
         switch (currentUserRole) {
           case Role.donor:
-            donationController.listenToUserDonation();
+            await donationController.listenToUserDonation();
             debugPrint("User is donor, listen to user donation");
             break;
           case Role.recipient:
             debugPrint("User is recipient, listen to user received donation");
-            donationController.listenToReceivedDonation();
+            await donationController.listenToReceivedDonation();
             break;
           default:
             debugPrint("User has no Role");
         }
+        notifyListeners();
         // UserController
-        userController.listenToUser();
+        await userController.listenToUser();
+        notifyListeners();
       }
       if (user == null) {
         await donationController.cancelAllListener();
         await userController.cancelAllListener();
-        debugPrint("User logged out, cancelled all listener");
+        listener?.cancel();
+        debugPrint("User logged out, all listener cancelled");
         return;
       }
     });

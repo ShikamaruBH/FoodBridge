@@ -608,6 +608,14 @@ Map<String, dynamic> appLocalizations = {
     "en": "Updating...",
     "vi": "Đang cập nhật...",
   },
+  "choose-role-success-text": {
+    "en": "Role updated",
+    "vi": "Cập nhật thành công",
+  },
+  "choose-role-success-description": {
+    "en": "You need to login again to continue",
+    "vi": "Bạn cần đăng nhập lại để tiếp tục",
+  },
   "edit-username-title": {
     "en": "Edit username",
     "vi": "Cập nhật tên người dùng",

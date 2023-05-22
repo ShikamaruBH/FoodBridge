@@ -47,7 +47,7 @@ class DonationController extends ChangeNotifier {
     deletedDonations.clear();
   }
 
-  void listenToUserDonation() async {
+  Future<void> listenToUserDonation() async {
     await cancelAllListener();
     allDonations.clear();
     debugPrint(
@@ -143,7 +143,7 @@ class DonationController extends ChangeNotifier {
     });
   }
 
-  void listenToReceivedDonation() async {
+  Future<void> listenToReceivedDonation() async {
     await cancelAllListener();
     receivedDonations.clear();
     var uid = FirebaseAuth.instance.currentUser!.uid;
