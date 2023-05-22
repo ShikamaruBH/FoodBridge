@@ -4,12 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/bottombuttoncontroller.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
+import 'package:food_bridge/controller/donationcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/mapcontroller.dart';
 import 'package:food_bridge/controller/quantitycontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
-import 'package:food_bridge/model/donation.dart';
 import 'package:food_bridge/model/loadinghandler.dart';
 import 'package:food_bridge/model/userinfo.dart';
 import 'package:food_bridge/model/userrole.dart';
@@ -21,8 +21,8 @@ import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:provider/provider.dart';
 
 class DonationDetailScreen extends StatelessWidget {
-  final Donation donation;
-  const DonationDetailScreen(this.donation, {super.key});
+  final String donationId;
+  const DonationDetailScreen(this.donationId, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -50,223 +50,248 @@ class DonationDetailScreen extends StatelessWidget {
             body: SizedBox(
               width: constraints.maxWidth,
               height: constraints.maxHeight,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: FutureBuilder(
-                        future: userController.getUserInfo(donation.donor),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                                  ConnectionState.waiting ||
-                              snapshot.data == null) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                HSpacer(),
-                                const SizedBox(
-                                  width: 30,
-                                  height: 30,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                ),
-                              ],
-                            );
-                          }
-                          final userInfo = AppUserInfo.fromJson(
-                              snapshot.data!['result'].data);
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              getUserAvatar(constraints, userInfo),
-                              HSpacer(),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: InkWell(
-                                  onTap: () => openDonorProfile(context),
-                                  child: Text(
-                                    userInfo.displayName,
-                                    style:
-                                        StyleManagement.menuTextStyle.copyWith(
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
+              child: ChangeNotifierProvider.value(
+                value: donationController,
+                child: Consumer<DonationController>(
+                  builder: (_, __, ___) => Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: FutureBuilder(
+                            future: userController.getUserInfo(
+                                donationController
+                                    .getDonation(donationId)
+                                    .donor),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                      ConnectionState.waiting ||
+                                  snapshot.data == null) {
+                                return Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    HSpacer(),
+                                    const SizedBox(
+                                      width: 30,
+                                      height: 30,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          );
-                        }),
-                  ),
-                  const VSpacer(),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Flexible(
-                            child: getImageDisplayer(constraints),
-                          ),
-                          Divider(color: ColorManagement.hintTextColorDark),
-                          Expanded(
-                            child: Card(
-                              color: Colors.grey.shade200,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              margin: EdgeInsets.zero,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: SingleChildScrollView(
-                                  scrollDirection: Axis.vertical,
-                                  child: Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Flexible(
-                                              child: Text(
-                                                donation.title,
-                                                style: StyleManagement
-                                                    .menuTextStyle
-                                                    .copyWith(fontSize: 17),
-                                              ),
-                                            ),
-                                          ],
+                                  ],
+                                );
+                              }
+                              final userInfo = AppUserInfo.fromJson(
+                                  snapshot.data!['result'].data);
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  getUserAvatar(constraints, userInfo),
+                                  HSpacer(),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 10),
+                                    child: InkWell(
+                                      onTap: () => openDonorProfile(context),
+                                      child: Text(
+                                        userInfo.displayName,
+                                        style: StyleManagement.menuTextStyle
+                                            .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
                                         ),
                                       ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
+                                    ),
+                                  )
+                                ],
+                              );
+                            }),
+                      ),
+                      const VSpacer(),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Flexible(
+                                child: getImageDisplayer(constraints),
+                              ),
+                              Divider(color: ColorManagement.hintTextColorDark),
+                              Expanded(
+                                child: Card(
+                                  color: Colors.grey.shade200,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  margin: EdgeInsets.zero,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.vertical,
+                                      child: Column(
                                         children: [
-                                          RichText(
-                                            text: TextSpan(
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 8),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
                                               children: [
-                                                TextSpan(
-                                                  text:
-                                                      "${localeController.getTranslate('food-quantity-title')}: ",
-                                                  style: StyleManagement
-                                                      .donationDetailTextStyle,
+                                                Flexible(
+                                                  child: Text(
+                                                    donationController
+                                                        .getDonation(donationId)
+                                                        .title,
+                                                    style: StyleManagement
+                                                        .menuTextStyle
+                                                        .copyWith(fontSize: 17),
+                                                  ),
                                                 ),
-                                                TextSpan(
-                                                  text: localeController
-                                                          .getTranslate(
-                                                              "quantity-left-text")(
-                                                      donation
-                                                          .getQuantityLeft(),
-                                                      donation.unit),
+                                              ],
+                                            ),
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              RichText(
+                                                text: TextSpan(
+                                                  children: [
+                                                    TextSpan(
+                                                      text:
+                                                          "${localeController.getTranslate('food-quantity-title')}: ",
+                                                      style: StyleManagement
+                                                          .donationDetailTextStyle,
+                                                    ),
+                                                    TextSpan(
+                                                      text: localeController
+                                                              .getTranslate(
+                                                                  "quantity-left-text")(
+                                                          donationController
+                                                              .getDonation(
+                                                                  donationId)
+                                                              .getQuantityLeft(),
+                                                          donationController
+                                                              .getDonation(
+                                                                  donationId)
+                                                              .unit),
+                                                      style: StyleManagement
+                                                          .notificationTitleMedium
+                                                          .copyWith(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const VSpacer(),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              donationController
+                                                  .getDonation(donationId)
+                                                  .getTimeRemaining()
+                                            ],
+                                          ),
+                                          const VSpacer(),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                localeController.getTranslate(
+                                                        'address-title') +
+                                                    ': ',
+                                                style: StyleManagement
+                                                    .donationDetailTextStyle,
+                                              )
+                                            ],
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Flexible(
+                                                child: ChangeNotifierProvider
+                                                    .value(
+                                                  value: mapController,
+                                                  child:
+                                                      Consumer<MapController>(
+                                                    builder: (_, mapController,
+                                                            __) =>
+                                                        InkWell(
+                                                      onTap: () =>
+                                                          showRoute(context),
+                                                      child:
+                                                          getCurrentAddressTextWidget(),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const VSpacer(),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                localeController.getTranslate(
+                                                        'pickup-instruction-text') +
+                                                    ': ',
+                                                style: StyleManagement
+                                                    .donationDetailTextStyle,
+                                              )
+                                            ],
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Flexible(
+                                                child: Text(
+                                                  donationController
+                                                      .getDonation(donationId)
+                                                      .note,
                                                   style: StyleManagement
                                                       .notificationTitleMedium
                                                       .copyWith(
                                                           fontWeight:
                                                               FontWeight.w600),
                                                 ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const VSpacer(),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [donation.getTimeRemaining()],
-                                      ),
-                                      const VSpacer(),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            localeController.getTranslate(
-                                                    'address-title') +
-                                                ': ',
-                                            style: StyleManagement
-                                                .donationDetailTextStyle,
-                                          )
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Flexible(
-                                            child: ChangeNotifierProvider.value(
-                                              value: mapController,
-                                              child: Consumer<MapController>(
-                                                builder:
-                                                    (_, mapController, __) =>
-                                                        InkWell(
-                                                  onTap: () =>
-                                                      showRoute(context),
-                                                  child:
-                                                      getCurrentAddressTextWidget(),
-                                                ),
                                               ),
-                                            ),
+                                            ],
                                           ),
                                         ],
                                       ),
-                                      const VSpacer(),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            localeController.getTranslate(
-                                                    'pickup-instruction-text') +
-                                                ': ',
-                                            style: StyleManagement
-                                                .donationDetailTextStyle,
-                                          )
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Flexible(
-                                            child: Text(
-                                              donation.note,
-                                              style: StyleManagement
-                                                  .notificationTitleMedium
-                                                  .copyWith(
-                                                      fontWeight:
-                                                          FontWeight.w600),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ChangeNotifierProvider.value(
-                      value: bottomButtonController,
-                      child: Consumer<BottomButtonController>(
-                        builder: (_, bottomButtonController, __) => Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: getBottomButton(context, constraints),
                         ),
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ChangeNotifierProvider.value(
+                          value: bottomButtonController,
+                          child: Consumer<BottomButtonController>(
+                            builder: (_, bottomButtonController, __) => Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: getBottomButton(context, constraints),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
@@ -302,7 +327,7 @@ class DonationDetailScreen extends StatelessWidget {
   }
 
   getImageDisplayer(BoxConstraints constraints) {
-    if (donation.imgs.isEmpty) {
+    if (donationController.getDonation(donationId).imgs.isEmpty) {
       return Container(
         width: constraints.maxWidth,
         height: constraints.maxHeight * .25,
@@ -321,12 +346,13 @@ class DonationDetailScreen extends StatelessWidget {
       );
     }
     return CarouselSlider.builder(
-      itemCount: donation.imgs.length,
+      itemCount: donationController.getDonation(donationId).imgs.length,
       itemBuilder: (context, index, realIndex) => ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: FutureBuilder(
-          future:
-              donationController.getUrl(donation.donor, donation.imgs[index]),
+          future: donationController.getUrl(
+              donationController.getDonation(donationId).donor,
+              donationController.getDonation(donationId).imgs[index]),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting ||
                 snapshot.data == null) {
@@ -435,6 +461,7 @@ class DonationDetailScreen extends StatelessWidget {
 
   List<Widget> getBottomButton(
       BuildContext context, BoxConstraints constraints) {
+    final donation = donationController.getDonation(donationId);
     switch (authController.currentUserRole) {
       case Role.donor:
         return [
@@ -514,7 +541,9 @@ class DonationDetailScreen extends StatelessWidget {
   }
 
   bool alreadyReceivedDonation() {
-    return donation.recipients
+    return donationController
+        .getDonation(donationId)
+        .recipients
         .containsKey(FirebaseAuth.instance.currentUser!.uid);
   }
 
@@ -568,7 +597,8 @@ class DonationDetailScreen extends StatelessWidget {
           ),
           HSpacer(),
           IconButton(
-            onPressed: () => receiveDonation(donation.id),
+            onPressed: () =>
+                receiveDonation(donationController.getDonation(donationId).id),
             icon: const Icon(
               Icons.done,
               color: Colors.green,
@@ -598,7 +628,11 @@ class DonationDetailScreen extends StatelessWidget {
   getReviewsButton(BoxConstraints constraints, BuildContext context) {
     return IconTextButton(
       constraints,
-      () => showReviews(context, constraints, 'review-button-text'),
+      () => showReviews(
+        context,
+        constraints,
+        'review-button-text',
+      ),
       Icons.mode_comment_outlined,
       'review-button-text',
     );
@@ -637,6 +671,7 @@ class DonationDetailScreen extends StatelessWidget {
   }
 
   void showRoute(context) async {
+    final donation = donationController.getDonation(donationId);
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) =>
           ViewRouteScreen(donation.latlng.latitude, donation.latlng.longitude),
@@ -662,7 +697,11 @@ class DonationDetailScreen extends StatelessWidget {
   }
 
   void showBottomPanel(
-      context, BoxConstraints constraints, listview, String title) {
+    context,
+    BoxConstraints constraints,
+    listview,
+    String title,
+  ) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -706,6 +745,7 @@ class DonationDetailScreen extends StatelessWidget {
   }
 
   getReviewListView(BoxConstraints constraints) {
+    final donation = donationController.getDonation(donationId);
     if (donation.reviews.isEmpty) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -714,15 +754,21 @@ class DonationDetailScreen extends StatelessWidget {
         ],
       );
     }
-    return ListView.builder(
-      itemCount: donation.reviews.length,
-      itemBuilder: (context, index) {
-        return reviewListTitle(index, constraints);
-      },
+    return ChangeNotifierProvider.value(
+      value: donationController,
+      child: Consumer<DonationController>(
+        builder: (_, __, ___) => ListView.builder(
+          itemCount: donation.reviews.length,
+          itemBuilder: (context, index) {
+            return reviewListTitle(index, constraints);
+          },
+        ),
+      ),
     );
   }
 
   getRecipientsListView(BoxConstraints constraints) {
+    final donation = donationController.getDonation(donationId);
     if (donation.recipients.isEmpty) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -731,15 +777,21 @@ class DonationDetailScreen extends StatelessWidget {
         ],
       );
     }
-    return ListView.builder(
-      itemCount: donation.recipients.length,
-      itemBuilder: (context, index) {
-        return recipientListTitle(index, constraints);
-      },
+    return ChangeNotifierProvider.value(
+      value: donationController,
+      child: Consumer<DonationController>(
+        builder: (_, __, ___) => ListView.builder(
+          itemCount: donation.recipients.length,
+          itemBuilder: (context, index) {
+            return recipientListTitle(index, constraints);
+          },
+        ),
+      ),
     );
   }
 
   reviewListTitle(int index, BoxConstraints constraints) {
+    final donation = donationController.getDonation(donationId);
     return FutureBuilder(
       future:
           userController.getUserInfo(donation.recipients.keys.toList()[index]),
@@ -820,6 +872,7 @@ class DonationDetailScreen extends StatelessWidget {
   }
 
   recipientListTitle(int index, BoxConstraints constraints) {
+    final donation = donationController.getDonation(donationId);
     return FutureBuilder(
       future: userController.getUserInfo(donation.reviews.keys.toList()[index]),
       builder: (context, snapshot) {
@@ -907,7 +960,8 @@ class DonationDetailScreen extends StatelessWidget {
 
   openDonorProfile(BuildContext context) async {
     await loadingHandler(
-      () => userController.getDonorInfo(donation.donor),
+      () => userController
+          .getDonorInfo(donationController.getDonation(donationId).donor),
       (result) {
         DonorInfo donorInfo = DonorInfo.fromJson(result["result"].data);
         Navigator.of(context).push(

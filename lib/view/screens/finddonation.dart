@@ -321,7 +321,7 @@ class DonationTileWidget extends StatelessWidget {
             quantityController.setMaxValue(donation.getQuantityLeft().toInt());
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => DonationDetailScreen(donation),
+                builder: (context) => DonationDetailScreen(donation.id),
               ),
             );
           },

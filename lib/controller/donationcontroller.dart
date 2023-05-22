@@ -376,6 +376,16 @@ class DonationController extends ChangeNotifier {
         .length;
   }
 
+  getDonation(String id) {
+    for (var list in [donations, receivedDonations, deletedDonations]) {
+      final rs = list.where((donation) => donation.id == id);
+      if (rs.isNotEmpty) {
+        return rs.first;
+      }
+    }
+    return null;
+  }
+
   void setCurrentSort(DonationSort donationSort) {
     currentSort = donationSort;
     sortDonation();

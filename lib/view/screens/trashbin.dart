@@ -247,7 +247,7 @@ class DonationTileWidget extends StatelessWidget {
               mapController.setAddress(donation.latlng);
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => DonationDetailScreen(donation),
+                  builder: (context) => DonationDetailScreen(donation.id),
                 ),
               );
             },
