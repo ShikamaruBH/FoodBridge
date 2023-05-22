@@ -107,6 +107,30 @@ Map<String, dynamic> appLocalizations = {
     "en": "Quantity",
     "vi": "Số lượng",
   },
+  "remove-text": {
+    "en": "Remove",
+    "vi": "Xoá",
+  },
+  "remove-recipient-success-text": {
+    "en": "Remove success",
+    "vi": "Xoá thành công",
+  },
+  "remove-recipient-confirm-title": {
+    "en": "Confirm remove",
+    "vi": "Xác nhận xoá",
+  },
+  "remove-recipient-confirm-content": {
+    "en": "Are you sure to remove this recipient from your donation?",
+    "vi": "Bạn có chắc muốn xoá người dùng này khỏi quyên góp?",
+  },
+  "remove-recipient-success-description": {
+    "en": "Remove recipient from donation success",
+    "vi": "Xoá người nhận khỏi quyên góp thành công",
+  },
+  "removing-recipient-text": {
+    "en": "Removing recipient...",
+    "vi": "Đang xoá người nhận... ",
+  },
   "food-unit-title": {
     "en": "Unit",
     "vi": "Đơn vị",

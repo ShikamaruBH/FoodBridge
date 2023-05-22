@@ -200,3 +200,30 @@ exports.reviewDonation = functions.https.onCall(async (data, context) => {
         .HttpsError("unknown", "unknown");
   }
 });
+
+exports.removeRecipient = functions.https.onCall(async (data, context) => {
+  isAuthenticated(context);
+  hasRole(context, Role.DONOR);
+  const donationRef = donationsRef.doc(data.donationId);
+  try {
+    const donation = await donationRef.get();
+    isExist(donation);
+    const uid = context.auth?.uid;
+    isOwner(donation, uid);
+    const recipients = donation.data()?.recipients;
+    delete recipients[data.recipientUid];
+    return donationsRef
+        .doc(data.donationId)
+        .update({
+          recipients,
+        })
+        .then(() => ({"": ""}))
+        .catch((err) => {
+          throw new functions.https.HttpsError(err.code, err.message);
+        });
+  } catch (error) {
+    console.log(`Error ${error}`);
+    throw new functions.https
+        .HttpsError("unknown", "unknown");
+  }
+});

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:food_bridge/controller/bottombuttoncontroller.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/donationcontroller.dart';
@@ -745,8 +746,7 @@ class DonationDetailScreen extends StatelessWidget {
   }
 
   getReviewListView(BoxConstraints constraints) {
-    final donation = donationController.getDonation(donationId);
-    if (donation.reviews.isEmpty) {
+    if (donationController.getDonation(donationId).reviews.isEmpty) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -758,7 +758,7 @@ class DonationDetailScreen extends StatelessWidget {
       value: donationController,
       child: Consumer<DonationController>(
         builder: (_, __, ___) => ListView.builder(
-          itemCount: donation.reviews.length,
+          itemCount: donationController.getDonation(donationId).reviews.length,
           itemBuilder: (context, index) {
             return reviewListTitle(index, constraints);
           },
@@ -768,8 +768,7 @@ class DonationDetailScreen extends StatelessWidget {
   }
 
   getRecipientsListView(BoxConstraints constraints) {
-    final donation = donationController.getDonation(donationId);
-    if (donation.recipients.isEmpty) {
+    if (donationController.getDonation(donationId).recipients.isEmpty) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -777,24 +776,32 @@ class DonationDetailScreen extends StatelessWidget {
         ],
       );
     }
+    bool isDonor = authController.currentUserRole == Role.donor;
     return ChangeNotifierProvider.value(
       value: donationController,
       child: Consumer<DonationController>(
         builder: (_, __, ___) => ListView.builder(
-          itemCount: donation.recipients.length,
+          itemCount:
+              donationController.getDonation(donationId).recipients.length,
           itemBuilder: (context, index) {
-            return recipientListTitle(index, constraints);
+            return getRecipientListTitle(index, constraints, isDonor);
           },
         ),
       ),
     );
   }
 
+  getRecipientListTitle(int index, BoxConstraints constraints, bool isDonor) {
+    if (isDonor) {
+      return slidableRecipientListTitle(index, constraints);
+    }
+    return recipientListTitle(index, constraints);
+  }
+
   reviewListTitle(int index, BoxConstraints constraints) {
     final donation = donationController.getDonation(donationId);
     return FutureBuilder(
-      future:
-          userController.getUserInfo(donation.recipients.keys.toList()[index]),
+      future: userController.getUserInfo(donation.reviews.keys.toList()[index]),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting ||
             snapshot.data == null) {
@@ -871,10 +878,44 @@ class DonationDetailScreen extends StatelessWidget {
     );
   }
 
+  slidableRecipientListTitle(int index, BoxConstraints constraints) {
+    final donation = donationController.getDonation(donationId);
+    final recipientUid = donation.reviews.keys.toList()[index];
+    return Slidable(
+      key: Key(donationId),
+      endActionPane: ActionPane(
+        motion: const ScrollMotion(),
+        extentRatio: .25,
+        dismissible: DismissiblePane(
+          onDismissed: () {},
+          closeOnCancel: true,
+          confirmDismiss: () async {
+            removeRecipient(recipientUid);
+            return false;
+          },
+        ),
+        children: [
+          SlidableAction(
+            onPressed: (context) async {
+              await removeRecipient(recipientUid);
+            },
+            borderRadius: BorderRadius.circular(10),
+            backgroundColor: ColorManagement.deleteColor,
+            foregroundColor: Colors.white,
+            icon: Icons.delete,
+            label: localeController.getTranslate('remove-text'),
+          ),
+        ],
+      ),
+      child: recipientListTitle(index, constraints),
+    );
+  }
+
   recipientListTitle(int index, BoxConstraints constraints) {
     final donation = donationController.getDonation(donationId);
+    final recipientUid = donation.reviews.keys.toList()[index];
     return FutureBuilder(
-      future: userController.getUserInfo(donation.reviews.keys.toList()[index]),
+      future: userController.getUserInfo(recipientUid),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting ||
             snapshot.data == null) {
@@ -889,9 +930,15 @@ class DonationDetailScreen extends StatelessWidget {
           );
         }
         final userInfo = AppUserInfo.fromJson(snapshot.data!["result"].data);
-        return Column(
-          children: [
-            Row(
+        return Card(
+          margin: EdgeInsets.zero,
+          color: ColorManagement.cardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -916,11 +963,31 @@ class DonationDetailScreen extends StatelessWidget {
                         ),
                       ],
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                              style: StyleManagement.notificationTitleBold,
+                              children: [
+                                TextSpan(
+                                  text: localeController
+                                      .getTranslate('food-quantity-title'),
+                                ),
+                                const TextSpan(text: ': '),
+                                TextSpan(
+                                  text: donation.recipients[recipientUid]
+                                      .toString(),
+                                ),
+                              ]),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ],
             ),
-          ],
+          ),
         );
       },
     );
@@ -988,6 +1055,76 @@ class DonationDetailScreen extends StatelessWidget {
         );
       },
       loadingText: 'loading-user-info-text',
+    );
+  }
+
+  Future<bool> removeRecipient(recipientUid) async {
+    bool rs = await showDialog(
+      barrierDismissible: false,
+      context: navigatorKey.currentState!.context,
+      builder: (context) => const ConfirmDialog(
+        'remove-recipient-confirm-title',
+        'remove-recipient-confirm-content',
+      ),
+    );
+    if (!rs) {
+      return rs;
+    }
+    return loadingHandler(
+      () => donationController.removeRecipient({
+        "donationId": donationId,
+        "recipientUid": recipientUid,
+      }),
+      (_) {
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => SuccessDialog(
+            'remove-recipient-success-text',
+            'remove-recipient-success-description',
+            () {},
+            showActions: false,
+          ),
+        );
+      },
+      loadingText: 'removing-recipient-text',
+      autoClose: true,
+    );
+  }
+}
+
+class RecipientListTileButton extends StatelessWidget {
+  final BoxConstraints constraints;
+  final IconData icon;
+  final Color color;
+  final Function callback;
+  const RecipientListTileButton(
+    this.constraints,
+    this.icon,
+    this.color,
+    this.callback, {
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: color,
+      margin: EdgeInsets.zero,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => callback(),
+          child: SizedBox(
+            width: constraints.maxWidth / 10,
+            height: constraints.maxWidth / 10,
+            child: Icon(
+              icon,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
