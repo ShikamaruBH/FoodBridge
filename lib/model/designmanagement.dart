@@ -27,6 +27,9 @@ class ColorManagement {
   static const materialStateWhite = MaterialStatePropertyAll(Colors.white);
   static final materialStateWhiteInactive =
       MaterialStatePropertyAll(Colors.white.withOpacity(0.2));
+  static const recipientStatusPending = Color(0xfffeec7e);
+  static const recipientStatusReceived = Color(0xffbcfec6);
+  static const recipientStatusRejected = Color(0xfff3bdb3);
 }
 
 class StyleManagement {

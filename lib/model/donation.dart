@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/model/designmanagement.dart';
+import 'package:food_bridge/model/recipientstatus.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 
@@ -18,7 +19,7 @@ class Donation {
   DateTime start;
   DateTime end;
   List<String> imgs;
-  Map<String, int> recipients;
+  Map<String, Map<String, dynamic>> recipients;
   Map<String, Map<String, dynamic>> reviews;
 
   Donation(
@@ -53,13 +54,18 @@ class Donation {
         DateTime.parse(data['start']).toLocal(),
         DateTime.parse(data['end']).toLocal(),
         List<String>.from(data['imgs']),
-        data["recipients"]?.cast<String, int>() ?? {},
+        data["recipients"]?.cast<String, Map<String, dynamic>>() ?? {},
         data["reviews"]?.cast<String, Map<String, dynamic>>() ?? {},
       );
 
   num getQuantityLeft() {
     num total = 0;
-    recipients.forEach((_, value) => total += value);
+    recipients.forEach((_, recipient) {
+      if (RecipientStatusExtension.fromValue(recipient['status']) !=
+          RecipientStatus.rejected) {
+        total += recipient["quantity"];
+      }
+    });
     return quantity - total;
   }
 

@@ -285,9 +285,18 @@ class DonationController extends ChangeNotifier {
     return callCloudFunction(data, 'donation-deleteDonation');
   }
 
-  Future<Map<String, dynamic>> removeRecipient(
+  Future<Map<String, dynamic>> confirmReceived(
       Map<String, dynamic> data) async {
-    return callCloudFunction(data, 'donation-removeRecipient');
+    return callCloudFunction(data, 'donation-confirmReceived');
+  }
+
+  Future<Map<String, dynamic>> undoRecipient(Map<String, dynamic> data) async {
+    return callCloudFunction(data, 'donation-undoRecipient');
+  }
+
+  Future<Map<String, dynamic>> rejectRecipient(
+      Map<String, dynamic> data) async {
+    return callCloudFunction(data, 'donation-rejectRecipient');
   }
 
   Future<Map<String, dynamic>> softDeleteDonation(

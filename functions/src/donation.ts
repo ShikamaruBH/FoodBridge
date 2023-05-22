@@ -3,6 +3,7 @@ import admin = require("firebase-admin");
 import {Role} from "./roles";
 import {hasRole, isAuthenticated, isExist, isOwner} from "./validators";
 import {donationsRef} from "./references";
+import {RecipientStatus} from "./recipientstatus";
 
 exports.createDonation = functions.https.onCall(async (data, context) => {
   isAuthenticated(context);
@@ -148,19 +149,23 @@ exports.receiveDonation = functions.https.onCall(async (data, context) => {
           }
           let total = 0;
           const quantity = donation.get("quantity");
-          // eslint-disable-next-line guard-for-in
-          for (const key in recipients) {
-            total += recipients[key];
-          }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          Object.values(recipients).forEach((recipient: any) => {
+            total += recipient.quantity;
+          });
           if (total + data.quantity > quantity) {
             throw new functions.https
                 .HttpsError("invalid-argument", "invalid-argument");
           }
-          recipients[uid] = data.quantity;
+          recipients[uid] = {
+            quantity: data.quantity,
+            status: RecipientStatus.PENDING,
+          };
           t.set(donationRef, {recipients}, {merge: true});
         })
         .then(() => ({"": ""}))
         .catch((err) => {
+          console.log("Error:", err);
           throw new functions.https.HttpsError(err.code, err.message);
         });
   } catch (error) {
@@ -201,7 +206,23 @@ exports.reviewDonation = functions.https.onCall(async (data, context) => {
   }
 });
 
-exports.removeRecipient = functions.https.onCall(async (data, context) => {
+exports.undoRecipient = functions.https.onCall(async (data, context) => {
+  return updateRecipientStatus(RecipientStatus.PENDING, data, context);
+});
+
+exports.confirmReceived = functions.https.onCall(async (data, context) => {
+  return updateRecipientStatus(RecipientStatus.RECEIVED, data, context);
+});
+
+exports.rejectRecipient = functions.https.onCall(async (data, context) => {
+  return updateRecipientStatus(RecipientStatus.REJECTED, data, context);
+});
+
+const updateRecipientStatus = async (
+    status: RecipientStatus,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: any,
+    context: functions.https.CallableContext) => {
   isAuthenticated(context);
   hasRole(context, Role.DONOR);
   const donationRef = donationsRef.doc(data.donationId);
@@ -211,7 +232,7 @@ exports.removeRecipient = functions.https.onCall(async (data, context) => {
     const uid = context.auth?.uid;
     isOwner(donation, uid);
     const recipients = donation.data()?.recipients;
-    delete recipients[data.recipientUid];
+    recipients[data.recipientUid].status = status;
     return donationsRef
         .doc(data.donationId)
         .update({
@@ -226,4 +247,4 @@ exports.removeRecipient = functions.https.onCall(async (data, context) => {
     throw new functions.https
         .HttpsError("unknown", "unknown");
   }
-});
+};

@@ -12,6 +12,7 @@ import 'package:food_bridge/controller/quantitycontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/model/loadinghandler.dart';
+import 'package:food_bridge/model/recipientstatus.dart';
 import 'package:food_bridge/model/userinfo.dart';
 import 'package:food_bridge/model/userrole.dart';
 import 'package:food_bridge/view/screens/neworupdatedonation.dart';
@@ -784,7 +785,10 @@ class DonationDetailScreen extends StatelessWidget {
           itemCount:
               donationController.getDonation(donationId).recipients.length,
           itemBuilder: (context, index) {
-            return getRecipientListTitle(index, constraints, isDonor);
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: getRecipientListTitle(index, constraints, isDonor),
+            );
           },
         ),
       ),
@@ -880,31 +884,57 @@ class DonationDetailScreen extends StatelessWidget {
 
   slidableRecipientListTitle(int index, BoxConstraints constraints) {
     final donation = donationController.getDonation(donationId);
-    final recipientUid = donation.reviews.keys.toList()[index];
+    final recipientUid = donation.recipients.keys.toList()[index];
+    final status = RecipientStatusExtension.fromValue(
+        donation.recipients[recipientUid]["status"]);
     return Slidable(
       key: Key(donationId),
       endActionPane: ActionPane(
         motion: const ScrollMotion(),
-        extentRatio: .25,
+        extentRatio: .5,
         dismissible: DismissiblePane(
           onDismissed: () {},
           closeOnCancel: true,
           confirmDismiss: () async {
-            removeRecipient(recipientUid);
+            rejectRecipient(recipientUid);
             return false;
           },
         ),
         children: [
-          SlidableAction(
-            onPressed: (context) async {
-              await removeRecipient(recipientUid);
-            },
-            borderRadius: BorderRadius.circular(10),
-            backgroundColor: ColorManagement.deleteColor,
-            foregroundColor: Colors.white,
-            icon: Icons.delete,
-            label: localeController.getTranslate('remove-text'),
-          ),
+          if (status == RecipientStatus.pending) ...[
+            SlidableAction(
+              onPressed: (context) async {
+                await rejectRecipient(recipientUid);
+              },
+              borderRadius: BorderRadius.circular(10),
+              backgroundColor: ColorManagement.deleteColor,
+              foregroundColor: Colors.black,
+              icon: Icons.delete,
+              label: localeController.getTranslate('reject-text'),
+            ),
+            SlidableAction(
+              onPressed: (context) async {
+                await confirmReceived(recipientUid);
+              },
+              borderRadius: BorderRadius.circular(10),
+              backgroundColor: ColorManagement.recipientStatusReceived,
+              foregroundColor: Colors.black,
+              icon: Icons.done,
+              label: localeController.getTranslate('confirm-button-title'),
+            ),
+          ],
+          if (status == RecipientStatus.rejected ||
+              status == RecipientStatus.received)
+            SlidableAction(
+              onPressed: (context) async {
+                await undoRecipient(recipientUid);
+              },
+              borderRadius: BorderRadius.circular(10),
+              backgroundColor: ColorManagement.recipientStatusPending,
+              foregroundColor: Colors.black,
+              icon: Icons.undo,
+              label: localeController.getTranslate('undo-text'),
+            ),
         ],
       ),
       child: recipientListTitle(index, constraints),
@@ -913,7 +943,7 @@ class DonationDetailScreen extends StatelessWidget {
 
   recipientListTitle(int index, BoxConstraints constraints) {
     final donation = donationController.getDonation(donationId);
-    final recipientUid = donation.reviews.keys.toList()[index];
+    final recipientUid = donation.recipients.keys.toList()[index];
     return FutureBuilder(
       future: userController.getUserInfo(recipientUid),
       builder: (context, snapshot) {
@@ -932,7 +962,7 @@ class DonationDetailScreen extends StatelessWidget {
         final userInfo = AppUserInfo.fromJson(snapshot.data!["result"].data);
         return Card(
           margin: EdgeInsets.zero,
-          color: ColorManagement.cardColor,
+          color: Colors.grey.shade100,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -952,8 +982,8 @@ class DonationDetailScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         InkWell(
-                          onTap: () => openRecipientProfile(
-                              context, donation.reviews.keys.toList()[index]),
+                          onTap: () => openRecipientProfile(context,
+                              donation.recipients.keys.toList()[index]),
                           child: Text(
                             userInfo.displayName,
                             style: StyleManagement.menuTextStyle.copyWith(
@@ -977,6 +1007,7 @@ class DonationDetailScreen extends StatelessWidget {
                                 const TextSpan(text: ': '),
                                 TextSpan(
                                   text: donation.recipients[recipientUid]
+                                          ["quantity"]
                                       .toString(),
                                 ),
                               ]),
@@ -984,6 +1015,31 @@ class DonationDetailScreen extends StatelessWidget {
                       ],
                     ),
                   ],
+                ),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: constraints.maxWidth * .25,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: getRecipentStatusColor(
+                              donation.recipients[recipientUid]['status']),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Text(
+                            localeController.getTranslate(
+                                donation.recipients[recipientUid]['status']),
+                            textAlign: TextAlign.center,
+                            style: StyleManagement.notificationTitleBold,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -1058,20 +1114,20 @@ class DonationDetailScreen extends StatelessWidget {
     );
   }
 
-  Future<bool> removeRecipient(recipientUid) async {
+  Future<bool> rejectRecipient(recipientUid) async {
     bool rs = await showDialog(
       barrierDismissible: false,
       context: navigatorKey.currentState!.context,
       builder: (context) => const ConfirmDialog(
-        'remove-recipient-confirm-title',
-        'remove-recipient-confirm-content',
+        'reject-recipient-confirm-title',
+        'reject-recipient-confirm-content',
       ),
     );
     if (!rs) {
       return rs;
     }
     return loadingHandler(
-      () => donationController.removeRecipient({
+      () => donationController.rejectRecipient({
         "donationId": donationId,
         "recipientUid": recipientUid,
       }),
@@ -1080,52 +1136,76 @@ class DonationDetailScreen extends StatelessWidget {
           barrierDismissible: false,
           context: navigatorKey.currentState!.context,
           builder: (context) => SuccessDialog(
-            'remove-recipient-success-text',
-            'remove-recipient-success-description',
+            'reject-recipient-success-text',
+            'reject-recipient-success-description',
             () {},
             showActions: false,
           ),
         );
       },
-      loadingText: 'removing-recipient-text',
+      loadingText: 'rejecting-recipient-text',
       autoClose: true,
     );
   }
-}
 
-class RecipientListTileButton extends StatelessWidget {
-  final BoxConstraints constraints;
-  final IconData icon;
-  final Color color;
-  final Function callback;
-  const RecipientListTileButton(
-    this.constraints,
-    this.icon,
-    this.color,
-    this.callback, {
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: color,
-      margin: EdgeInsets.zero,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => callback(),
-          child: SizedBox(
-            width: constraints.maxWidth / 10,
-            height: constraints.maxWidth / 10,
-            child: Icon(
-              icon,
-              color: Colors.white,
-            ),
+  Future<bool> undoRecipient(recipientUid) async {
+    return loadingHandler(
+      () => donationController.undoRecipient({
+        "donationId": donationId,
+        "recipientUid": recipientUid,
+      }),
+      (_) {
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => SuccessDialog(
+            'undo-recipient-success-text',
+            'undo-recipient-success-description',
+            () {},
+            showActions: false,
           ),
-        ),
-      ),
+        );
+      },
+      loadingText: 'undoing-recipient-text',
+      autoClose: true,
     );
+  }
+
+  Future<bool> confirmReceived(recipientUid) async {
+    return loadingHandler(
+      () => donationController.confirmReceived({
+        "donationId": donationId,
+        "recipientUid": recipientUid,
+      }),
+      (_) {
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => SuccessDialog(
+            'confirm-recipient-success-text',
+            'confirm-recipient-success-description',
+            () {},
+            showActions: false,
+          ),
+        );
+      },
+      loadingText: 'updating-text',
+      autoClose: true,
+    );
+  }
+
+  getRecipentStatusColor(String value) {
+    RecipientStatus status = RecipientStatusExtension.fromValue(value);
+    switch (status) {
+      case RecipientStatus.pending:
+        return ColorManagement.recipientStatusPending;
+      case RecipientStatus.received:
+        return ColorManagement.recipientStatusReceived;
+      case RecipientStatus.rejected:
+        return ColorManagement.recipientStatusRejected;
+      default:
+        return null;
+    }
   }
 }
 

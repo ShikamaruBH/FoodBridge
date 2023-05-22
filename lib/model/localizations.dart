@@ -107,29 +107,41 @@ Map<String, dynamic> appLocalizations = {
     "en": "Quantity",
     "vi": "Số lượng",
   },
-  "remove-text": {
-    "en": "Remove",
-    "vi": "Xoá",
+  "reject-text": {
+    "en": "Reject",
+    "vi": "Từ chối",
   },
-  "remove-recipient-success-text": {
-    "en": "Remove success",
-    "vi": "Xoá thành công",
+  "reject-recipient-success-text": {
+    "en": "Reject success",
+    "vi": "Từ chối thành công",
   },
-  "remove-recipient-confirm-title": {
-    "en": "Confirm remove",
-    "vi": "Xác nhận xoá",
+  "reject-recipient-confirm-title": {
+    "en": "Confirm reject",
+    "vi": "Xác nhận từ chối",
   },
-  "remove-recipient-confirm-content": {
-    "en": "Are you sure to remove this recipient from your donation?",
-    "vi": "Bạn có chắc muốn xoá người dùng này khỏi quyên góp?",
+  "pending": {
+    "en": "PENDING",
+    "vi": "ĐANG CHỜ",
   },
-  "remove-recipient-success-description": {
-    "en": "Remove recipient from donation success",
-    "vi": "Xoá người nhận khỏi quyên góp thành công",
+  "received": {
+    "en": "RECEIVED",
+    "vi": "ĐÃ NHẬN",
   },
-  "removing-recipient-text": {
-    "en": "Removing recipient...",
-    "vi": "Đang xoá người nhận... ",
+  "rejected": {
+    "en": "REJECTED",
+    "vi": "BỊ TỪ CHỐI",
+  },
+  "reject-recipient-confirm-content": {
+    "en": "Are you sure to reject this recipient?",
+    "vi": "Bạn có chắc muốn từ chối người dùng này?",
+  },
+  "reject-recipient-success-description": {
+    "en": "Reject recipient success",
+    "vi": "Từ chối người nhận thành công",
+  },
+  "rejecting-recipient-text": {
+    "en": "Rejecting recipient...",
+    "vi": "Đang từ chối người nhận... ",
   },
   "food-unit-title": {
     "en": "Unit",
@@ -178,7 +190,7 @@ Map<String, dynamic> appLocalizations = {
       }
       if (hours > 0) {
         rs += pad(hours, 'hour');
-        return hours;
+        return rs;
       }
       if (minutes > 0) {
         rs += pad(minutes, 'minute');
@@ -199,7 +211,7 @@ Map<String, dynamic> appLocalizations = {
       }
       if (hours > 0) {
         rs += pad(hours, 'giờ');
-        return hours;
+        return rs;
       }
       if (minutes > 0) {
         rs += pad(minutes, 'phút');
@@ -290,9 +302,33 @@ Map<String, dynamic> appLocalizations = {
     "en": "Confirm",
     "vi": "Xác nhận",
   },
+  "undo-text": {
+    "en": "Undo",
+    "vi": "Hoàn tác",
+  },
   "delete-donation-confirm-title": {
     "en": "Confirm delete",
     "vi": "Xác nhận xoá",
+  },
+  "undo-recipient-success-text": {
+    "en": "Undo success",
+    "vi": "Hoàn tác thành công",
+  },
+  "undo-recipient-success-description": {
+    "en": "Undo recipient status success",
+    "vi": "Đã hoàn tác trạng thái người nhận",
+  },
+  "undoing-recipient-text": {
+    "en": "Undoing...",
+    "vi": "Đang hoàn tác",
+  },
+  "confirm-recipient-success-text": {
+    "en": "Receive success",
+    "vi": "Nhận thành công",
+  },
+  "confirm-recipient-success-description": {
+    "en": "Confirm donation received by recipient success",
+    "vi": "Xác nhận đã nhận quyên góp thành công",
   },
   "delete-donation-confirm-content": {
     "en": "Are you sure want to delete this donation?",
