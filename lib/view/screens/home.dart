@@ -649,7 +649,7 @@ class NotificationCard extends StatelessWidget {
         ),
       ),
       child: ListTile(
-        onTap: () => markAsRead(notification.id),
+        onTap: notification.hasRead ? () {} : () => markAsRead(notification.id),
         trailing: getNotificationDot(context, notification.hasRead),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 5),
@@ -758,7 +758,8 @@ class NotificationBarWidget extends StatelessWidget {
         ),
         IconButton(
           splashRadius: 20,
-          onPressed: markAllAsRead,
+          onPressed:
+              notificationController.totalUnread > 0 ? markAllAsRead : null,
           icon: const Icon(
             Icons.clear_all_rounded,
             size: 34,
