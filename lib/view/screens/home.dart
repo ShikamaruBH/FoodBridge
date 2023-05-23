@@ -5,10 +5,12 @@ import 'package:food_bridge/controller/authcontroller.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/donationcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
+import 'package:food_bridge/controller/notificationcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/model/donation.dart';
 import 'package:food_bridge/model/loadinghandler.dart';
+import 'package:food_bridge/model/notification.dart';
 import 'package:food_bridge/model/userrole.dart';
 import 'package:food_bridge/view/screens/chooselocation.dart';
 import 'package:food_bridge/view/screens/donationdetail.dart';
@@ -22,6 +24,7 @@ import 'package:food_bridge/view/widgets/useravatar.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:badges/badges.dart' as badges;
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -47,7 +50,20 @@ class HomeScreen extends StatelessWidget {
               actions: [
                 Builder(
                   builder: (context) => IconButton(
-                    icon: const Icon(Icons.notifications),
+                    icon: ChangeNotifierProvider.value(
+                      value: notificationController,
+                      child: Consumer<NotificationController>(
+                        builder: (__, _, ___) => badges.Badge(
+                          badgeContent: Text(
+                            notificationController.totalUnread.toString(),
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          showBadge: notificationController.totalUnread > 0,
+                          badgeAnimation: const badges.BadgeAnimation.slide(),
+                          child: const Icon(Icons.notifications),
+                        ),
+                      ),
+                    ),
                     onPressed: () => Scaffold.of(context).openEndDrawer(),
                     tooltip:
                         MaterialLocalizations.of(context).openAppDrawerTooltip,
@@ -63,21 +79,9 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            endDrawer: SafeArea(
+            endDrawer: const SafeArea(
               child: Drawer(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const NotificationBarWidget(0),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: 2,
-                        itemBuilder: (context, index) =>
-                            const NotificationCardWidget(),
-                      ),
-                    ),
-                  ],
-                ),
+                child: NotificationListView(),
               ),
             ),
             floatingActionButton: getFloatingButton(context),
@@ -222,6 +226,44 @@ class HomeScreen extends StatelessWidget {
       ),
       MenuListTile(Icons.logout, 'logout-title', logout),
     ];
+  }
+}
+
+class NotificationListView extends StatelessWidget {
+  const NotificationListView({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider.value(
+      value: notificationController,
+      child: Consumer<NotificationController>(
+        builder: (_, __, ___) => Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            NotificationBarWidget(notificationController.totalNotification),
+            Expanded(
+              child: ListView.builder(
+                itemCount: notificationController.totalNotification,
+                itemBuilder: (context, index) => getNotificationCard(index),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  getNotificationCard(int index) {
+    switch (authController.currentUserRole) {
+      case Role.donor:
+        return getDonorNotificationCard(index);
+      case Role.recipient:
+        return getRecipientNotificationCard(index);
+      default:
+        return const Text("");
+    }
   }
 }
 
@@ -563,66 +605,115 @@ class MonthlyDescriptionTextWidget extends StatelessWidget {
   }
 }
 
-class NotificationCardWidget extends StatelessWidget {
-  const NotificationCardWidget({
+getDonorNotificationCard(index) {
+  return NotificationCard(
+    index,
+    'donor-notification-title-part-1',
+    'donor-notification-title-part-2',
+  );
+}
+
+getRecipientNotificationCard(index) {
+  return NotificationCard(
+    index,
+    'recipient-notification-title-part-1',
+    'recipient-notification-title-part-2',
+  );
+}
+
+class NotificationCard extends StatelessWidget {
+  final int index;
+  final String title1;
+  final String title2;
+  // ignore: prefer_const_constructors_in_immutables
+  NotificationCard(
+    this.index,
+    this.title1,
+    this.title2, {
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
+    UserNotification notification = notificationController.notifications[index];
     return Card(
-      color: ColorManagement.notificationUnread,
-      child: ListTile(
-        onTap: () {},
-        trailing: Column(
-          children: [
-            Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ],
+      elevation: 1,
+      color: notification.hasRead
+          ? ColorManagement.notificationRead
+          : ColorManagement.notificationUnread,
+      shape: RoundedRectangleBorder(
+        borderRadius: const BorderRadius.all(Radius.circular(5)),
+        side: BorderSide(
+          color: Colors.grey.shade200,
+          width: .5,
         ),
-        subtitle: const Padding(
-          padding: EdgeInsets.only(top: 5),
+      ),
+      child: ListTile(
+        onTap: () => markAsRead(notification.id),
+        trailing: getNotificationDot(context, notification.hasRead),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 5),
           child: Text(
-            'Just now',
-            style: TextStyle(fontSize: 12),
+            notification.createAt.toString(),
+            style: const TextStyle(fontSize: 12),
           ),
         ),
         title: RichText(
-            textAlign: TextAlign.start,
-            text: TextSpan(
-                style: StyleManagement.notificationTitleMedium,
-                children: [
-                  TextSpan(
-                    text: localeController
-                        .getTranslate('donor-notification-title-part-1'),
-                  ),
-                  const TextSpan(
-                    text: " Rice and Beans ",
-                    style: StyleManagement.notificationTitleBold,
-                  ),
-                  TextSpan(
-                    text: localeController
-                        .getTranslate('donor-notification-title-part-2'),
-                  ),
-                  const TextSpan(
-                    text: " Nadia Kim",
-                    style: StyleManagement.notificationTitleBold,
-                  )
-                ])),
+          textAlign: TextAlign.start,
+          text: TextSpan(
+            style: StyleManagement.notificationTitleMedium,
+            children: [
+              TextSpan(
+                text: localeController.getTranslate(title1),
+              ),
+              TextSpan(
+                text: " ${notification.donation} ",
+                style: StyleManagement.notificationTitleBold,
+              ),
+              TextSpan(
+                text: localeController.getTranslate(title2),
+              ),
+              TextSpan(
+                text: " ${notification.from}",
+                style: StyleManagement.notificationTitleBold,
+              )
+            ],
+          ),
+        ),
       ),
+    );
+  }
+
+  getNotificationDot(BuildContext context, bool hasRead) {
+    if (hasRead) {
+      return null;
+    }
+    return Column(
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary,
+            shape: BoxShape.circle,
+          ),
+        ),
+      ],
+    );
+  }
+
+  markAsRead(String id) async {
+    await loadingHandler(
+      () => notificationController.markAsRead({"id": id}),
+      (_) {},
     );
   }
 }
 
 class NotificationBarWidget extends StatelessWidget {
   final num total;
-  const NotificationBarWidget(
+  // ignore: prefer_const_constructors_in_immutables
+  NotificationBarWidget(
     this.total, {
     super.key,
   });
@@ -657,13 +748,20 @@ class NotificationBarWidget extends StatelessWidget {
         ),
         IconButton(
           splashRadius: 20,
-          onPressed: () {},
+          onPressed: markAllAsRead,
           icon: const Icon(
             Icons.clear_all_rounded,
             size: 34,
           ),
         ),
       ],
+    );
+  }
+
+  void markAllAsRead() async {
+    await loadingHandler(
+      () => notificationController.markAllAsRead(),
+      (_) {},
     );
   }
 }

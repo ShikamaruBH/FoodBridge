@@ -48,14 +48,17 @@ class AuthController extends ChangeNotifier {
           default:
             debugPrint("User has no Role");
         }
-        notifyListeners();
+
         // UserController
         await userController.listenToUser();
-        notifyListeners();
+
+        // NotificationController
+        await notificationController.listenToUserNotification();
       }
       if (user == null) {
         await donationController.cancelAllListener();
         await userController.cancelAllListener();
+        await notificationController.cancelAllListener();
         debugPrint("User logged out, all listener cancelled");
         return;
       }

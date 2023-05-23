@@ -24,6 +24,7 @@ class ColorManagement {
   static const selectedColor = Color(0xffFFA62B);
   static const donationTileColor = Color(0xffF5F5F5);
   static const notificationUnread = Color(0xffEAEAEA);
+  static final notificationRead = Colors.grey.shade100;
   static const materialStateWhite = MaterialStatePropertyAll(Colors.white);
   static final materialStateWhiteInactive =
       MaterialStatePropertyAll(Colors.white.withOpacity(0.2));

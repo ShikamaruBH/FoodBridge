@@ -354,3 +354,35 @@ class UpdateUserDetailDialog extends StatelessWidget {
     );
   }
 }
+
+class UserFeedbackDialog extends StatelessWidget {
+  const UserFeedbackDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(5),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  color: Colors.green,
+                  width: 100,
+                  height: 100,
+                )
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
