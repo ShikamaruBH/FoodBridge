@@ -654,7 +654,7 @@ class NotificationCard extends StatelessWidget {
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 5),
           child: Text(
-            notification.createAt.toString(),
+            getNotificationTimestamp(notification.createAt),
             style: const TextStyle(fontSize: 12),
           ),
         ),
@@ -682,6 +682,16 @@ class NotificationCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String getNotificationTimestamp(DateTime createAt) {
+    final now = DateTime.now();
+    if (createAt.day == now.day &&
+        createAt.month == now.month &&
+        createAt.year == now.year) {
+      return DateFormat("hh:mm").format(createAt);
+    }
+    return DateFormat("dd-MM-yyyy hh:mm").format(createAt);
   }
 
   getNotificationDot(BuildContext context, bool hasRead) {

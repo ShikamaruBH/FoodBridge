@@ -58,6 +58,9 @@ class NotificationController extends ChangeNotifier {
             break;
         }
       }
+      notifications.sort(
+        (a, b) => a.createAt.compareTo(b.createAt),
+      );
       isLoading = false;
       notifyListeners();
     });
