@@ -2,7 +2,7 @@ import functions = require("firebase-functions");
 import admin = require("firebase-admin");
 import {Role} from "./roles";
 import {hasRole, isAuthenticated, isExist, isOwner} from "./validators";
-import {donationsRef} from "./references";
+import {donationsRef, userRef} from "./references";
 import {RecipientStatus} from "./recipientstatus";
 
 exports.createDonation = functions.https.onCall(async (data, context) => {
@@ -162,6 +162,20 @@ exports.receiveDonation = functions.https.onCall(async (data, context) => {
             status: RecipientStatus.PENDING,
           };
           t.set(donationRef, {recipients}, {merge: true});
+
+          const donorUid = donation.get("donor");
+          const notificationRef = userRef
+              .doc(donorUid)
+              .collection("notifications")
+              .doc();
+
+          const user = await admin.auth().getUser(donorUid);
+          t.set(notificationRef, {
+            from: user.displayName,
+            donation: donation.get("title"),
+            createAt: new Date(),
+            hasRead: false,
+          });
         })
         .then(() => ({"": ""}))
         .catch((err) => {
