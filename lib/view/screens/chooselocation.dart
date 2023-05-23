@@ -53,7 +53,7 @@ class ChooseLocationScreen extends StatelessWidget {
       builder: (context, constraints) => ChangeNotifierProvider.value(
         value: localeController,
         child: Consumer<LocalizationController>(
-          builder: (_, localeController, __) => Scaffold(
+          builder: (_, ___, __) => Scaffold(
             appBar: AppBar(
               title:
                   Text(localeController.getTranslate('choose-location-title')),

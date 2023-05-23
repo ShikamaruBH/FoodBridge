@@ -92,7 +92,7 @@ class LoginScreen extends StatelessWidget {
       body: ChangeNotifierProvider.value(
         value: localeController,
         child: Consumer<LocalizationController>(
-          builder: (_, localeController, __) => Stack(
+          builder: (_, ___, __) => Stack(
             alignment: Alignment.center,
             children: [
               ImageFiltered(

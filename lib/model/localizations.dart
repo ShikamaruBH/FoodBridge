@@ -656,9 +656,9 @@ Map<String, dynamic> appLocalizations = {
     "en": "RECIPIENTS",
     "vi": "NGƯỜI NHẬN",
   },
-  "rating-stats-label": {
-    "en": "RATING",
-    "vi": "ĐÁNH GIÁ",
+  "like-stats-label": {
+    "en": "LIKE",
+    "vi": "LƯỢT THÍCH",
   },
   "monthly-donation-text-donor": {
     "en": (total) =>

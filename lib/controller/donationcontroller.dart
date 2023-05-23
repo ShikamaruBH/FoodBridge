@@ -350,31 +350,6 @@ class DonationController extends ChangeNotifier {
     return recipients.length.toString();
   }
 
-  String getRating() {
-    switch (authController.currentUserRole) {
-      case Role.donor:
-        return getDonorRating();
-      default:
-        return '0';
-    }
-  }
-
-  String getDonorRating() {
-    double total = 0;
-    int count = 0;
-    for (var donation in donations) {
-      donation.reviews.forEach((_, review) {
-        total += review['rating'];
-        count++;
-      });
-    }
-    if (count == 0) {
-      return '0';
-    }
-    total /= count;
-    return total.toStringAsFixed(1);
-  }
-
   num getTotalDonationThisMonth() {
     return getTotalDonationThisMonthOf(donations);
   }

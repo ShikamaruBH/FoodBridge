@@ -39,11 +39,15 @@ class UserController extends ChangeNotifier {
       if (!documentSnapshot.exists) {
         authController.currentUserInfo.email = '';
         authController.currentUserInfo.phoneNumber = '';
+        authController.currentUserInfo.likes = 0;
         return;
       } else {
         final user = documentSnapshot.data()!;
         authController.currentUserInfo.email = user['email'];
         authController.currentUserInfo.phoneNumber = user['phoneNumber'];
+        authController.currentUserInfo.likes = user['likes'];
+        authController.currentUserInfo.isLiked =
+            user['likedUsers'].contains(FirebaseAuth.instance.currentUser!.uid);
       }
       notifyListeners();
     });
@@ -95,5 +99,9 @@ class UserController extends ChangeNotifier {
 
   Future<Map<String, dynamic>> getRecipientInfo(String uid) async {
     return callCloudFunction({"uid": uid}, "user-getRecipientInfo");
+  }
+
+  Future<Map<String, dynamic>> likeUser(String uid) async {
+    return callCloudFunction({"uid": uid}, "user-likeUser");
   }
 }

@@ -73,7 +73,7 @@ class DeletedDonationWidget extends StatelessWidget {
           child: ChangeNotifierProvider.value(
             value: donationController,
             child: Consumer<DonationController>(
-              builder: (_, donationController, __) => Column(
+              builder: (_, ___, __) => Column(
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8),

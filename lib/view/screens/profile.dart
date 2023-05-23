@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/authcontroller.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/donationcontroller.dart';
+import 'package:food_bridge/controller/likebuttoncontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/usercontroller.dart';
 import 'package:food_bridge/main.dart';
@@ -32,7 +34,7 @@ class UserProfileScreen extends StatelessWidget {
       builder: (_, constraints) => ChangeNotifierProvider.value(
         value: localeController,
         child: Consumer<LocalizationController>(
-          builder: (_, localeController, __) => Scaffold(
+          builder: (_, ___, __) => Scaffold(
             appBar: AppBar(
               elevation: 0,
               leading: IconButton(
@@ -138,8 +140,7 @@ class UserProfileScreen extends StatelessWidget {
                                       child: ChangeNotifierProvider.value(
                                         value: userController,
                                         child: Consumer<UserController>(
-                                          builder: (_, userController, __) =>
-                                              Column(
+                                          builder: (_, ___, __) => Column(
                                             children: [
                                               getUserInfoRow(
                                                 Icons.phone,
@@ -594,30 +595,51 @@ class UserStatsWidget extends StatelessWidget {
       child: ChangeNotifierProvider.value(
         value: donationController,
         child: Consumer<DonationController>(
-          builder: (_, donationController, __) => Row(
+          builder: (_, ___, __) => Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               StatsBoxWidget(
                 getDonationStats(),
                 getDonationStatsLabel(),
-                constraints: constraints,
+                getDonationStatsWidth(),
               ),
               if (shouldShowRecipientStats())
                 StatsBoxWidget(
                   getRecipientStats(),
                   'recipients-stats-label',
-                  constraints: constraints,
+                  constraints.maxWidth / 4,
                 ),
-              StatsBoxWidget(
-                getRatingStats(),
-                'rating-stats-label',
-                constraints: constraints,
+              ChangeNotifierProvider.value(
+                value: likeButtonController,
+                child: Consumer<LikeButtonController>(
+                  builder: (_, __, ___) => LikesBoxWidget(
+                    constraints,
+                    likeUser,
+                  ),
+                ),
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  double getDonationStatsWidth() {
+    if (donorInfo != null) {
+      return constraints.maxWidth / 4;
+    }
+    if (recipientInfo != null) {
+      return constraints.maxWidth / 2;
+    }
+    switch (authController.currentUserRole) {
+      case Role.donor:
+        return constraints.maxWidth / 4;
+      case Role.recipient:
+        return constraints.maxWidth / 2;
+      default:
+        return 0;
+    }
   }
 
   String getDonationStatsLabel() {
@@ -635,16 +657,6 @@ class UserStatsWidget extends StatelessWidget {
       default:
         return '';
     }
-  }
-
-  String getRatingStats() {
-    if (donorInfo != null) {
-      return donorInfo!.getRating();
-    }
-    if (recipientInfo != null) {
-      return recipientInfo!.getRating();
-    }
-    return donationController.getRating();
   }
 
   String getRecipientStats() {
@@ -673,36 +685,96 @@ class UserStatsWidget extends StatelessWidget {
     }
     return donationController.getTotalDonation();
   }
+
+  likeUser() async {
+    String uid;
+    if (donorInfo != null) {
+      uid = donorInfo!.uid!;
+    } else if (recipientInfo != null) {
+      uid = recipientInfo!.uid!;
+    } else {
+      uid = FirebaseAuth.instance.currentUser!.uid;
+    }
+    await loadingHandler(
+      () => userController.likeUser(uid),
+      (_) {},
+      showLoadingDialog: false,
+    );
+  }
+}
+
+class LikesBoxWidget extends StatelessWidget {
+  final BoxConstraints constraints;
+  final Function callback;
+  const LikesBoxWidget(
+    this.constraints,
+    this.callback, {
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        likeButtonController.like();
+        callback();
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(5),
+        child: SizedBox(
+          width: constraints.maxWidth / 4,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                likeButtonController.likes.toString(),
+                style: StyleManagement.statsTextStyle,
+              ),
+              Icon(
+                Icons.thumb_up_off_alt_rounded,
+                size: constraints.maxWidth / 20,
+                color: likeButtonController.isLiked
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.grey,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class StatsBoxWidget extends StatelessWidget {
   final String value;
   final String label;
+  final double width;
   const StatsBoxWidget(
     this.value,
-    this.label, {
+    this.label,
+    this.width, {
     super.key,
-    required this.constraints,
   });
-
-  final BoxConstraints constraints;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          value,
-          style: StyleManagement.statsTextStyle,
-        ),
-        Text(
-          localeController.getTranslate(label),
-          style: StyleManagement.settingsItemTextStyle.copyWith(
-            color: Colors.black.withOpacity(.66),
+    return SizedBox(
+      width: width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            value,
+            style: StyleManagement.statsTextStyle,
           ),
-        )
-      ],
+          Text(
+            localeController.getTranslate(label),
+            style: StyleManagement.settingsItemTextStyle.copyWith(
+              color: Colors.black.withOpacity(.66),
+            ),
+          )
+        ],
+      ),
     );
   }
 }

@@ -56,7 +56,6 @@ class AuthController extends ChangeNotifier {
       if (user == null) {
         await donationController.cancelAllListener();
         await userController.cancelAllListener();
-        listener?.cancel();
         debugPrint("User logged out, all listener cancelled");
         return;
       }

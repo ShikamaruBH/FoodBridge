@@ -31,13 +31,20 @@ exports.getDonorInfo = functions.https.onCall(async (data, context) => {
   const photoURL = userRecord.photoURL;
   let email;
   let phoneNumber;
+  let likes;
+  let isLiked;
   try {
     const user = await userRef.doc(data.uid).get();
     email = user.data()?.email;
     phoneNumber = user.data()?.phoneNumber;
+    likes = user.data()?.likes;
+    const likedUsers = user.data()?.likedUsers || [];
+    isLiked = likedUsers.includes(context.auth!.uid);
   } catch (err) {
     email = "";
     phoneNumber = "";
+    likes = 0;
+    isLiked = false;
   }
   const donations = await donationsRef.where("donor", "==", data.uid).get();
   const totalDonation = donations.docs.length;
@@ -69,6 +76,8 @@ exports.getDonorInfo = functions.https.onCall(async (data, context) => {
     totalDonation,
     totalRecipient,
     rating,
+    likes,
+    isLiked,
   };
 });
 
@@ -98,13 +107,20 @@ exports.getRecipientInfo = functions.https.onCall(async (data, context) => {
   const photoURL = userRecord.photoURL;
   let email;
   let phoneNumber;
+  let likes;
+  let isLiked;
   try {
     const user = await userRef.doc(data.uid).get();
     email = user.data()?.email;
     phoneNumber = user.data()?.phoneNumber;
+    likes = user.data()?.likes;
+    const likedUsers = user.data()?.likedUsers || [];
+    isLiked = likedUsers.includes(context.auth!.uid);
   } catch (err) {
     email = "";
     phoneNumber = "";
+    likes = 0;
+    isLiked = false;
   }
   const donations = await donationsRef
       .where(`recipients.${data.uid}`, "!=", null)
@@ -118,6 +134,8 @@ exports.getRecipientInfo = functions.https.onCall(async (data, context) => {
     phoneNumber,
     totalReceivedDonation,
     rating,
+    likes,
+    isLiked,
   };
 });
 
@@ -130,6 +148,40 @@ exports.updateUserInfo = functions.https.onCall(async (data, context) => {
           {merge: true})
       .then(() => ({"": ""}))
       .catch((err) => {
+        throw new functions.https.HttpsError(err.code, err.message);
+      });
+});
+
+exports.likeUser = functions.https.onCall(async (data, context) => {
+  isAuthenticated(context);
+  const userRef = admin.firestore().collection("users").doc(data.uid);
+  return admin
+      .firestore()
+      .runTransaction(async (t) => {
+        const user = await t.get(userRef);
+        const temp = user.get("likedUsers") || [];
+        console.log("Liked user: ", temp);
+        const likedUsers = new Set(temp);
+        const uid = context.auth!.uid;
+        if (likedUsers.has(uid)) {
+          likedUsers.delete(uid);
+        } else {
+          likedUsers.add(uid);
+        }
+        console.log("Liked user after: ", likedUsers);
+        const likes = likedUsers.size;
+        console.log("Likes: ", likes);
+        t.set(userRef, {
+          likedUsers: Array.from(likedUsers),
+          likes,
+        },
+        {
+          merge: true,
+        });
+      })
+      .then(() => ({"": ""}))
+      .catch((err) => {
+        console.log("Error:", err);
         throw new functions.https.HttpsError(err.code, err.message);
       });
 });

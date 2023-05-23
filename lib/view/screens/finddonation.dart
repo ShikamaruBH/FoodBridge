@@ -40,7 +40,7 @@ class FindDonationScreen extends StatelessWidget {
             body: ChangeNotifierProvider.value(
               value: filterController,
               child: Consumer<FilterController>(
-                builder: (_, filterController, __) => Container(
+                builder: (_, ___, __) => Container(
                   width: constraints.maxWidth,
                   color: Theme.of(context).colorScheme.primary,
                   child: Column(
@@ -62,7 +62,7 @@ class FindDonationScreen extends StatelessWidget {
                             child: ChangeNotifierProvider.value(
                               value: donationController,
                               child: Consumer<DonationController>(
-                                builder: (_, donationController, __) => Column(
+                                builder: (_, ___, __) => Column(
                                   children: [
                                     InkWell(
                                       onTap: filterController.swap,
@@ -138,7 +138,7 @@ class FindDonationScreen extends StatelessWidget {
           ChangeNotifierProvider.value(
             value: dateTimePickerController,
             child: Consumer<DatetimePickerController>(
-              builder: (_, dateTimePickerController, __) => Row(
+              builder: (_, ___, __) => Row(
                 children: [
                   Expanded(
                     child: Column(
@@ -208,7 +208,7 @@ class AvailableDonationWidget extends StatelessWidget {
         child: ChangeNotifierProvider.value(
           value: donationController,
           child: Consumer<DonationController>(
-            builder: (_, donationController, __) => Column(
+            builder: (_, ___, __) => Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
@@ -544,7 +544,7 @@ class FoodTypeCheckBoxWidget extends StatelessWidget {
     return ChangeNotifierProvider.value(
       value: foodCategoryController,
       child: Consumer<FoodCategoryCheckBoxController>(
-        builder: (_, checkBoxController, __) => Column(
+        builder: (_, ___, __) => Column(
           children: [
             Card(
               elevation: 0,
@@ -552,12 +552,12 @@ class FoodTypeCheckBoxWidget extends StatelessWidget {
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(9)),
               ),
-              color: checkBoxController.status(type)
+              color: foodCategoryController.status(type)
                   ? ColorManagement.foodTypeCheckBoxCardBackgroundChecked
                   : ColorManagement.foodTypeCheckBoxCardBackgroundUncheck,
               child: InkWell(
                 onTap: () {
-                  checkBoxController.check(type);
+                  foodCategoryController.check(type);
                   donationController.listenToFilteredDonation();
                 },
                 child: SizedBox(
@@ -566,7 +566,7 @@ class FoodTypeCheckBoxWidget extends StatelessWidget {
                   child: Icon(
                     icon,
                     size: 48,
-                    color: checkBoxController.status(type)
+                    color: foodCategoryController.status(type)
                         ? Colors.white
                         : ColorManagement
                             .foodTypeCheckBoxCardIconUncheckColorLight,
@@ -579,8 +579,8 @@ class FoodTypeCheckBoxWidget extends StatelessWidget {
               child: Text(
                 localeController.getTranslate(type),
                 style: StyleManagement.newDonationFieldTitleTextStyle.copyWith(
-                  color: Colors.white
-                      .withOpacity(checkBoxController.status(type) ? .87 : .43),
+                  color: Colors.white.withOpacity(
+                      foodCategoryController.status(type) ? .87 : .43),
                 ),
               ),
             )

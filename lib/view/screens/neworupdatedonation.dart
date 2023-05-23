@@ -140,7 +140,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
       builder: (_, constraints) => ChangeNotifierProvider.value(
         value: localeController,
         child: Consumer<LocalizationController>(
-          builder: (_, localeController, __) => Scaffold(
+          builder: (_, ___, __) => Scaffold(
             resizeToAvoidBottomInset: false,
             appBar: AppBar(
               elevation: 0,
@@ -168,7 +168,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                       child: ChangeNotifierProvider.value(
                         value: mapController,
                         child: Consumer<MapController>(
-                          builder: (_, mapController, __) => TextFormField(
+                          builder: (_, ___, __) => TextFormField(
                             readOnly: true,
                             onTap: () => Navigator.of(context).push(
                               MaterialPageRoute(
@@ -337,9 +337,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                 ChangeNotifierProvider.value(
                                   value: dateTimePickerController,
                                   child: Consumer<DatetimePickerController>(
-                                    builder:
-                                        (_, dateTimePickerController, __) =>
-                                            Row(
+                                    builder: (_, ___, __) => Row(
                                       children: [
                                         Expanded(
                                           child: Column(
@@ -398,9 +396,8 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                         child: ChangeNotifierProvider.value(
                                           value: donationController,
                                           child: Consumer<DonationController>(
-                                            builder:
-                                                (_, donationController, __) =>
-                                                    ListView.builder(
+                                            builder: (_, ___, __) =>
+                                                ListView.builder(
                                               scrollDirection: Axis.horizontal,
                                               itemCount: donationController
                                                       .images.length +
@@ -747,7 +744,7 @@ class FoodTypeCheckBoxWidget extends StatelessWidget {
     return ChangeNotifierProvider.value(
       value: foodCategoryController,
       child: Consumer<FoodCategoryCheckBoxController>(
-        builder: (_, checkBoxController, __) => Column(
+        builder: (_, ___, __) => Column(
           children: [
             Card(
               elevation: 0,
@@ -755,18 +752,18 @@ class FoodTypeCheckBoxWidget extends StatelessWidget {
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(9)),
               ),
-              color: checkBoxController.status(type)
+              color: foodCategoryController.status(type)
                   ? ColorManagement.foodTypeCheckBoxCardBackgroundChecked
                   : ColorManagement.foodTypeCheckBoxCardBackgroundUncheck,
               child: InkWell(
-                onTap: () => checkBoxController.check(type),
+                onTap: () => foodCategoryController.check(type),
                 child: SizedBox(
                   width: 75,
                   height: 75,
                   child: Icon(
                     icon,
                     size: 48,
-                    color: checkBoxController.status(type)
+                    color: foodCategoryController.status(type)
                         ? Colors.white
                         : ColorManagement
                             .foodTypeCheckBoxCardIconUncheckColorDark,
@@ -779,8 +776,8 @@ class FoodTypeCheckBoxWidget extends StatelessWidget {
               child: Text(
                 localeController.getTranslate(type),
                 style: StyleManagement.newDonationFieldTitleTextStyle.copyWith(
-                  color: Colors.black
-                      .withOpacity(checkBoxController.status(type) ? .76 : .24),
+                  color: Colors.black.withOpacity(
+                      foodCategoryController.status(type) ? .76 : .24),
                 ),
               ),
             )

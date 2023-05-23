@@ -33,7 +33,7 @@ class DonationDetailScreen extends StatelessWidget {
       builder: (_, constraints) => ChangeNotifierProvider.value(
         value: localeController,
         child: Consumer<LocalizationController>(
-          builder: (_, localeController, __) => Scaffold(
+          builder: (_, ___, __) => Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.black.withOpacity(.01),
               elevation: 0,
@@ -224,8 +224,7 @@ class DonationDetailScreen extends StatelessWidget {
                                                   value: mapController,
                                                   child:
                                                       Consumer<MapController>(
-                                                    builder: (_, mapController,
-                                                            __) =>
+                                                    builder: (_, ___, __) =>
                                                         InkWell(
                                                       onTap: () =>
                                                           showRoute(context),
@@ -284,7 +283,7 @@ class DonationDetailScreen extends StatelessWidget {
                         child: ChangeNotifierProvider.value(
                           value: bottomButtonController,
                           child: Consumer<BottomButtonController>(
-                            builder: (_, bottomButtonController, __) => Row(
+                            builder: (_, ___, __) => Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: getBottomButton(context, constraints),
                             ),
@@ -574,7 +573,7 @@ class DonationDetailScreen extends StatelessWidget {
             child: ChangeNotifierProvider.value(
               value: quantityController,
               child: Consumer<QuantityController>(
-                builder: (_, quantityController, __) => TextField(
+                builder: (_, ___, __) => TextField(
                   controller: quantityController.controller,
                   onChanged: quantityController.setValue,
                   textAlign: TextAlign.center,
@@ -1087,6 +1086,8 @@ class DonationDetailScreen extends StatelessWidget {
           .getDonorInfo(donationController.getDonation(donationId).donor),
       (result) {
         DonorInfo donorInfo = DonorInfo.fromJson(result["result"].data);
+        donorInfo.uid = donationController.getDonation(donationId).donor;
+        likeButtonController.setLike(donorInfo.getLikes());
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => UserProfileScreen(donorInfo: donorInfo),
@@ -1103,6 +1104,8 @@ class DonationDetailScreen extends StatelessWidget {
       (result) {
         RecipientInfo recipientInfo =
             RecipientInfo.fromJson(result["result"].data);
+        recipientInfo.uid = uid;
+        likeButtonController.setLike(recipientInfo.getLikes());
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) =>

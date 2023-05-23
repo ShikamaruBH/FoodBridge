@@ -8,16 +8,21 @@ Future<bool> loadingHandler(
   String? loadingText,
   bool autoClose = false,
   bool barrierDismissible = false,
+  bool showLoadingDialog = true,
 }) async {
-  showDialog(
-    barrierDismissible: barrierDismissible,
-    context: navigatorKey.currentState!.context,
-    builder: (context) => LoadingDialog(
-      message: loadingText,
-    ),
-  );
+  if (showLoadingDialog) {
+    showDialog(
+      barrierDismissible: barrierDismissible,
+      context: navigatorKey.currentState!.context,
+      builder: (context) => LoadingDialog(
+        message: loadingText,
+      ),
+    );
+  }
   await asyncFunction().then((result) async {
-    Navigator.pop(navigatorKey.currentState!.context);
+    if (showLoadingDialog) {
+      Navigator.pop(navigatorKey.currentState!.context);
+    }
     if (result['success']) {
       successCallback(result);
       if (autoClose) {

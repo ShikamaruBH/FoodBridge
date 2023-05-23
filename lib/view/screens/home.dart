@@ -40,7 +40,7 @@ class HomeScreen extends StatelessWidget {
     return ChangeNotifierProvider.value(
       value: localeController,
       child: Consumer<LocalizationController>(
-        builder: (_, localeController, __) => LayoutBuilder(
+        builder: (_, ___, __) => LayoutBuilder(
           builder: (context, constraints) => Scaffold(
             appBar: AppBar(
               elevation: 0,
@@ -88,11 +88,10 @@ class HomeScreen extends StatelessWidget {
               child: ChangeNotifierProvider.value(
                 value: donationController,
                 child: Consumer<DonationController>(
-                  builder: (_, donationController, __) =>
-                      ChangeNotifierProvider.value(
+                  builder: (_, ___, __) => ChangeNotifierProvider.value(
                     value: authController,
                     child: Consumer<AuthController>(
-                      builder: (_, authController, __) => Column(
+                      builder: (_, ___, __) => Column(
                         children: [
                           UserAvatar(constraints),
                           const VSpacer(),
@@ -194,15 +193,14 @@ class HomeScreen extends StatelessWidget {
           builder: (__, authController, _) => AccountHeaderWidget(),
         ),
       ),
-      MenuListTile(
-        Icons.account_box_rounded,
-        'profile-title',
-        () => Navigator.of(context).push(
+      MenuListTile(Icons.account_box_rounded, 'profile-title', () {
+        likeButtonController.setLike(authController.currentUserInfo.getLikes());
+        Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => const UserProfileScreen(),
           ),
-        ),
-      ),
+        );
+      }),
       if (authController.currentUserRole == Role.donor)
         MenuListTile(
           Icons.delete_rounded,
@@ -257,7 +255,7 @@ class DonationHistoryWidget extends StatelessWidget {
           child: ChangeNotifierProvider.value(
             value: donationController,
             child: Consumer<DonationController>(
-              builder: (_, donationController, __) => Column(
+              builder: (_, ___, __) => Column(
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8),

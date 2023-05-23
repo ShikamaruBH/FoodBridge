@@ -13,7 +13,7 @@ class SettingsScreen extends StatelessWidget {
     return ChangeNotifierProvider.value(
       value: localeController,
       child: Consumer<LocalizationController>(
-        builder: (_, localeController, __) => Scaffold(
+        builder: (_, ___, __) => Scaffold(
           appBar: AppBar(
             leading: IconButton(
               onPressed: () => Navigator.of(context).pop(),
