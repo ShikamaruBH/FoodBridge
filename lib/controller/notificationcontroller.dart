@@ -59,7 +59,7 @@ class NotificationController extends ChangeNotifier {
         }
       }
       notifications.sort(
-        (a, b) => a.createAt.compareTo(b.createAt),
+        (a, b) => b.createAt.compareTo(a.createAt),
       );
       isLoading = false;
       notifyListeners();
