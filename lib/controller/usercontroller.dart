@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
+import 'package:food_bridge/model/donation.dart';
 import 'package:food_bridge/model/userrole.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -135,6 +136,11 @@ class UserController extends ChangeNotifier {
       debugPrint("Error: $err");
       return {"success": false, "err": err};
     }
+  }
+
+  Future<Map<String, dynamic>> getDonationUserInfo(String id) async {
+    Donation donation = donationController.getDonation(id);
+    return getUserInfo(donation.donor);
   }
 
   Future<Map<String, dynamic>> getRecipientInfo(String uid) async {

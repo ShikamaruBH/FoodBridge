@@ -375,6 +375,19 @@ class DonationController extends ChangeNotifier {
     return null;
   }
 
+  Future<Donation> fetchDonation(String id) async {
+    Donation? donation = getDonation(id);
+    if (donation != null) {
+      return donation;
+    }
+    final donationRef =
+        FirebaseFirestore.instance.collection("donations").doc(id);
+    final donationSnapshot = await donationRef.get();
+    donation = Donation.fromJson(donationSnapshot.id, donationSnapshot.data()!);
+    donations.add(donation);
+    return donation;
+  }
+
   void setCurrentSort(DonationSort donationSort) {
     currentSort = donationSort;
     sortDonation();

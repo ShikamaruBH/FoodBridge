@@ -42,6 +42,7 @@ class NotificationController extends ChangeNotifier {
       isLoading = true;
       notifyListeners();
       for (var element in event.docChanges) {
+        debugPrint("Have data: ${element.doc.data()}");
         UserNotification notification =
             UserNotification.fromJson(element.doc.id, element.doc.data()!);
 

@@ -60,10 +60,8 @@ class DonationDetailScreen extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: FutureBuilder(
-                            future: userController.getUserInfo(
-                                donationController
-                                    .getDonation(donationId)
-                                    .donor),
+                            future:
+                                userController.getDonationUserInfo(donationId),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                       ConnectionState.waiting ||

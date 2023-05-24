@@ -42,6 +42,7 @@ exports.onNewDonation = functions.firestore
               batch.set(notificationRef, {
                 from: donorSnapshot.get("displayName"),
                 donation: donationData.title,
+                donationId: donationId,
                 createAt: new Date(),
                 hasRead: false,
               });

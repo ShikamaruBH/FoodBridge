@@ -173,6 +173,7 @@ exports.receiveDonation = functions.https.onCall(async (data, context) => {
           t.set(notificationRef, {
             from: user.displayName,
             donation: donation.get("title"),
+            donationId: donation.id,
             createAt: new Date(),
             hasRead: false,
           });

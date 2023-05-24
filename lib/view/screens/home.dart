@@ -649,7 +649,7 @@ class NotificationCard extends StatelessWidget {
         ),
       ),
       child: ListTile(
-        onTap: notification.hasRead ? () {} : () => markAsRead(notification.id),
+        onTap: () => showDonation(notification),
         trailing: getNotificationDot(context, notification.hasRead),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 5),
@@ -712,10 +712,22 @@ class NotificationCard extends StatelessWidget {
     );
   }
 
-  markAsRead(String id) async {
+  void showDonation(UserNotification notification) async {
     await loadingHandler(
-      () => notificationController.markAsRead({"id": id}),
+      () async {
+        if (!notification.hasRead) {
+          notificationController.markAsRead({"id": notification.id});
+        }
+        await donationController.fetchDonation(notification.donationId);
+        return {"success": true};
+      },
       (_) {},
+      autoClose: false,
+    );
+    Navigator.of(navigatorKey.currentState!.context).push(
+      MaterialPageRoute(
+        builder: (context) => DonationDetailScreen(notification.donationId),
+      ),
     );
   }
 }
