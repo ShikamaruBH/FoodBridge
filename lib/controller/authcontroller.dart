@@ -66,16 +66,11 @@ class AuthController extends ChangeNotifier {
   }
 
   Future<Map<String, dynamic>> register(Map<String, dynamic> data) async {
-    try {
-      UserCredential credential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-              email: data['email'], password: data['password']);
-      User user = credential.user!;
-      await user.updateDisplayName(data['fullname']);
-      return {"success": true};
-    } on FirebaseAuthException catch (err) {
-      return {"success": false, "err": err};
-    }
+    return callCloudFunction({
+      "email": data["email"],
+      "password": data["password"],
+      "displayName": data["fullname"],
+    }, "user-createUser");
   }
 
   Future<Map<String, dynamic>> loginGoogle() async {
@@ -145,6 +140,9 @@ class AuthController extends ChangeNotifier {
       IdTokenResult idTokenResult = await user.getIdTokenResult();
       currentUserRole =
           RoleExtension.fromValue(idTokenResult.claims?['role'] ?? '');
+      if (currentUserRole == Role.none) {
+        return false;
+      }
       currentUserInfo.photoURL = user.photoURL;
       return true;
     }

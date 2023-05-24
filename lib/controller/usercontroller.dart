@@ -46,8 +46,9 @@ class UserController extends ChangeNotifier {
         authController.currentUserInfo.email = user['email'];
         authController.currentUserInfo.phoneNumber = user['phoneNumber'];
         authController.currentUserInfo.likes = user['likes'];
-        authController.currentUserInfo.isLiked =
-            user['likedUsers'].contains(FirebaseAuth.instance.currentUser!.uid);
+        authController.currentUserInfo.isLiked = user['likedUsers']
+                ?.contains(FirebaseAuth.instance.currentUser!.uid) ??
+            false;
       }
       notifyListeners();
     });
@@ -58,18 +59,14 @@ class UserController extends ChangeNotifier {
         .ref('${FirebaseAuth.instance.currentUser!.uid}/avatar.jpg');
     await imgRef.putFile(File(image.path));
     String photoURL = await imgRef.getDownloadURL();
-    try {
-      await FirebaseAuth.instance.currentUser!.updatePhotoURL(photoURL);
-      return {"success": true};
-    } catch (err) {
-      return {"success": false, "err": err};
-    }
+    await FirebaseAuth.instance.currentUser!.updatePhotoURL(photoURL);
+    return callCloudFunction({"photoURL": photoURL}, "user-updateUserInfo");
   }
 
   Future<Map<String, dynamic>> updateDisplayName(String name) async {
     try {
       await FirebaseAuth.instance.currentUser!.updateDisplayName(name);
-      return {"success": true};
+      return callCloudFunction({"displayName": name}, "user-updateUserInfo");
     } catch (err) {
       return {"success": false, "err": err};
     }
@@ -77,28 +74,98 @@ class UserController extends ChangeNotifier {
 
   Future<Map<String, dynamic>> updatePhoneNumber(String phoneNumber) async {
     return callCloudFunction(
-      {"phoneNumber": phoneNumber},
-      "user-updateUserInfo",
-    );
+        {"phoneNumber": phoneNumber}, "user-updateUserInfo");
   }
 
   Future<Map<String, dynamic>> updateEmail(String email) async {
-    return callCloudFunction(
-      {"email": email},
-      "user-updateUserInfo",
-    );
+    return callCloudFunction({"email": email}, "user-updateUserInfo");
   }
 
   Future<Map<String, dynamic>> getUserInfo(String uid) async {
-    return callCloudFunction({"uid": uid}, "user-getUserInfo");
+    debugPrint("Getting info of $uid");
+    try {
+      final documentSnapshot =
+          await FirebaseFirestore.instance.collection("users").doc(uid).get();
+      final data = documentSnapshot.data();
+      final result = {
+        "displayName": data!['displayName'],
+        "photoURL": data['photoURL'],
+      };
+      return {"success": true, "result": result};
+    } catch (err) {
+      return {"success": false, "err": err};
+    }
   }
 
   Future<Map<String, dynamic>> getDonorInfo(String uid) async {
-    return callCloudFunction({"uid": uid}, "user-getDonorInfo");
+    debugPrint("Getting donor info of $uid");
+    try {
+      final documentSnapshot =
+          await FirebaseFirestore.instance.collection("users").doc(uid).get();
+      final data = documentSnapshot.data();
+      final List<String> likedUsers = data!["likedUsers"].cast<String>() ?? [];
+      final isLiked =
+          likedUsers.contains(FirebaseAuth.instance.currentUser!.uid);
+
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection("donations")
+          .where("donor", isEqualTo: uid)
+          .get();
+
+      final recipientSet = <String>{};
+
+      for (var element in querySnapshot.docs) {
+        final Map<String, dynamic> recipients =
+            element.data()["recipients"]?.cast<String, dynamic>() ?? {};
+        recipientSet.addAll(recipients.keys);
+      }
+
+      final result = {
+        "displayName": data['displayName'],
+        "photoURL": data['photoURL'],
+        "email": data['email'],
+        "phoneNumber": data['phoneNumber'],
+        "likes": data['likes'] ?? 0,
+        "isLiked": isLiked,
+        "totalDonation": querySnapshot.size,
+        "totalRecipient": recipientSet.length,
+      };
+      return {"success": true, "result": result};
+    } catch (err) {
+      debugPrint("Error: $err");
+      return {"success": false, "err": err};
+    }
   }
 
   Future<Map<String, dynamic>> getRecipientInfo(String uid) async {
-    return callCloudFunction({"uid": uid}, "user-getRecipientInfo");
+    debugPrint("Getting recipient info of $uid");
+    try {
+      final documentSnapshot =
+          await FirebaseFirestore.instance.collection("users").doc(uid).get();
+      final data = documentSnapshot.data();
+      final List<String> likedUsers = data!["likedUsers"].cast<String>() ?? [];
+      final isLiked =
+          likedUsers.contains(FirebaseAuth.instance.currentUser!.uid);
+
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection("donations")
+          .where("recipients.$uid", isNull: false)
+          .get();
+
+      final result = {
+        "displayName": data['displayName'],
+        "photoURL": data['photoURL'],
+        "email": data['email'],
+        "phoneNumber": data['phoneNumber'],
+        "likes": data['likes'] ?? 0,
+        "isLiked": isLiked,
+        "totalReceivedDonation": querySnapshot.size,
+      };
+      return {"success": true, "result": result};
+    } catch (err) {
+      debugPrint("Error: $err");
+      return {"success": false, "err": err};
+    }
   }
 
   Future<Map<String, dynamic>> likeUser(String uid) async {

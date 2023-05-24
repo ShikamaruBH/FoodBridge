@@ -83,7 +83,7 @@ class DonationDetailScreen extends StatelessWidget {
                                 );
                               }
                               final userInfo = AppUserInfo.fromJson(
-                                  snapshot.data!['result'].data);
+                                  snapshot.data!['result']);
                               return Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -818,7 +818,7 @@ class DonationDetailScreen extends StatelessWidget {
             ),
           );
         }
-        final userInfo = AppUserInfo.fromJson(snapshot.data!["result"].data);
+        final userInfo = AppUserInfo.fromJson(snapshot.data!["result"]);
         return Column(
           children: [
             Row(
@@ -958,7 +958,7 @@ class DonationDetailScreen extends StatelessWidget {
             ),
           );
         }
-        final userInfo = AppUserInfo.fromJson(snapshot.data!["result"].data);
+        final userInfo = AppUserInfo.fromJson(snapshot.data!["result"]);
         return Card(
           margin: EdgeInsets.zero,
           color: Colors.grey.shade100,
@@ -1085,7 +1085,7 @@ class DonationDetailScreen extends StatelessWidget {
       () => userController
           .getDonorInfo(donationController.getDonation(donationId).donor),
       (result) {
-        DonorInfo donorInfo = DonorInfo.fromJson(result["result"].data);
+        DonorInfo donorInfo = DonorInfo.fromJson(result["result"]);
         donorInfo.uid = donationController.getDonation(donationId).donor;
         likeButtonController.setLike(donorInfo.getLikes());
         Navigator.of(context).push(
@@ -1102,8 +1102,7 @@ class DonationDetailScreen extends StatelessWidget {
     await loadingHandler(
       () => userController.getRecipientInfo(uid),
       (result) {
-        RecipientInfo recipientInfo =
-            RecipientInfo.fromJson(result["result"].data);
+        RecipientInfo recipientInfo = RecipientInfo.fromJson(result["result"]);
         recipientInfo.uid = uid;
         likeButtonController.setLike(recipientInfo.getLikes());
         Navigator.of(context).push(

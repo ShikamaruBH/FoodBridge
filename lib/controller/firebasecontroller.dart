@@ -6,8 +6,6 @@ Future<FirebaseApp> initializeFirebase() async {
   FirebaseApp firebaseApp = await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // FirebaseFirestore.instance.settings =
-  //     const Settings(persistenceEnabled: false);
   return firebaseApp;
 }
 
