@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import functions = require("firebase-functions");
 import admin = require("firebase-admin");
@@ -45,16 +46,19 @@ exports.createUser = functions.https.onCall(async (data) => {
 
 exports.updateUserRole = functions.https.onCall(async (data, context) => {
   isAuthenticated(context);
-  return admin
-      .auth()
-      .setCustomUserClaims(
+  try {
+    await admin
+        .auth()
+        .setCustomUserClaims(
           context.auth!.uid,
           {role: data.role}
-      )
-      .then(() => ({"message": "update-role-success"}))
-      .catch((err) => {
-        throw new functions.https.HttpsError(err.code, err.message);
-      });
+        );
+    await userRef.doc(context.auth!.uid).update({role: data.role});
+    return {"": ""};
+  } catch (err: any) {
+    console.log("Error: ", err);
+    throw new functions.https.HttpsError(err.code, err.message);
+  }
 });
 
 exports.updateUserInfo = functions.https.onCall(async (data, context) => {

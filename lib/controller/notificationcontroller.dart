@@ -61,6 +61,7 @@ class NotificationController extends ChangeNotifier {
       notifications.sort(
         (a, b) => b.createAt.compareTo(a.createAt),
       );
+      debugPrint("Fetch ${notifications.length} notifications");
       isLoading = false;
       notifyListeners();
     });
