@@ -100,7 +100,7 @@ class DonationController extends ChangeNotifier {
         "Datetime filter: ${dateTimePickerController.start.toUtc().toString()}");
     debugPrint("Distance filter: ${DistanceSliderController().value}");
     Query query = FirebaseFirestore.instance.collection('donations').where(
-          'start',
+          'end',
           isGreaterThanOrEqualTo:
               dateTimePickerController.start.toUtc().toIso8601String(),
         );
@@ -110,7 +110,8 @@ class DonationController extends ChangeNotifier {
         arrayContainsAny: foodCategoryController.getChecked(),
       );
     }
-    donationListener = query.snapshots().listen((event) async {
+    donationListener =
+        query.where("deleteAt", isNull: true).snapshots().listen((event) async {
       isLoading = true;
       notifyListeners();
       for (var element in event.docChanges) {
