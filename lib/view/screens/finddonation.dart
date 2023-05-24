@@ -143,7 +143,7 @@ class FindDonationScreen extends StatelessWidget {
                   Expanded(
                     child: Column(
                       children: [
-                        const FieldTitleWidget('food-start-date-title'),
+                        const FieldTitleWidget('end-after-title'),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 5),
                           child: DonationDatetimePicker(

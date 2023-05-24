@@ -710,4 +710,8 @@ Map<String, dynamic> appLocalizations = {
     "en": "from",
     "vi": "từ",
   },
+  "end-after-title": {
+    "en": "End after",
+    "vi": "Kết thúc sau",
+  },
 };
