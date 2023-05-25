@@ -335,7 +335,7 @@ class DonationController extends ChangeNotifier {
   String getTotalDonation() {
     switch (authController.currentUserRole) {
       case Role.donor:
-        return donations.length.toString();
+        return allDonations.length.toString();
       case Role.recipient:
         return receivedDonations.length.toString();
       default:
@@ -345,7 +345,7 @@ class DonationController extends ChangeNotifier {
 
   String getTotalRecipient() {
     Set<String> recipients = {};
-    for (var donation in donations) {
+    for (var donation in allDonations) {
       recipients.addAll(donation.recipients.keys);
     }
     return recipients.length.toString();
