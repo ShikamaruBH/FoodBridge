@@ -394,4 +394,8 @@ class DonationController extends ChangeNotifier {
     sortDonation();
     notifyListeners();
   }
+
+  void refresh() {
+    notifyListeners();
+  }
 }

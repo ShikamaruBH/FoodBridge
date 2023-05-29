@@ -718,7 +718,9 @@ class NotificationCard extends StatelessWidget {
         if (!notification.hasRead) {
           notificationController.markAsRead({"id": notification.id});
         }
-        await donationController.fetchDonation(notification.donationId);
+        Donation donation =
+            await donationController.fetchDonation(notification.donationId);
+        mapController.setAddress(donation.latlng);
         return {"success": true};
       },
       (_) {},

@@ -107,9 +107,21 @@ Map<String, dynamic> appLocalizations = {
     "en": "Quantity",
     "vi": "Số lượng",
   },
+  "arrive-time-title": {
+    "en": "Arrive time",
+    "vi": "Thời gian đến nhận",
+  },
   "reject-text": {
     "en": "Reject",
     "vi": "Từ chối",
+  },
+  "invalid-receive-time-after-end-text": {
+    "en": "Must receive before donation end",
+    "vi": "Phải nhận trước khi quyên góp kết thúc",
+  },
+  "invalid-receive-time-before-start-text": {
+    "en": "Can not receive before donation start",
+    "vi": "Không thể nhận trước khi quyên góp bắt đầu",
   },
   "reject-recipient-success-text": {
     "en": "Reject success",
@@ -178,6 +190,18 @@ Map<String, dynamic> appLocalizations = {
   "time-remaining-title": {
     "en": "Time remaning",
     "vi": "Thời gian còn lại",
+  },
+  "receive-donation-text": {
+    "en": "Receive donation",
+    "vi": "Nhận quyên góp",
+  },
+  "hour-text": {
+    "en": "Hour",
+    "vi": "Giờ",
+  },
+  "minute-text": {
+    "en": "Minute",
+    "vi": "Phút",
   },
   "time-remaining-text": {
     "en": (days, hours, minutes, seconds) {
@@ -341,6 +365,10 @@ Map<String, dynamic> appLocalizations = {
   "invalid-datetime-error-text": {
     "en": "End time must be after start time",
     "vi": "Thời gian kết thúc phải ở sau thời gian bắt đầu",
+  },
+  "invalid-donation-quantity-text": {
+    "en": "Invalid donation quantity",
+    "vi": "Số lượng nhận không hợp lệ",
   },
   "address-hint-text": {
     "en": "Pick or seach for your location on the map",

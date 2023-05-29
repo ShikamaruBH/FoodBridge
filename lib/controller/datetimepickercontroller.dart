@@ -18,6 +18,7 @@ class DatetimePickerController extends ChangeNotifier {
 
   setStart(DateTime value) {
     start = value;
+    end = value;
     notifyListeners();
   }
 

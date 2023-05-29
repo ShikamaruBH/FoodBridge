@@ -189,12 +189,14 @@ class DecoratorManagement {
       borderRadius: BorderRadius.all(Radius.circular(6)),
     ),
   );
-  static defaultTextFieldDecoratorDark(String hint, hintStyle) =>
+  static InputDecoration defaultTextFieldDecoratorDark(
+          String hint, hintStyle) =>
       InputDecoration(
         isDense: true,
         hintStyle: hintStyle,
         errorMaxLines: 2,
-        hintText: localeController.getTranslate(hint),
+        labelText: localeController.getTranslate(hint),
+        floatingLabelBehavior: FloatingLabelBehavior.auto,
         contentPadding: const EdgeInsets.all(11),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),

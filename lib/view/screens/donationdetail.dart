@@ -8,7 +8,6 @@ import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/donationcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/mapcontroller.dart';
-import 'package:food_bridge/controller/quantitycontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/model/loadinghandler.dart';
@@ -21,6 +20,7 @@ import 'package:food_bridge/view/screens/routeviewer.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:provider/provider.dart';
+import 'package:timer_count_down/timer_count_down.dart';
 
 class DonationDetailScreen extends StatelessWidget {
   final String donationId;
@@ -412,11 +412,12 @@ class DonationDetailScreen extends StatelessWidget {
     );
   }
 
-  void receiveDonation(String id) async {
+  void receiveDonation(String id, quantity, DateTime arriveTime) async {
     await loadingHandler(
       () => donationController.receiveDonation({
         "id": id,
-        "quantity": quantityController.value,
+        "quantity": num.parse(quantity),
+        "arriveTime": arriveTime.toUtc().toIso8601String(),
       }),
       (_) {
         Navigator.pop(navigatorKey.currentState!.context);
@@ -519,15 +520,15 @@ class DonationDetailScreen extends StatelessWidget {
             getRecipientsButton(constraints, context),
           ];
         }
-        if (bottomButtonController.isQuantityOpen) {
-          return [
-            getQuantityButton(constraints, context),
-          ];
-        }
         return [
           IconTextButton(
             constraints,
-            () => bottomButtonController.switchQuantity(),
+            () => openReciveDonationDialog(
+              context,
+              donation.start,
+              donation.end,
+              donation.quantity,
+            ),
             Icons.card_giftcard,
             'receive-text',
           ),
@@ -544,75 +545,6 @@ class DonationDetailScreen extends StatelessWidget {
         .getDonation(donationId)
         .recipients
         .containsKey(FirebaseAuth.instance.currentUser!.uid);
-  }
-
-  getQuantityButton(BoxConstraints constraints, BuildContext context) {
-    return Expanded(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          FoodQuantityButton(
-            constraints,
-            Icons.remove,
-            quantityController.decrease,
-            const BorderRadius.only(
-              topLeft: Radius.circular(6),
-              bottomLeft: Radius.circular(6),
-            ),
-          ),
-          Container(
-            width: constraints.maxWidth * .1,
-            height: constraints.maxWidth * .12,
-            decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                border: Border.symmetric(
-                    horizontal: BorderSide(
-                        color: Theme.of(context).colorScheme.secondary))),
-            child: ChangeNotifierProvider.value(
-              value: quantityController,
-              child: Consumer<QuantityController>(
-                builder: (_, ___, __) => TextField(
-                  controller: quantityController.controller,
-                  onChanged: quantityController.setValue,
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  style: StyleManagement.quantityTextStyle,
-                  decoration: const InputDecoration(border: InputBorder.none),
-                ),
-              ),
-            ),
-          ),
-          HSpacer(
-            offset: -9.9,
-          ),
-          FoodQuantityButton(
-            constraints,
-            Icons.add,
-            quantityController.increase,
-            const BorderRadius.only(
-              topRight: Radius.circular(6),
-              bottomRight: Radius.circular(6),
-            ),
-          ),
-          HSpacer(),
-          IconButton(
-            onPressed: () =>
-                receiveDonation(donationController.getDonation(donationId).id),
-            icon: const Icon(
-              Icons.done,
-              color: Colors.green,
-            ),
-          ),
-          IconButton(
-            onPressed: bottomButtonController.switchQuantity,
-            icon: const Icon(
-              Icons.close,
-              color: Colors.red,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   getRecipientsButton(BoxConstraints constraints, BuildContext context) {
@@ -734,7 +666,14 @@ class DonationDetailScreen extends StatelessWidget {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: listview,
+                child: ChangeNotifierProvider.value(
+                  value: donationController,
+                  child: Consumer<DonationController>(
+                    builder: (_, __, ____) {
+                      return listview;
+                    },
+                  ),
+                ),
               ),
             )
           ],
@@ -766,30 +705,27 @@ class DonationDetailScreen extends StatelessWidget {
   }
 
   getRecipientsListView(BoxConstraints constraints) {
-    if (donationController.getDonation(donationId).recipients.isEmpty) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(localeController.getTranslate('no-recipient-text')),
-        ],
+    return Consumer<DonationController>(builder: (_, __, ___) {
+      if (donationController.getDonation(donationId).getRecipients().isEmpty) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(localeController.getTranslate('no-recipient-text')),
+          ],
+        );
+      }
+      bool isDonor = authController.currentUserRole == Role.donor;
+      return ListView.builder(
+        itemCount:
+            donationController.getDonation(donationId).getRecipients().length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: getRecipientListTitle(index, constraints, isDonor),
+          );
+        },
       );
-    }
-    bool isDonor = authController.currentUserRole == Role.donor;
-    return ChangeNotifierProvider.value(
-      value: donationController,
-      child: Consumer<DonationController>(
-        builder: (_, __, ___) => ListView.builder(
-          itemCount:
-              donationController.getDonation(donationId).recipients.length,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: getRecipientListTitle(index, constraints, isDonor),
-            );
-          },
-        ),
-      ),
-    );
+    });
   }
 
   getRecipientListTitle(int index, BoxConstraints constraints, bool isDonor) {
@@ -881,7 +817,7 @@ class DonationDetailScreen extends StatelessWidget {
 
   slidableRecipientListTitle(int index, BoxConstraints constraints) {
     final donation = donationController.getDonation(donationId);
-    final recipientUid = donation.recipients.keys.toList()[index];
+    final recipientUid = donation.getRecipients().keys.toList()[index];
     final status = RecipientStatusExtension.fromValue(
         donation.recipients[recipientUid]["status"]);
     return Slidable(
@@ -893,7 +829,11 @@ class DonationDetailScreen extends StatelessWidget {
           onDismissed: () {},
           closeOnCancel: true,
           confirmDismiss: () async {
-            rejectRecipient(recipientUid);
+            if (status == RecipientStatus.pending) {
+              rejectRecipient(recipientUid);
+            } else {
+              undoRecipient(recipientUid);
+            }
             return false;
           },
         ),
@@ -940,7 +880,11 @@ class DonationDetailScreen extends StatelessWidget {
 
   recipientListTitle(int index, BoxConstraints constraints) {
     final donation = donationController.getDonation(donationId);
-    final recipientUid = donation.recipients.keys.toList()[index];
+    final recipientUid = donation.getRecipients().keys.toList()[index];
+    final recipient = donation.recipients[recipientUid];
+    final status = RecipientStatusExtension.fromValue(recipient['status']);
+    final duration =
+        recipient['expireAt']?.toDate()?.difference(DateTime.now());
     return FutureBuilder(
       future: userController.getUserInfo(recipientUid),
       builder: (context, snapshot) {
@@ -967,9 +911,13 @@ class DonationDetailScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                getRecipientAvatar(constraints, userInfo),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    getRecipientAvatar(constraints, userInfo),
+                  ],
+                ),
                 HSpacer(),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -980,7 +928,7 @@ class DonationDetailScreen extends StatelessWidget {
                       children: [
                         InkWell(
                           onTap: () => openRecipientProfile(context,
-                              donation.recipients.keys.toList()[index]),
+                              donation.getRecipients().keys.toList()[index]),
                           child: Text(
                             userInfo.displayName,
                             style: StyleManagement.menuTextStyle.copyWith(
@@ -989,6 +937,9 @@ class DonationDetailScreen extends StatelessWidget {
                           ),
                         ),
                       ],
+                    ),
+                    const VSpacer(
+                      offset: -8,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -1003,14 +954,37 @@ class DonationDetailScreen extends StatelessWidget {
                                 ),
                                 const TextSpan(text: ': '),
                                 TextSpan(
-                                  text: donation.recipients[recipientUid]
-                                          ["quantity"]
-                                      .toString(),
+                                  text: recipient["quantity"].toString(),
                                 ),
                               ]),
                         ),
                       ],
                     ),
+                    const VSpacer(
+                      offset: -8,
+                    ),
+                    if (status == RecipientStatus.pending)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Countdown(
+                            seconds: duration.inSeconds,
+                            interval: const Duration(seconds: 1),
+                            onFinished: donationController.refresh,
+                            build: (_, seconds) => RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: getTime(seconds),
+                                    style:
+                                        StyleManagement.notificationTitleBold,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
                 Expanded(
@@ -1206,6 +1180,38 @@ class DonationDetailScreen extends StatelessWidget {
       default:
         return null;
     }
+  }
+
+  openReciveDonationDialog(
+    BuildContext context,
+    DateTime start,
+    DateTime end,
+    int quantity,
+  ) async {
+    Map<String, dynamic> result = await showDialog(
+      barrierDismissible: true,
+      context: navigatorKey.currentState!.context,
+      builder: (context) => ReceiveDonationDialog(start, end, quantity),
+    );
+    if (!result["success"]) {
+      return;
+    }
+    Map<String, dynamic> data = result["data"];
+    receiveDonation(
+      donationId,
+      data["quantity"],
+      data["arriveTime"],
+    );
+  }
+
+  String getTime(double value) {
+    Duration duration = Duration(seconds: value.toInt());
+    String str(int value) => value.toString().padLeft(2, '0');
+    final days = duration.inDays;
+    final hours = duration.inHours.remainder(24);
+    final minutes = duration.inMinutes.remainder(60);
+    final seconds = duration.inSeconds.remainder(60);
+    return "${str(days)}:${str(hours)}:${str(minutes)}:${str(seconds)}";
   }
 }
 

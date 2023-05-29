@@ -354,6 +354,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                                       .setStart,
                                                   dateTimePickerController
                                                       .start,
+                                                  firstDate: DateTime.now(),
                                                 ),
                                               ),
                                             ],
@@ -375,10 +376,8 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                                   'end',
                                                   dateTimePickerController
                                                       .setEnd,
-                                                  dateTimePickerController.end,
-                                                  firstDate:
-                                                      dateTimePickerController
-                                                          .start,
+                                                  dateTimePickerController
+                                                      .start,
                                                 ),
                                               ),
                                             ],

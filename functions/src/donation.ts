@@ -159,6 +159,7 @@ exports.receiveDonation = functions.https.onCall(async (data, context) => {
           }
           recipients[uid] = {
             quantity: data.quantity,
+            expireAt: new Date(data.arriveTime),
             status: RecipientStatus.PENDING,
           };
           t.set(donationRef, {recipients}, {merge: true});
@@ -237,7 +238,8 @@ const updateRecipientStatus = async (
     status: RecipientStatus,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any,
-    context: functions.https.CallableContext) => {
+    context: functions.https.CallableContext,
+) => {
   isAuthenticated(context);
   hasRole(context, Role.DONOR);
   const donationRef = donationsRef.doc(data.donationId);

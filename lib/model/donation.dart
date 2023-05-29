@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
+import 'package:food_bridge/model/dayhourminute.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/model/recipientstatus.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -62,7 +63,9 @@ class Donation {
     num total = 0;
     recipients.forEach((_, recipient) {
       if (RecipientStatusExtension.fromValue(recipient['status']) !=
-          RecipientStatus.rejected) {
+              RecipientStatus.rejected &&
+          (recipient['expireAt'] == null ||
+              recipient['expireAt'].toDate().isAfter(DateTime.now()))) {
         total += recipient["quantity"];
       }
     });
@@ -120,13 +123,15 @@ class Donation {
     );
   }
 
-  List<dynamic> getDayHourMinute(double seconds) {
-    Duration duration = Duration(seconds: seconds.toInt());
-    return [
-      duration.inDays,
-      duration.inHours.remainder(24),
-      duration.inMinutes.remainder(60),
-      duration.inSeconds.remainder(60)
-    ];
+  Map<String, Map<String, dynamic>> getRecipients() {
+    final rs = recipients.entries.where((element) {
+      final recipient = element.value;
+      final DateTime expireAt = recipient["expireAt"].toDate();
+      final RecipientStatus status =
+          RecipientStatusExtension.fromValue(recipient["status"]);
+      return (status != RecipientStatus.pending ||
+          expireAt.isAfter(DateTime.now()));
+    });
+    return Map<String, Map<String, dynamic>>.fromEntries(rs);
   }
 }
