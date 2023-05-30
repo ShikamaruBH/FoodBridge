@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 Map<String, dynamic> appLocalizations = {
   "server-error": {
     "en": "Can't connect to server, try again later.",
@@ -282,9 +284,26 @@ Map<String, dynamic> appLocalizations = {
     "en": "Loading route...",
     "vi": "Đang tạo lộ trình...",
   },
+  "receive-time-remaining-text": {
+    "en": "Time remaining",
+    "vi": "Thời gian còn lại",
+  },
+  "timeout-description-text": {
+    "en": "Time's Up! You didn't receive the donation in time.",
+    "vi":
+        "Đã hết thời gian! Bạn đã không nhận quyên góp này đúng thời gian đã hẹn.",
+  },
+  "receive-donation-timer-description-text": {
+    "en":
+        "You already registered to receive this donation, please receive the donation before the timer end.",
+    "vi":
+        "Bạn đã đăng ký nhận quyên góp này, vui lòng nhận quyên góp trước khi thời gian kết thúc.",
+  },
   "donation-has-not-start-yet-text": {
-    "en": "The donation hasn't started yet",
-    "vi": "Quyên góp chưa bắt đầu",
+    "en": (start) =>
+        "Donations will start at ${DateFormat('H:mm a').format(start)} on ${DateFormat('MMM dd, yyyy').format(start)}",
+    "vi": (start) =>
+        "Quyên góp sẽ bắt đầu vào lúc ${DateFormat('H:mm a').format(start)} ngày ${DateFormat('MMM dd, yyyy').format(start)}",
   },
   "address-title": {
     "en": "Address",

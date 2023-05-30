@@ -9,7 +9,9 @@ import 'package:food_bridge/controller/donationcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
 import 'package:food_bridge/controller/mapcontroller.dart';
 import 'package:food_bridge/main.dart';
+import 'package:food_bridge/model/dayhourminute.dart';
 import 'package:food_bridge/model/designmanagement.dart';
+import 'package:food_bridge/model/donation.dart';
 import 'package:food_bridge/model/loadinghandler.dart';
 import 'package:food_bridge/model/recipientstatus.dart';
 import 'package:food_bridge/model/userinfo.dart';
@@ -22,9 +24,12 @@ import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:provider/provider.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 
+// ignore: must_be_immutable
 class DonationDetailScreen extends StatelessWidget {
   final String donationId;
-  const DonationDetailScreen(this.donationId, {super.key});
+  bool isLoadingReviewListTile = false;
+  bool isLoadingRecipientListTile = false;
+  DonationDetailScreen(this.donationId, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -523,12 +528,7 @@ class DonationDetailScreen extends StatelessWidget {
         return [
           IconTextButton(
             constraints,
-            () => openReciveDonationDialog(
-              context,
-              donation.start,
-              donation.end,
-              donation.quantity,
-            ),
+            () => receiveButtonOnClick(context, donation),
             Icons.card_giftcard,
             'receive-text',
           ),
@@ -540,11 +540,32 @@ class DonationDetailScreen extends StatelessWidget {
     }
   }
 
+  receiveButtonOnClick(BuildContext context, Donation donation) {
+    final Map<String, Map<String, dynamic>> recipients = donation.recipients;
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    if (recipients.containsKey(uid)) {
+      openTimerDialog(
+          recipients[uid]!["expireAt"].toDate().difference(DateTime.now()));
+    } else {
+      openReciveDonationDialog(
+        context,
+        donation.start,
+        donation.end,
+        donation.quantity.toInt(),
+      );
+    }
+  }
+
   bool alreadyReceivedDonation() {
-    return donationController
-        .getDonation(donationId)
-        .recipients
-        .containsKey(FirebaseAuth.instance.currentUser!.uid);
+    final Map<String, Map<String, dynamic>> recipients =
+        donationController.getDonation(donationId).recipients;
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    if (!recipients.containsKey(uid)) {
+      return false;
+    }
+    final status = recipients[uid]!["status"];
+    return RecipientStatusExtension.fromValue(status) ==
+        RecipientStatus.received;
   }
 
   getRecipientsButton(BoxConstraints constraints, BuildContext context) {
@@ -742,6 +763,10 @@ class DonationDetailScreen extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting ||
             snapshot.data == null) {
+          if (isLoadingReviewListTile) {
+            return const Text('');
+          }
+          isLoadingReviewListTile = true;
           return const Center(
             child: SizedBox(
               width: 30,
@@ -752,64 +777,68 @@ class DonationDetailScreen extends StatelessWidget {
             ),
           );
         }
+        isLoadingReviewListTile = false;
         final userInfo = AppUserInfo.fromJson(snapshot.data!["result"]);
-        return Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                getRecipientAvatar(constraints, userInfo),
-                HSpacer(),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        InkWell(
-                          onTap: () => openRecipientProfile(
-                              context, donation.reviews.keys.toList()[index]),
-                          child: Text(
-                            userInfo.displayName,
-                            style: StyleManagement.menuTextStyle.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  getRecipientAvatar(constraints, userInfo),
+                  HSpacer(),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          InkWell(
+                            onTap: () => openRecipientProfile(
+                                context, donation.reviews.keys.toList()[index]),
+                            child: Text(
+                              userInfo.displayName,
+                              style: StyleManagement.menuTextStyle.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(donation.reviews.values
-                            .toList()[index]["rating"]
-                            .toString()),
-                        HSpacer(),
-                        const Icon(
-                          Icons.star,
-                          color: Colors.yellow,
-                          size: 20,
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const VSpacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Flexible(
-                  child: Text(
-                    donation.reviews.values.toList()[index]["review"],
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(donation.reviews.values
+                              .toList()[index]["rating"]
+                              .toString()),
+                          HSpacer(),
+                          const Icon(
+                            Icons.star,
+                            color: Colors.yellow,
+                            size: 20,
+                          )
+                        ],
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            )
-          ],
+                ],
+              ),
+              const VSpacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Flexible(
+                    child: Text(
+                      donation.reviews.values.toList()[index]["review"],
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
         );
       },
     );
@@ -890,6 +919,10 @@ class DonationDetailScreen extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting ||
             snapshot.data == null) {
+          if (isLoadingRecipientListTile) {
+            return const Text('');
+          }
+          isLoadingRecipientListTile = true;
           return const Center(
             child: SizedBox(
               width: 30,
@@ -900,6 +933,7 @@ class DonationDetailScreen extends StatelessWidget {
             ),
           );
         }
+        isLoadingRecipientListTile = false;
         final userInfo = AppUserInfo.fromJson(snapshot.data!["result"]);
         return Card(
           margin: EdgeInsets.zero,
@@ -1204,14 +1238,12 @@ class DonationDetailScreen extends StatelessWidget {
     );
   }
 
-  String getTime(double value) {
-    Duration duration = Duration(seconds: value.toInt());
-    String str(int value) => value.toString().padLeft(2, '0');
-    final days = duration.inDays;
-    final hours = duration.inHours.remainder(24);
-    final minutes = duration.inMinutes.remainder(60);
-    final seconds = duration.inSeconds.remainder(60);
-    return "${str(days)}:${str(hours)}:${str(minutes)}:${str(seconds)}";
+  void openTimerDialog(Duration duration) {
+    showDialog(
+      barrierDismissible: true,
+      context: navigatorKey.currentState!.context,
+      builder: (context) => TimerDialog(duration),
+    );
   }
 }
 

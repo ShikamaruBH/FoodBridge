@@ -2,6 +2,7 @@ enum RecipientStatus {
   pending,
   received,
   rejected,
+  timeout,
   none,
 }
 
@@ -14,6 +15,8 @@ extension RecipientStatusExtension on RecipientStatus {
         return 'received';
       case RecipientStatus.rejected:
         return 'rejected';
+      case RecipientStatus.timeout:
+        return 'timeout';
       case RecipientStatus.none:
       default:
         return '';
@@ -28,6 +31,8 @@ extension RecipientStatusExtension on RecipientStatus {
         return RecipientStatus.received;
       case 'rejected':
         return RecipientStatus.rejected;
+      case 'timeout':
+        return RecipientStatus.timeout;
       case '':
       default:
         return RecipientStatus.none;

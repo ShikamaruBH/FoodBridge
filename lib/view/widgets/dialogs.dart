@@ -3,9 +3,11 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/model/customvalidators.dart';
+import 'package:food_bridge/model/dayhourminute.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:timer_count_down/timer_count_down.dart';
 
 class LoadingDialog extends StatelessWidget {
   final String? message;
@@ -512,5 +514,106 @@ class ReceiveDonationDialog extends StatelessWidget {
       Map<String, dynamic> data = _formKey.currentState!.value;
       Navigator.pop(context, {"success": true, "data": data});
     }
+  }
+}
+
+class TimerDialog extends StatelessWidget {
+  final Duration duration;
+  const TimerDialog(this.duration, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (_, constraints) => Dialog(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: Text(
+                      localeController
+                          .getTranslate("receive-time-remaining-text"),
+                      style: StyleManagement.statsTextStyle
+                          .copyWith(color: Colors.black),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+              const VSpacer(),
+              ...getTimerWidget(context, duration),
+              const VSpacer(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  getTimerWidget(context, Duration duration) {
+    if (duration.isNegative) {
+      return [
+        Row(
+          children: [
+            Flexible(
+              child: Text(
+                localeController.getTranslate("timeout-description-text"),
+                style: StyleManagement.donationDetailTextStyle
+                    .copyWith(color: ColorManagement.deleteColor),
+                textAlign: TextAlign.center,
+              ),
+            )
+          ],
+        ),
+      ];
+    }
+    return [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Flexible(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Text(
+                localeController
+                    .getTranslate("receive-donation-timer-description-text"),
+                style: StyleManagement.donationDetailTextStyle,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ],
+      ),
+      const VSpacer(),
+      Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Countdown(
+            seconds: duration.inSeconds,
+            interval: const Duration(seconds: 1),
+            onFinished: Navigator.of(context).pop,
+            build: (_, seconds) => Text(
+              getTime(seconds),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 25,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ];
   }
 }

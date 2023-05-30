@@ -62,10 +62,12 @@ class Donation {
   num getQuantityLeft() {
     num total = 0;
     recipients.forEach((_, recipient) {
-      if (RecipientStatusExtension.fromValue(recipient['status']) !=
-              RecipientStatus.rejected &&
-          (recipient['expireAt'] == null ||
-              recipient['expireAt'].toDate().isAfter(DateTime.now()))) {
+      final status = RecipientStatusExtension.fromValue(recipient['status']);
+      final expireAtIsAfterNow = recipient['expireAt'] != null
+          ? recipient['expireAt'].toDate().isAfter(DateTime.now())
+          : false;
+      if (status == RecipientStatus.received ||
+          status == RecipientStatus.pending && expireAtIsAfterNow) {
         total += recipient["quantity"];
       }
     });
@@ -74,9 +76,12 @@ class Donation {
 
   getTimeRemaining() {
     if (DateTime.now().isBefore(start)) {
-      return Text(
-        localeController.getTranslate('donation-has-not-start-yet-text'),
-        style: StyleManagement.donationDetailTextStyle,
+      return Flexible(
+        child: Text(
+          localeController
+              .getTranslate('donation-has-not-start-yet-text')(start),
+          style: StyleManagement.donationDetailTextStyle,
+        ),
       );
     }
     if (DateTime.now().isAfter(end)) {
