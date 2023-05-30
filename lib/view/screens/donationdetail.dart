@@ -1233,29 +1233,6 @@ class DonationDetailScreen extends StatelessWidget {
     );
   }
 
-  Future<bool> confirmReceived(recipientUid) async {
-    return loadingHandler(
-      () => donationController.confirmReceived({
-        "donationId": donationId,
-        "recipientUid": recipientUid,
-      }),
-      (_) {
-        showDialog(
-          barrierDismissible: false,
-          context: navigatorKey.currentState!.context,
-          builder: (context) => SuccessDialog(
-            'confirm-recipient-success-text',
-            'confirm-recipient-success-description',
-            () {},
-            showActions: false,
-          ),
-        );
-      },
-      loadingText: 'updating-text',
-      autoClose: true,
-    );
-  }
-
   getRecipentStatusColor(String value) {
     RecipientStatus status = RecipientStatusExtension.fromValue(value);
     switch (status) {

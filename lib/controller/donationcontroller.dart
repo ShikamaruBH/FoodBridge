@@ -7,9 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/distanceslidercontroller.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
+import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/donation.dart';
 import 'package:food_bridge/model/donationsort.dart';
+import 'package:food_bridge/model/recipientstatus.dart';
 import 'package:food_bridge/model/userrole.dart';
+import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:md5_file_checksum/md5_file_checksum.dart';
@@ -162,6 +165,20 @@ class DonationController extends ChangeNotifier {
       for (var element in event.docChanges) {
         Donation donation =
             Donation.fromJson(element.doc.id, element.doc.data()!);
+        final uid = FirebaseAuth.instance.currentUser!.uid;
+        final status = RecipientStatusExtension.fromValue(
+            donation.recipients[uid]!["status"]);
+        if (status == RecipientStatus.receiving) {
+          showDialog(
+            barrierDismissible: false,
+            context: navigatorKey.currentState!.context,
+            builder: (context) => ConfirmReceiveDonationDialog(
+              title: donation.title,
+              donationId: donation.id,
+              recipientUid: uid,
+            ),
+          );
+        }
         switch (element.type) {
           case DocumentChangeType.added:
             receivedDonations.add(donation);

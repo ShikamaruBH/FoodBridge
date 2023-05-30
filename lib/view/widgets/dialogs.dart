@@ -6,6 +6,7 @@ import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/dayhourminute.dart';
 import 'package:food_bridge/model/designmanagement.dart';
+import 'package:food_bridge/model/loadinghandler.dart';
 import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:timer_count_down/timer_count_down.dart';
@@ -620,7 +621,15 @@ class TimerDialog extends StatelessWidget {
 }
 
 class ConfirmReceiveDonationDialog extends StatelessWidget {
-  const ConfirmReceiveDonationDialog({super.key});
+  final String? title;
+  final String? donationId;
+  final String? recipientUid;
+  const ConfirmReceiveDonationDialog({
+    this.title,
+    this.donationId,
+    this.recipientUid,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -636,11 +645,11 @@ class ConfirmReceiveDonationDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Flexible(
                     child: Text(
-                      localeController
-                          .getTranslate('waiting-for-recipient-confirm-text'),
+                      getDialogTitle(),
                       style: StyleManagement.statsTextStyle
                           .copyWith(color: Colors.black),
                       textAlign: TextAlign.center,
@@ -648,6 +657,37 @@ class ConfirmReceiveDonationDialog extends StatelessWidget {
                   ),
                 ],
               ),
+              const VSpacer(),
+              if (title != null)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          style: StyleManagement.donationDetailTextStyle,
+                          children: [
+                            TextSpan(
+                                text: localeController.getTranslate(
+                                    'confirm-received-donation-description')),
+                            const TextSpan(
+                              text: ' ',
+                            ),
+                            TextSpan(
+                              text: title,
+                              style: StyleManagement.donationDetailTextStyle
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               const VSpacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -701,6 +741,26 @@ class ConfirmReceiveDonationDialog extends StatelessWidget {
                       ),
                     ),
                   ),
+                  if (title != null) ...[
+                    HSpacer(),
+                    Flexible(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          Navigator.of(context).pop({"success": true});
+                          confirmReceived(donationId, recipientUid);
+                        },
+                        style: StyleManagement.elevatedButtonStyle.copyWith(
+                          backgroundColor: MaterialStatePropertyAll(
+                              Theme.of(context).colorScheme.secondary),
+                          elevation: const MaterialStatePropertyAll(4),
+                        ),
+                        child: Text(
+                          localeController.getTranslate('confirm-button-title'),
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    ),
+                  ]
                 ],
               ),
               const VSpacer(),
@@ -708,6 +768,37 @@ class ConfirmReceiveDonationDialog extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  getDialogTitle() {
+    if (title == null) {
+      return localeController
+          .getTranslate('waiting-for-recipient-confirm-text');
+    }
+    return localeController.getTranslate('confirm-received-donation-text');
+  }
+
+  Future<bool> confirmReceived(donationId, recipientUid) async {
+    return loadingHandler(
+      () => donationController.confirmReceived({
+        "donationId": donationId,
+        "recipientUid": recipientUid,
+      }),
+      (_) {
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => SuccessDialog(
+            'confirm-recipient-success-text',
+            'confirm-recipient-success-description',
+            () {},
+            showActions: false,
+          ),
+        );
+      },
+      loadingText: 'updating-text',
+      autoClose: true,
     );
   }
 }

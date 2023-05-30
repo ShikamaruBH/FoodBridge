@@ -245,7 +245,9 @@ const updateRecipientStatus = async (
     context: functions.https.CallableContext,
 ) => {
   isAuthenticated(context);
-  hasRole(context, Role.DONOR);
+  if (status != RecipientStatus.RECEIVED) {
+    hasRole(context, Role.DONOR);
+  }
   const donationRef = donationsRef.doc(data.donationId);
   try {
     const donation = await donationRef.get();

@@ -381,6 +381,14 @@ Map<String, dynamic> appLocalizations = {
     "en": "Undoing...",
     "vi": "Đang hoàn tác",
   },
+  "confirm-received-donation-text": {
+    "en": "Confirm received",
+    "vi": "Xác nhận đã nhận",
+  },
+  "confirm-received-donation-description": {
+    "en": "Confirm you have received",
+    "vi": "Xác nhận bạn đã nhận quyên góp",
+  },
   "confirm-recipient-success-text": {
     "en": "Receive success",
     "vi": "Nhận thành công",
