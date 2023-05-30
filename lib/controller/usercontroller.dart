@@ -149,7 +149,7 @@ class UserController extends ChangeNotifier {
       final documentSnapshot =
           await FirebaseFirestore.instance.collection("users").doc(uid).get();
       final data = documentSnapshot.data();
-      final List<String> likedUsers = data!["likedUsers"].cast<String>() ?? [];
+      final List<String> likedUsers = data!["likedUsers"]?.cast<String>() ?? [];
       final isLiked =
           likedUsers.contains(FirebaseAuth.instance.currentUser!.uid);
 
