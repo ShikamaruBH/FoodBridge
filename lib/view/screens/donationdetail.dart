@@ -441,6 +441,57 @@ class DonationDetailScreen extends StatelessWidget {
     );
   }
 
+  Future<bool> receivingDonation(String recipientUid) async {
+    return loadingHandler(
+      () => donationController.receivingDonation({
+        "donationId": donationId,
+        "recipientUid": recipientUid,
+      }),
+      (_) async {
+        Navigator.pop(navigatorKey.currentState!.context);
+        receivingDialogController.isDialogShowing = true;
+        receivingDialogController.listenToRecipientStatus(
+          donationId,
+          recipientUid,
+        );
+        Map<String, dynamic> result = await showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => const ConfirmReceiveDonationDialog(),
+        );
+        if (!result["success"]) {
+          loadingHandler(
+            () => donationController.undoRecipient({
+              "donationId": donationId,
+              "recipientUid": recipientUid,
+            }),
+            (_) {},
+            showLoadingDialog: false,
+          );
+          showDialog(
+            context: navigatorKey.currentState!.context,
+            builder: (context) => const ReceiveDonationFailedDialog(),
+          );
+        } else {
+          await receivingDialogController.cancelAllListener();
+          showDialog(
+            barrierDismissible: false,
+            context: navigatorKey.currentState!.context,
+            builder: (context) => SuccessDialog(
+              'receive-success-text',
+              'receive-success-description',
+              () {},
+              showActions: false,
+            ),
+          );
+          receivingDialogController.isDialogShowing = true;
+          await Future.delayed(const Duration(seconds: 1));
+          Navigator.of(navigatorKey.currentState!.context).pop();
+        }
+      },
+    );
+  }
+
   void reviewDonation(String id) async {
     await loadingHandler(
       () => donationController.reviewDonation({
@@ -736,24 +787,26 @@ class DonationDetailScreen extends StatelessWidget {
         );
       }
       bool isDonor = authController.currentUserRole == Role.donor;
-      return ListView.builder(
-        itemCount:
-            donationController.getDonation(donationId).getRecipients().length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5),
-            child: getRecipientListTitle(index, constraints, isDonor),
-          );
-        },
+      return SlidableAutoCloseBehavior(
+        child: ListView.builder(
+          itemCount:
+              donationController.getDonation(donationId).getRecipients().length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: getRecipientListTitle(index, constraints, isDonor),
+            );
+          },
+        ),
       );
     });
   }
 
   getRecipientListTitle(int index, BoxConstraints constraints, bool isDonor) {
     if (isDonor) {
-      return slidableRecipientListTitle(index, constraints);
+      return slidableRecipientListTile(index, constraints);
     }
-    return recipientListTitle(index, constraints);
+    return recipientListTile(index, constraints);
   }
 
   reviewListTitle(int index, BoxConstraints constraints) {
@@ -844,13 +897,14 @@ class DonationDetailScreen extends StatelessWidget {
     );
   }
 
-  slidableRecipientListTitle(int index, BoxConstraints constraints) {
+  slidableRecipientListTile(int index, BoxConstraints constraints) {
     final donation = donationController.getDonation(donationId);
     final recipientUid = donation.getRecipients().keys.toList()[index];
     final status = RecipientStatusExtension.fromValue(
         donation.recipients[recipientUid]["status"]);
     return Slidable(
-      key: Key(donationId),
+      groupTag: 'recipientListTile',
+      key: Key(recipientUid),
       endActionPane: ActionPane(
         motion: const ScrollMotion(),
         extentRatio: .5,
@@ -880,7 +934,7 @@ class DonationDetailScreen extends StatelessWidget {
             ),
             SlidableAction(
               onPressed: (context) async {
-                await confirmReceived(recipientUid);
+                await receivingDonation(recipientUid);
               },
               borderRadius: BorderRadius.circular(10),
               backgroundColor: ColorManagement.recipientStatusReceived,
@@ -903,11 +957,11 @@ class DonationDetailScreen extends StatelessWidget {
             ),
         ],
       ),
-      child: recipientListTitle(index, constraints),
+      child: recipientListTile(index, constraints),
     );
   }
 
-  recipientListTitle(int index, BoxConstraints constraints) {
+  recipientListTile(int index, BoxConstraints constraints) {
     final donation = donationController.getDonation(donationId);
     final recipientUid = donation.getRecipients().keys.toList()[index];
     final recipient = donation.recipients[recipientUid];
@@ -1211,6 +1265,8 @@ class DonationDetailScreen extends StatelessWidget {
         return ColorManagement.recipientStatusReceived;
       case RecipientStatus.rejected:
         return ColorManagement.recipientStatusRejected;
+      case RecipientStatus.receiving:
+        return Theme.of(navigatorKey.currentState!.context).colorScheme.primary;
       default:
         return null;
     }

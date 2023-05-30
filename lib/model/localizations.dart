@@ -141,6 +141,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "RECEIVED",
     "vi": "ĐÃ NHẬN",
   },
+  "receiving": {
+    "en": "RECEIVING",
+    "vi": "ĐANG NHẬN",
+  },
   "rejected": {
     "en": "REJECTED",
     "vi": "BỊ TỪ CHỐI",
@@ -156,6 +160,14 @@ Map<String, dynamic> appLocalizations = {
   "rejecting-recipient-text": {
     "en": "Rejecting recipient...",
     "vi": "Đang từ chối người nhận... ",
+  },
+  "receive-failed-text": {
+    "en": "Confirm failed",
+    "vi": "Xác nhận thất bại",
+  },
+  "receive-failed-description": {
+    "en": "Recipient failed to confirm to receive the donation",
+    "vi": "Người nhận đã không xác nhận việc nhận quyên góp",
   },
   "food-unit-title": {
     "en": "Unit",
@@ -287,6 +299,10 @@ Map<String, dynamic> appLocalizations = {
   "receive-time-remaining-text": {
     "en": "Time remaining",
     "vi": "Thời gian còn lại",
+  },
+  "waiting-for-recipient-confirm-text": {
+    "en": "Waiting for recipient confirm",
+    "vi": "Chờ người nhận xác nhận",
   },
   "timeout-description-text": {
     "en": "Time's Up! You didn't receive the donation in time.",
@@ -448,6 +464,14 @@ Map<String, dynamic> appLocalizations = {
   "cancel-text": {
     "en": "Cancel",
     "vi": "Huỷ",
+  },
+  "receive-success-text": {
+    "en": "Receive success",
+    "vi": "Nhận thành công",
+  },
+  "receive-success-description": {
+    "en": "Recipient confirmed",
+    "vi": "Người nhận đã xác nhận",
   },
   "delete-text": {
     "en": "Delete",

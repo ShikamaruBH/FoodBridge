@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
+import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/dayhourminute.dart';
 import 'package:food_bridge/model/designmanagement.dart';
@@ -615,5 +616,165 @@ class TimerDialog extends StatelessWidget {
         ),
       ),
     ];
+  }
+}
+
+class ConfirmReceiveDonationDialog extends StatelessWidget {
+  const ConfirmReceiveDonationDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (_, constraints) => Dialog(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      localeController
+                          .getTranslate('waiting-for-recipient-confirm-text'),
+                      style: StyleManagement.statsTextStyle
+                          .copyWith(color: Colors.black),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+              const VSpacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ClipOval(
+                    child: Container(
+                      width: constraints.maxWidth / 3,
+                      height: constraints.maxWidth / 3,
+                      color: Theme.of(context).colorScheme.secondary,
+                      child: Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Center(
+                          child: Countdown(
+                            seconds: 60,
+                            interval: const Duration(seconds: 1),
+                            onFinished: () async {
+                              Navigator.of(navigatorKey.currentState!.context)
+                                  .pop({"success": false});
+                            },
+                            build: (_, seconds) => Text(
+                              seconds.toInt().toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 60,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              const VSpacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: ElevatedButton(
+                      onPressed: () =>
+                          Navigator.of(context).pop({"success": false}),
+                      style: StyleManagement.elevatedButtonStyle.copyWith(
+                        backgroundColor: MaterialStatePropertyAll(
+                            Theme.of(context).colorScheme.secondary),
+                        elevation: const MaterialStatePropertyAll(4),
+                      ),
+                      child: Text(
+                        localeController.getTranslate('cancel-text'),
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const VSpacer(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ReceiveDonationFailedDialog extends StatelessWidget {
+  const ReceiveDonationFailedDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (_, constraints) => Dialog(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: Text(
+                      localeController.getTranslate('receive-failed-text'),
+                      style: StyleManagement.statsTextStyle
+                          .copyWith(color: Colors.black),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+              const VSpacer(),
+              Center(
+                child: ClipOval(
+                  child: Container(
+                    color: Colors.yellow,
+                    width: constraints.maxWidth / 3,
+                    height: constraints.maxWidth / 3,
+                    child: Icon(
+                      Icons.timer_off,
+                      color: Colors.black,
+                      size: constraints.maxWidth / 4,
+                    ),
+                  ),
+                ),
+              ),
+              const VSpacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: Text(
+                      localeController
+                          .getTranslate("receive-failed-description"),
+                      style: StyleManagement.donationDetailTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                ],
+              ),
+              const VSpacer(),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

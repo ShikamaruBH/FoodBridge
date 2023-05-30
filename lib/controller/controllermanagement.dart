@@ -1,5 +1,6 @@
 import 'package:food_bridge/controller/authcontroller.dart';
 import 'package:food_bridge/controller/bottombuttoncontroller.dart';
+import 'package:food_bridge/controller/receivingdialogcontroller.dart';
 import 'package:food_bridge/controller/datetimepickercontroller.dart';
 import 'package:food_bridge/controller/donationcontroller.dart';
 import 'package:food_bridge/controller/finddonationfiltercontroller.dart';
@@ -24,4 +25,5 @@ final likeButtonController = LikeButtonController();
 final bottomButtonController = BottomButtonController();
 final notificationController = NotificationController();
 final dateTimePickerController = DatetimePickerController();
+final receivingDialogController = ReceivingDialogController();
 final foodCategoryController = FoodCategoryCheckBoxController();

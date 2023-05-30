@@ -351,10 +351,12 @@ class DonationHistoryWidget extends StatelessWidget {
       return Text(localeController.getTranslate(nodata));
     }
     if (source.isNotEmpty && !donationController.isLoading) {
-      return ListView.builder(
-        itemCount: source.length,
-        itemBuilder: (context, index) =>
-            DonationTileWidget(index, source, canDelete),
+      return SlidableAutoCloseBehavior(
+        child: ListView.builder(
+          itemCount: source.length,
+          itemBuilder: (context, index) =>
+              DonationTileWidget(index, source, canDelete),
+        ),
       );
     }
   }
@@ -416,6 +418,7 @@ class DonationTileWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Slidable(
+        groupTag: "donationTile",
         key: Key(donation.id),
         endActionPane: ActionPane(
           motion: const ScrollMotion(),

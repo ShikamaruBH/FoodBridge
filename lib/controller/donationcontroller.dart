@@ -25,8 +25,8 @@ class DonationController extends ChangeNotifier {
   List<Donation> deletedDonations = [];
   Map<String, String> imgURLs = {};
   bool isLoading = false;
-  DonationSort currentSort = DonationSort.NONE;
   bool isSortReveser = false;
+  DonationSort currentSort = DonationSort.NONE;
   StreamSubscription? donationListener;
   StreamSubscription? receivedDonationListener;
 
@@ -318,6 +318,11 @@ class DonationController extends ChangeNotifier {
   Future<Map<String, dynamic>> receiveDonation(
       Map<String, dynamic> data) async {
     return callCloudFunction(data, 'donation-receiveDonation');
+  }
+
+  Future<Map<String, dynamic>> receivingDonation(
+      Map<String, dynamic> data) async {
+    return callCloudFunction(data, 'donation-receivingDonation');
   }
 
   Future<String> getUrl(String uid, String img) async {

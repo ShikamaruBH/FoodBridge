@@ -226,6 +226,10 @@ exports.undoRecipient = functions.https.onCall(async (data, context) => {
   return updateRecipientStatus(RecipientStatus.PENDING, data, context);
 });
 
+exports.receivingDonation = functions.https.onCall(async (data, context) => {
+  return updateRecipientStatus(RecipientStatus.RECEIVING, data, context);
+});
+
 exports.confirmReceived = functions.https.onCall(async (data, context) => {
   return updateRecipientStatus(RecipientStatus.RECEIVED, data, context);
 });
@@ -247,7 +251,9 @@ const updateRecipientStatus = async (
     const donation = await donationRef.get();
     isExist(donation);
     const uid = context.auth?.uid;
-    isOwner(donation, uid);
+    if (status != RecipientStatus.RECEIVED) {
+      isOwner(donation, uid);
+    }
     const recipients = donation.data()?.recipients;
     recipients[data.recipientUid].status = status;
     return donationsRef

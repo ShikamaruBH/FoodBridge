@@ -118,9 +118,11 @@ class DeletedDonationWidget extends StatelessWidget {
     }
     if (donationController.deletedDonations.isNotEmpty &&
         !donationController.isLoading) {
-      return ListView.builder(
-        itemCount: donationController.deletedDonations.length,
-        itemBuilder: (context, index) => DonationTileWidget(index),
+      return SlidableAutoCloseBehavior(
+        child: ListView.builder(
+          itemCount: donationController.deletedDonations.length,
+          itemBuilder: (context, index) => DonationTileWidget(index),
+        ),
       );
     }
     if (donationController.isLoading) {
@@ -189,6 +191,7 @@ class DonationTileWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Slidable(
         key: Key(donation.id),
+        groupTag: "deletedDonationTile",
         startActionPane: ActionPane(
           motion: const StretchMotion(),
           extentRatio: .3,

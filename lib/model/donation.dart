@@ -67,7 +67,7 @@ class Donation {
           ? recipient['expireAt'].toDate().isAfter(DateTime.now())
           : false;
       if (status == RecipientStatus.received ||
-          status == RecipientStatus.pending && expireAtIsAfterNow) {
+          (status != RecipientStatus.rejected && expireAtIsAfterNow)) {
         total += recipient["quantity"];
       }
     });
