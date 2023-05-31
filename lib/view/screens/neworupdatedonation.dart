@@ -161,274 +161,325 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
               color: Theme.of(context).colorScheme.primary,
               child: FormBuilder(
                 key: _formKey,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 28),
-                      child: ChangeNotifierProvider.value(
-                        value: mapController,
-                        child: Consumer<MapController>(
-                          builder: (_, ___, __) => TextFormField(
-                            readOnly: true,
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    ChooseLocationScreen(false),
-                              ),
-                            ),
-                            controller:
-                                mapController.addressTextFieldController,
-                            style: StyleManagement.addressTextStyle,
-                            decoration:
-                                DecoratorManagement.addressTextFieldDecorator(
-                              'address-hint-text',
-                              Icon(
-                                Icons.location_on_sharp,
-                                color: ColorManagement.descriptionColorDark,
+                child: CustomScrollView(
+                  slivers: [
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 28),
+                            child: ChangeNotifierProvider.value(
+                              value: mapController,
+                              child: Consumer<MapController>(
+                                builder: (_, ___, __) => TextFormField(
+                                  readOnly: true,
+                                  onTap: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ChooseLocationScreen(false),
+                                    ),
+                                  ),
+                                  controller:
+                                      mapController.addressTextFieldController,
+                                  style: StyleManagement.addressTextStyle,
+                                  decoration: DecoratorManagement
+                                      .addressTextFieldDecorator(
+                                    'address-hint-text',
+                                    Icon(
+                                      Icons.location_on_sharp,
+                                      color:
+                                          ColorManagement.descriptionColorDark,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
-                    const VSpacer(),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 28),
-                      child: FormBuilderTextField(
-                        name: 'note',
-                        initialValue: donation?.note ?? "",
-                        style: StyleManagement.addressTextStyle,
-                        decoration:
-                            DecoratorManagement.addressTextFieldDecorator(
-                          'pickup-instruction-text',
-                          null,
-                        ),
-                      ),
-                    ),
-                    const VSpacer(),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: Card(
-                          margin: EdgeInsets.zero,
-                          color: Colors.white,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(13),
-                              topRight: Radius.circular(13),
+                          const VSpacer(),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 28),
+                            child: FormBuilderTextField(
+                              name: 'note',
+                              initialValue: donation?.note ?? "",
+                              style: StyleManagement.addressTextStyle,
+                              decoration:
+                                  DecoratorManagement.addressTextFieldDecorator(
+                                'pickup-instruction-text',
+                                null,
+                              ),
                             ),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 22,
-                              vertical: 10,
-                            ),
-                            child: Column(
-                              children: [
-                                const FieldTitleWidget('food-type-title'),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: const [
-                                      FoodTypeCheckBoxWidget(
-                                        'food-type-grocery',
-                                        Icons.local_grocery_store_rounded,
-                                      ),
-                                      FoodTypeCheckBoxWidget(
-                                        'food-type-cooked',
-                                        Icons.ramen_dining_rounded,
-                                      ),
-                                      FoodTypeCheckBoxWidget(
-                                        'food-type-fruits',
-                                        Icons.apple_rounded,
-                                      ),
-                                      FoodTypeCheckBoxWidget(
-                                        'food-type-beverage',
-                                        Icons.emoji_food_beverage_rounded,
-                                      ),
-                                    ],
+                          const VSpacer(),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Card(
+                                margin: EdgeInsets.zero,
+                                color: Colors.white,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(13),
+                                    topRight: Radius.circular(13),
                                   ),
                                 ),
-                                const FieldTitleWidget('food-title-title'),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 5),
-                                  child: FormBuilderTextField(
-                                    name: 'title',
-                                    initialValue: donation?.title ?? "",
-                                    style:
-                                        StyleManagement.textFieldTextStyleDark,
-                                    decoration: DecoratorManagement
-                                        .defaultTextFieldDecoratorDark(
-                                            "", null),
-                                    validator: CustomValidator.required,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 22,
+                                    vertical: 10,
                                   ),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Expanded(
-                                      child: Column(
+                                  child: Column(
+                                    children: [
+                                      Column(
                                         children: [
                                           const FieldTitleWidget(
-                                              'food-quantity-title'),
+                                              'food-type-title'),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 10),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: const [
+                                                FoodTypeCheckBoxWidget(
+                                                  'food-type-grocery',
+                                                  Icons
+                                                      .local_grocery_store_rounded,
+                                                ),
+                                                FoodTypeCheckBoxWidget(
+                                                  'food-type-cooked',
+                                                  Icons.ramen_dining_rounded,
+                                                ),
+                                                FoodTypeCheckBoxWidget(
+                                                  'food-type-fruits',
+                                                  Icons.apple_rounded,
+                                                ),
+                                                FoodTypeCheckBoxWidget(
+                                                  'food-type-beverage',
+                                                  Icons
+                                                      .emoji_food_beverage_rounded,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const FieldTitleWidget(
+                                              'food-title-title'),
                                           Padding(
                                             padding: const EdgeInsets.symmetric(
                                                 vertical: 5),
                                             child: FormBuilderTextField(
-                                              name: 'quantity',
-                                              initialValue: donation?.quantity
-                                                      .toString() ??
-                                                  "",
+                                              name: 'title',
+                                              initialValue:
+                                                  donation?.title ?? "",
                                               style: StyleManagement
                                                   .textFieldTextStyleDark,
-                                              keyboardType:
-                                                  TextInputType.number,
                                               decoration: DecoratorManagement
                                                   .defaultTextFieldDecoratorDark(
                                                       "", null),
-                                              validator: FormBuilderValidators
-                                                  .compose([
-                                                CustomValidator.required,
-                                                CustomValidator.numberic,
-                                              ]),
+                                              validator:
+                                                  CustomValidator.required,
                                             ),
                                           ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              Expanded(
+                                                child: Column(
+                                                  children: [
+                                                    const FieldTitleWidget(
+                                                        'food-quantity-title'),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          vertical: 5),
+                                                      child:
+                                                          FormBuilderTextField(
+                                                        name: 'quantity',
+                                                        initialValue: donation
+                                                                ?.quantity
+                                                                .toString() ??
+                                                            "",
+                                                        style: StyleManagement
+                                                            .textFieldTextStyleDark,
+                                                        keyboardType:
+                                                            TextInputType
+                                                                .number,
+                                                        decoration:
+                                                            DecoratorManagement
+                                                                .defaultTextFieldDecoratorDark(
+                                                                    "", null),
+                                                        validator:
+                                                            FormBuilderValidators
+                                                                .compose([
+                                                          CustomValidator
+                                                              .required,
+                                                          CustomValidator
+                                                              .numberic,
+                                                        ]),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              Expanded(
+                                                child: Column(
+                                                  children: [
+                                                    const FieldTitleWidget(
+                                                        'food-unit-title'),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          vertical: 5),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                vertical: 5),
+                                                        child:
+                                                            FormBuilderTextField(
+                                                          name: 'unit',
+                                                          initialValue:
+                                                              donation?.unit ??
+                                                                  "",
+                                                          style: StyleManagement
+                                                              .textFieldTextStyleDark,
+                                                          decoration:
+                                                              DecoratorManagement
+                                                                  .defaultTextFieldDecoratorDark(
+                                                                      "", null),
+                                                          validator:
+                                                              CustomValidator
+                                                                  .required,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          ChangeNotifierProvider.value(
+                                            value: dateTimePickerController,
+                                            child: Consumer<
+                                                DatetimePickerController>(
+                                              builder: (_, ___, __) => Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Column(
+                                                      children: [
+                                                        const FieldTitleWidget(
+                                                            'food-start-date-title'),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  vertical: 5),
+                                                          child:
+                                                              DonationDatetimePicker(
+                                                            'start',
+                                                            dateTimePickerController
+                                                                .setStart,
+                                                            dateTimePickerController
+                                                                .start,
+                                                            firstDate:
+                                                                DateTime.now(),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Expanded(
+                                                    child: Column(
+                                                      children: [
+                                                        const FieldTitleWidget(
+                                                            'food-end-date-title'),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  vertical: 5),
+                                                          child:
+                                                              DonationDatetimePicker(
+                                                            'end',
+                                                            dateTimePickerController
+                                                                .setEnd,
+                                                            dateTimePickerController
+                                                                .start,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
                                           const FieldTitleWidget(
-                                              'food-unit-title'),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 5),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 5),
-                                              child: FormBuilderTextField(
-                                                name: 'unit',
-                                                initialValue:
-                                                    donation?.unit ?? "",
-                                                style: StyleManagement
-                                                    .textFieldTextStyleDark,
-                                                decoration: DecoratorManagement
-                                                    .defaultTextFieldDecoratorDark(
-                                                        "", null),
-                                                validator:
-                                                    CustomValidator.required,
+                                              'food-photo-title'),
+                                          Row(
+                                            children: [
+                                              ChangeNotifierProvider.value(
+                                                value: donationController,
+                                                child: Consumer<
+                                                    DonationController>(
+                                                  builder: (_, ___, __) =>
+                                                      SizedBox(
+                                                    width:
+                                                        constraints.maxWidth *
+                                                            .85,
+                                                    height: 100,
+                                                    child: ListView.builder(
+                                                      scrollDirection:
+                                                          Axis.horizontal,
+                                                      itemCount:
+                                                          donationController
+                                                                  .images
+                                                                  .length +
+                                                              donationController
+                                                                  .urls.length +
+                                                              1,
+                                                      itemBuilder:
+                                                          (context, index) =>
+                                                              Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(right: 5),
+                                                        child: ClipRRect(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(9),
+                                                          child: getListTile(
+                                                              index),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
                                               ),
-                                            ),
+                                            ],
                                           ),
                                         ],
                                       ),
-                                    )
-                                  ],
-                                ),
-                                ChangeNotifierProvider.value(
-                                  value: dateTimePickerController,
-                                  child: Consumer<DatetimePickerController>(
-                                    builder: (_, ___, __) => Row(
-                                      children: [
-                                        Expanded(
-                                          child: Column(
-                                            children: [
-                                              const FieldTitleWidget(
-                                                  'food-start-date-title'),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 5),
-                                                child: DonationDatetimePicker(
-                                                  'start',
-                                                  dateTimePickerController
-                                                      .setStart,
-                                                  dateTimePickerController
-                                                      .start,
-                                                  firstDate: DateTime.now(),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                            children: [
-                                              const FieldTitleWidget(
-                                                  'food-end-date-title'),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 5),
-                                                child: DonationDatetimePicker(
-                                                  'end',
-                                                  dateTimePickerController
-                                                      .setEnd,
-                                                  dateTimePickerController
-                                                      .start,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const FieldTitleWidget('food-photo-title'),
-                                Expanded(
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: ChangeNotifierProvider.value(
-                                          value: donationController,
-                                          child: Consumer<DonationController>(
-                                            builder: (_, ___, __) =>
-                                                ListView.builder(
-                                              scrollDirection: Axis.horizontal,
-                                              itemCount: donationController
-                                                      .images.length +
-                                                  donationController
-                                                      .urls.length +
-                                                  1,
-                                              itemBuilder: (context, index) =>
-                                                  Padding(
-                                                padding: const EdgeInsets.only(
-                                                    right: 5),
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(9),
-                                                  child: getListTile(index),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 10),
+                                        child: getBottomBar(donation),
                                       ),
                                     ],
                                   ),
                                 ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  child: getBottomBar(donation),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
                     )
                   ],
