@@ -773,6 +773,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "Receiced donation",
     "vi": "Quyên góp đã nhận",
   },
+  "new-recipient-text": {
+    "en": "New recipient",
+    "vi": "Người nhận mới",
+  },
   "donor-notification-title-part-1": {
     "en": "Your donation",
     "vi": "Quyên góp",

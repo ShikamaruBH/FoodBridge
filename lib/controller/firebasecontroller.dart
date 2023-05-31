@@ -1,4 +1,6 @@
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -6,7 +8,14 @@ Future<FirebaseApp> initializeFirebase() async {
   FirebaseApp firebaseApp = await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  FirebaseMessaging.onBackgroundMessage(backgroundMessageHandle);
   return firebaseApp;
+}
+
+Future<void> backgroundMessageHandle(RemoteMessage message) async {
+  print("Receive new data message");
+  final data = message.data;
+  await notificationService.showNotification(data);
 }
 
 Future<Map<String, dynamic>> callCloudFunction(

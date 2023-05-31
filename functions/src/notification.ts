@@ -12,7 +12,8 @@ exports.onNewDonation = functions.firestore
     .onCreate(async (snapshot, context) => {
       try {
         const donationId = context.params.donationId;
-        const donationData = snapshot.data();
+        const donationTitle = snapshot.get("title");
+        const donationDonor = snapshot.get("donor");
 
         const usersQuerySnapshot = await userRef
             .where("role", "==", Role.RECIPIENT)
@@ -22,7 +23,8 @@ exports.onNewDonation = functions.firestore
         const totalUsers = usersQuerySnapshot.size;
         let processedUsers = 0;
 
-        const donorSnapshot = await userRef.doc(donationData.donor).get();
+        const donorSnapshot = await userRef.doc(donationDonor).get();
+        const donorDisplayName = donorSnapshot.get("displayName");
 
         while (processedUsers < totalUsers) {
           const batch = admin.firestore().batch();
@@ -36,22 +38,27 @@ exports.onNewDonation = functions.firestore
                 .ref
                 .collection("notifications")
                 .doc(donationId);
-            const notification = await notificationRef.get();
 
-            if (!notification.exists) {
-              batch.set(notificationRef, {
-                from: donorSnapshot.get("displayName"),
-                donation: donationData.title,
-                donationId: donationId,
-                createAt: new Date(),
-                hasRead: false,
-              });
-            }
+            batch.set(
+                notificationRef, {
+                  from: donorDisplayName,
+                  donation: donationTitle,
+                  donationId: donationId,
+                  createAt: new Date(),
+                  hasRead: false,
+                });
           }
 
           await batch.commit();
           processedUsers += batchSize;
         }
+        const payload = {
+          data: {
+            title: donationTitle,
+            donor: donorDisplayName,
+          },
+        };
+        await admin.messaging().sendToTopic("newDonation", payload);
         return;
       } catch (err: any) {
         console.log("Error: ", err);

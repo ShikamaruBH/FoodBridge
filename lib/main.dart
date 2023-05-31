@@ -11,6 +11,7 @@ final navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeFirebase();
+  await notificationService.init();
   runApp(const MyApp());
 }
 

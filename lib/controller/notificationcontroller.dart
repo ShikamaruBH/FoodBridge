@@ -3,10 +3,8 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
 import 'package:food_bridge/model/notification.dart';
-import 'package:food_bridge/model/userrole.dart';
 
 class NotificationController extends ChangeNotifier {
   static final NotificationController _instance =
@@ -28,9 +26,6 @@ class NotificationController extends ChangeNotifier {
 
   Future<void> listenToUserNotification() async {
     await cancelAllListener();
-    if (authController.currentUserRole == Role.none) {
-      return;
-    }
     notifications.clear();
     debugPrint("Listen to user notifications");
     listener = FirebaseFirestore.instance

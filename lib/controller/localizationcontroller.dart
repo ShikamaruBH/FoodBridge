@@ -20,6 +20,12 @@ class LocalizationController extends ChangeNotifier {
     return _instance;
   }
 
+  getLocale() async {
+    await SharedPreferences.getInstance().then((value) {
+      locale = value.getString("locale") ?? "vi";
+    });
+  }
+
   dynamic getTranslate(String text) {
     if (!appLocalizations.containsKey(text)) {
       return text;

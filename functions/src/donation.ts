@@ -170,14 +170,41 @@ exports.receiveDonation = functions.https.onCall(async (data, context) => {
               .collection("notifications")
               .doc();
 
-          const user = await admin.auth().getUser(donorUid);
+          const donor = await admin
+              .firestore()
+              .collection("users")
+              .doc(donorUid)
+              .get();
+
+          const donationTitle = donation.get("title");
+
           t.set(notificationRef, {
-            from: user.displayName,
-            donation: donation.get("title"),
+            from: donor.get("displayName"),
+            donation: donationTitle,
             donationId: donation.id,
             createAt: new Date(),
             hasRead: false,
           });
+
+          const recipient = await admin
+              .firestore()
+              .collection("users")
+              .doc(uid)
+              .get();
+
+          const payload = {
+            data: {
+              title: donationTitle,
+              recipient: recipient.get("displayName"),
+            },
+          };
+
+          await admin
+              .messaging()
+              .sendToDevice(
+                  donor.get("messageToken"),
+                  payload,
+              );
         })
         .then(() => ({"": ""}))
         .catch((err) => {
