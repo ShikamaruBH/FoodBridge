@@ -1,5 +1,6 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -13,7 +14,7 @@ Future<FirebaseApp> initializeFirebase() async {
 }
 
 Future<void> backgroundMessageHandle(RemoteMessage message) async {
-  print("Receive new data message");
+  debugPrint("Receive new message");
   final data = message.data;
   await notificationService.showNotification(data);
 }

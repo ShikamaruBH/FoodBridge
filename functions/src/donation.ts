@@ -285,6 +285,11 @@ const updateRecipientStatus = async (
     }
     const recipients = donation.data()?.recipients;
     recipients[data.recipientUid].status = status;
+    let deadline = new Date();
+    deadline = new Date(deadline.getTime() + 60000);
+    if (status == RecipientStatus.RECEIVING) {
+      recipients[data.recipientUid].confirmDeadline = deadline;
+    }
     return donationsRef
         .doc(data.donationId)
         .update({

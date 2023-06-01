@@ -169,10 +169,13 @@ class DonationController extends ChangeNotifier {
         final status = RecipientStatusExtension.fromValue(
             donation.recipients[uid]!["status"]);
         if (status == RecipientStatus.receiving) {
+          final confirmDeadline = donation.recipients[uid]!["confirmDeadline"];
+          final duration = confirmDeadline.toDate().difference(DateTime.now());
           showDialog(
             barrierDismissible: false,
             context: navigatorKey.currentState!.context,
             builder: (context) => ConfirmReceiveDonationDialog(
+              duration,
               title: donation.title,
               donationId: donation.id,
               recipientUid: uid,
@@ -398,9 +401,9 @@ class DonationController extends ChangeNotifier {
     return null;
   }
 
-  Future<Donation> fetchDonation(String id) async {
+  Future<Donation> fetchDonation(String id, {bool useCache = true}) async {
     Donation? donation = getDonation(id);
-    if (donation != null) {
+    if (donation != null && useCache) {
       return donation;
     }
     final donationRef =

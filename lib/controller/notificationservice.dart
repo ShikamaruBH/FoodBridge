@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 
@@ -27,7 +28,7 @@ class NotificationService {
   }
 
   static printPayload(details) {
-    print("Notification response: ${details.payload}");
+    debugPrint("Notification response: ${details.payload}");
   }
 
   showNotification(Map<String, dynamic> data) async {
