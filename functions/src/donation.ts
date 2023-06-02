@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import functions = require("firebase-functions");
 import admin = require("firebase-admin");
 import {Role} from "./roles";
@@ -47,6 +48,39 @@ exports.updateDonation = functions.https.onCall(async (data, context) => {
     console.log(`Error ${error}`);
     throw new functions.https
         .HttpsError("unknown", "unknown");
+  }
+});
+
+exports.deleteAllDonation = functions.https.onCall(async (data, context) => {
+  isAuthenticated(context);
+  hasRole(context, Role.DONOR);
+  try {
+    const uid = context.auth?.uid;
+    const donationQuerySnapshot = await donationsRef
+        .where("donor", "==", uid)
+        .where("deleteAt", "!=", null)
+        .get();
+
+    const batchSize = 500;
+    const totalDonations = donationQuerySnapshot.size;
+    let processedDonations = 0;
+
+    while (processedDonations < totalDonations) {
+      const batch = admin.firestore().batch();
+      const batchDonations = donationQuerySnapshot.docs.slice(
+          processedDonations,
+          processedDonations + batchSize,
+      );
+      for (const donation of batchDonations) {
+        batch.delete(donation.ref);
+      }
+      await batch.commit();
+      processedDonations += batchSize;
+    }
+    return {"": ""};
+  } catch (err: any) {
+    console.log("Error: ", err);
+    throw new functions.https.HttpsError(err.code, err.message);
   }
 });
 

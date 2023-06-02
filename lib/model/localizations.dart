@@ -501,6 +501,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "Choose image",
     "vi": "Chọn ảnh",
   },
+  "delete-all-button-title": {
+    "en": "Delete all",
+    "vi": "Xoá tất cả",
+  },
   "deleting-text": {
     "en": "Deleting...",
     "vi": "Đang xoá...",
@@ -780,6 +784,14 @@ Map<String, dynamic> appLocalizations = {
   "donor-notification-title-part-1": {
     "en": "Your donation",
     "vi": "Quyên góp",
+  },
+  "delete-all-donation-success-text": {
+    "en": "All donation deleted",
+    "vi": "Đã xoá tất cả",
+  },
+  "delete-all-donation-success-description": {
+    "en": "Delete all donation success",
+    "vi": "Xoá tất cả quyên góp thành công",
   },
   "donor-notification-title-part-2": {
     "en": "has new recipient",

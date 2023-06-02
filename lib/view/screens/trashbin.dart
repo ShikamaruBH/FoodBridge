@@ -13,6 +13,8 @@ import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../widgets/spacer.dart';
+
 class TrashBinScreen extends StatelessWidget {
   const TrashBinScreen({super.key});
 
@@ -103,6 +105,30 @@ class DeletedDonationWidget extends StatelessWidget {
                   Expanded(
                     child: getDeletedDonationListView(),
                   ),
+                  const VSpacer(),
+                  if (donationController.deletedDonations.isNotEmpty)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                              onPressed: () => deleteAll(),
+                              style: StyleManagement.elevatedButtonStyle
+                                  .copyWith(
+                                      backgroundColor:
+                                          const MaterialStatePropertyAll(
+                                              ColorManagement.deleteColor)),
+                              child: Text(
+                                localeController
+                                    .getTranslate('delete-all-button-title'),
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
                 ],
               ),
             ),
@@ -128,6 +154,27 @@ class DeletedDonationWidget extends StatelessWidget {
     if (donationController.isLoading) {
       return Text(localeController.getTranslate('loading-text'));
     }
+  }
+
+  deleteAll() async {
+    await loadingHandler(
+      () => donationController.deleteAllDonation({}),
+      (_) {
+        Navigator.pop(navigatorKey.currentState!.context);
+        showDialog(
+          barrierDismissible: false,
+          context: navigatorKey.currentState!.context,
+          builder: (context) => SuccessDialog(
+            'delete-all-donation-success-text',
+            'delete-all-donation-success-description',
+            () {},
+            showActions: false,
+          ),
+        );
+      },
+      loadingText: 'deleting-text',
+      autoClose: true,
+    );
   }
 }
 
