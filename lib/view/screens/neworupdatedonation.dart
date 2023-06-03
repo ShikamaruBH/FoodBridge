@@ -468,6 +468,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                           ),
                                         ],
                                       ),
+                                      const Spacer(),
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 10),
