@@ -458,11 +458,11 @@ class DonationDetailScreen extends StatelessWidget {
             await donationController.fetchDonation(donationId, useCache: false);
         final confirmDeadline =
             donation.recipients[recipientUid]!["confirmDeadline"];
-        final duration = confirmDeadline.toDate().difference(DateTime.now());
         Map<String, dynamic> result = await showDialog(
           barrierDismissible: false,
           context: navigatorKey.currentState!.context,
-          builder: (context) => ConfirmReceiveDonationDialog(duration),
+          builder: (context) =>
+              ConfirmReceiveDonationDialog(confirmDeadline.toDate()),
         );
         if (!result["success"]) {
           loadingHandler(

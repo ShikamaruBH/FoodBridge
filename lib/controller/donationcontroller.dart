@@ -26,6 +26,7 @@ class DonationController extends ChangeNotifier {
   List<Donation> receivedDonations = [];
   List<Donation> allDonations = [];
   List<Donation> deletedDonations = [];
+  List<Donation> donationsCache = [];
   Map<String, String> imgURLs = {};
   bool isLoading = false;
   bool isSortReveser = false;
@@ -170,12 +171,11 @@ class DonationController extends ChangeNotifier {
             donation.recipients[uid]!["status"]);
         if (status == RecipientStatus.receiving) {
           final confirmDeadline = donation.recipients[uid]!["confirmDeadline"];
-          final duration = confirmDeadline.toDate().difference(DateTime.now());
           showDialog(
             barrierDismissible: false,
             context: navigatorKey.currentState!.context,
             builder: (context) => ConfirmReceiveDonationDialog(
-              duration,
+              confirmDeadline.toDate(),
               title: donation.title,
               donationId: donation.id,
               recipientUid: uid,
@@ -397,7 +397,13 @@ class DonationController extends ChangeNotifier {
   }
 
   getDonation(String id) {
-    for (var list in [donations, receivedDonations, deletedDonations]) {
+    debugPrint("Get donation $id from cache");
+    for (var list in [
+      receivedDonations,
+      donations,
+      deletedDonations,
+      donationsCache
+    ]) {
       final rs = list.where((donation) => donation.id == id);
       if (rs.isNotEmpty) {
         return rs.first;
@@ -415,7 +421,7 @@ class DonationController extends ChangeNotifier {
         FirebaseFirestore.instance.collection("donations").doc(id);
     final donationSnapshot = await donationRef.get();
     donation = Donation.fromJson(donationSnapshot.id, donationSnapshot.data()!);
-    donations.add(donation);
+    donationsCache.add(donation);
     return donation;
   }
 

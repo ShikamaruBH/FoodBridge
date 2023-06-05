@@ -139,7 +139,7 @@ class UserController extends ChangeNotifier {
   }
 
   Future<Map<String, dynamic>> getDonationUserInfo(String id) async {
-    Donation donation = donationController.getDonation(id);
+    Donation donation = await donationController.fetchDonation(id);
     return getUserInfo(donation.donor);
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
+import 'package:notification_permissions/notification_permissions.dart';
 
 class NotificationService {
   static final NotificationService _notificationService =
@@ -25,6 +26,16 @@ class NotificationService {
       onDidReceiveNotificationResponse: printPayload,
       onDidReceiveBackgroundNotificationResponse: printPayload,
     );
+
+    PermissionStatus permissionStatus =
+        await NotificationPermissions.getNotificationPermissionStatus();
+
+    if (permissionStatus != PermissionStatus.granted) {
+      permissionStatus =
+          await NotificationPermissions.requestNotificationPermissions(
+              openSettings: true);
+    }
+    debugPrint("Notification permission: $permissionStatus");
   }
 
   static printPayload(details) {

@@ -624,9 +624,9 @@ class ConfirmReceiveDonationDialog extends StatelessWidget {
   final String? title;
   final String? donationId;
   final String? recipientUid;
-  final Duration duration;
+  final DateTime deadline;
   const ConfirmReceiveDonationDialog(
-    this.duration, {
+    this.deadline, {
     this.title,
     this.donationId,
     this.recipientUid,
@@ -703,7 +703,8 @@ class ConfirmReceiveDonationDialog extends StatelessWidget {
                         padding: const EdgeInsets.all(15),
                         child: Center(
                           child: Countdown(
-                            seconds: duration.inSeconds,
+                            seconds:
+                                deadline.difference(DateTime.now()).inSeconds,
                             interval: const Duration(seconds: 1),
                             onFinished: () async {
                               Navigator.of(navigatorKey.currentState!.context)

@@ -52,6 +52,7 @@ dependencies:
   md5_file_checksum: ^1.0.4
   flutter_rating_bar: ^4.0.1
   open_route_service: ^1.2.2
+  flutter_background: ^1.2.0
   firebase_messaging: ^14.6.2
   permission_handler: ^10.2.0
   shared_preferences: ^2.0.17
@@ -60,6 +61,7 @@ dependencies:
   cached_network_image: ^3.2.3
   flutter_launcher_icons: ^0.13.1
   form_builder_validators: ^8.4.0
+  notification_permissions: ^0.6.1
   flutter_local_notifications: ^14.1.0
   flutter_localizations:
     sdk: flutter

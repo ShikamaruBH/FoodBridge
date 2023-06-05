@@ -1,4 +1,5 @@
 import 'package:food_bridge/controller/authcontroller.dart';
+import 'package:food_bridge/controller/backgroundservice.dart';
 import 'package:food_bridge/controller/bottombuttoncontroller.dart';
 import 'package:food_bridge/controller/notificationservice.dart';
 import 'package:food_bridge/controller/receivingdialogcontroller.dart';
@@ -18,6 +19,7 @@ final mapController = MapController();
 final authController = AuthController();
 final userController = UserController();
 final filterController = FilterController();
+final backgroundService = BackgroundService();
 final quantityController = QuantityController();
 final donationController = DonationController();
 final notificationService = NotificationService();
