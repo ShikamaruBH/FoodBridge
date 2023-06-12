@@ -142,6 +142,7 @@ class AuthController extends ChangeNotifier {
       currentUserInfo.photoURL = userCredential.user!.photoURL;
 
       final messageToken = await FirebaseMessaging.instance.getToken();
+
       return callCloudFunction(
         {"messageToken": messageToken},
         "user-updateUserInfo",
