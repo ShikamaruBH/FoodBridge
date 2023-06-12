@@ -2,14 +2,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import functions = require("firebase-functions");
 import admin = require("firebase-admin");
-import {isAuthenticated} from "./validators";
-import {userRef} from "./references";
+import {isAuthenticated, isExist} from "./validators";
+import {usersRef} from "./references";
 
 exports.onCreateUser = functions
     .auth
     .user()
     .onCreate(async (userRecord) => {
-      return userRef
+      return usersRef
           .doc(userRecord.uid)
           .set({
             displayName: userRecord.displayName,
@@ -53,7 +53,7 @@ exports.updateUserRole = functions.https.onCall(async (data, context) => {
           context.auth!.uid,
           {role: data.role}
         );
-    await userRef.doc(context.auth!.uid).update({role: data.role});
+    await usersRef.doc(context.auth!.uid).update({role: data.role});
     return {"": ""};
   } catch (err: any) {
     console.log("Error: ", err);
@@ -63,8 +63,26 @@ exports.updateUserRole = functions.https.onCall(async (data, context) => {
 
 exports.updateUserInfo = functions.https.onCall(async (data, context) => {
   isAuthenticated(context);
-  return userRef
-      .doc(context.auth!.uid)
+  const uid = context.auth!.uid;
+  try {
+    const user = await usersRef.doc(uid).get();
+    isExist(user);
+    const temp = user.get("messageToken") || [];
+    if (data.messageToken != undefined) {
+      console.log("Message Token: ", data.messageToken);
+      console.log("Message Tokens: ", temp);
+      const messageToken = new Set(temp);
+      messageToken.add(data.messageToken);
+      data.messageToken = Array.from(messageToken);
+      console.log("Data: ", data);
+    }
+  } catch (err: any) {
+    console.log("Error: ", err);
+    throw new functions.https.HttpsError(err.code, err.message);
+  }
+
+  return usersRef
+      .doc(uid)
       .set(
           data,
           {merge: true})

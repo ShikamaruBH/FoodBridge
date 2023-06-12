@@ -3,7 +3,7 @@ import functions = require("firebase-functions");
 import admin = require("firebase-admin");
 import {Role} from "./roles";
 import {hasRole, isAuthenticated, isExist, isOwner} from "./validators";
-import {donationsRef, userRef} from "./references";
+import {donationsRef, usersRef} from "./references";
 import {RecipientStatus} from "./recipientstatus";
 
 exports.createDonation = functions.https.onCall(async (data, context) => {
@@ -199,7 +199,7 @@ exports.receiveDonation = functions.https.onCall(async (data, context) => {
           t.set(donationRef, {recipients}, {merge: true});
 
           const donorUid = donation.get("donor");
-          const notificationRef = userRef
+          const notificationRef = usersRef
               .doc(donorUid)
               .collection("notifications")
               .doc();
@@ -233,12 +233,16 @@ exports.receiveDonation = functions.https.onCall(async (data, context) => {
             },
           };
 
-          await admin
-              .messaging()
-              .sendToDevice(
-                  donor.get("messageToken"),
-                  payload,
-              );
+          const messageToken = donor.get("messageToken") || [];
+          for (const msgTk of messageToken) {
+            console.log("Sending message to ", msgTk);
+            await admin
+                .messaging()
+                .sendToDevice(
+                    msgTk,
+                    payload,
+                );
+          }
         })
         .then(() => ({"": ""}))
         .catch((err) => {

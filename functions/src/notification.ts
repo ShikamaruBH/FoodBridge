@@ -3,7 +3,7 @@
 import functions = require("firebase-functions");
 import admin = require("firebase-admin");
 import {isAuthenticated, isExist} from "./validators";
-import {userRef} from "./references";
+import {usersRef} from "./references";
 import {Role} from "./roles";
 
 
@@ -15,7 +15,7 @@ exports.onNewDonation = functions.firestore
         const donationTitle = snapshot.get("title");
         const donationDonor = snapshot.get("donor");
 
-        const usersQuerySnapshot = await userRef
+        const usersQuerySnapshot = await usersRef
             .where("role", "==", Role.RECIPIENT)
             .get();
 
@@ -23,7 +23,7 @@ exports.onNewDonation = functions.firestore
         const totalUsers = usersQuerySnapshot.size;
         let processedUsers = 0;
 
-        const donorSnapshot = await userRef.doc(donationDonor).get();
+        const donorSnapshot = await usersRef.doc(donationDonor).get();
         const donorDisplayName = donorSnapshot.get("displayName");
 
         while (processedUsers < totalUsers) {
@@ -69,7 +69,7 @@ exports.onNewDonation = functions.firestore
 exports.markAsRead = functions.https.onCall(async (data, context) => {
   isAuthenticated(context);
   const uid = context.auth!.uid;
-  const notificationRef = userRef
+  const notificationRef = usersRef
       .doc(uid)
       .collection("notifications")
       .doc(data.id);
@@ -91,7 +91,7 @@ exports.markAllAsRead = functions.https.onCall(async (data, context) => {
   const uid = context.auth!.uid;
   try {
     const batch = admin.firestore().batch();
-    const notificationsRef = userRef.doc(uid).collection("notifications");
+    const notificationsRef = usersRef.doc(uid).collection("notifications");
     const querySnapshot = await notificationsRef.get();
     querySnapshot.forEach((doc) => {
       const notificationDocRef = notificationsRef.doc(doc.id);
