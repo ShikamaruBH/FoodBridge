@@ -13,6 +13,7 @@ Future<FirebaseApp> initializeFirebase() async {
   return firebaseApp;
 }
 
+@pragma('vm:entry-point')
 Future<void> backgroundMessageHandle(RemoteMessage message) async {
   debugPrint("Receive new message");
   final data = message.data;
