@@ -3,7 +3,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
-import 'package:food_bridge/controller/mapcontroller.dart';
+import 'package:food_bridge/controller/widget_controller/mapcontroller.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/model/userrole.dart';
@@ -263,9 +263,7 @@ class AddressListTitle extends StatelessWidget {
             color: ColorManagement.iconColor,
           ),
         ),
-        const SizedBox(
-          width: 10,
-        ),
+        HSpacer(),
         Flexible(
           child: Text(
             suggestion.properties['label'],

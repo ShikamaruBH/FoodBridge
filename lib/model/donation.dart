@@ -16,6 +16,8 @@ class Donation {
   LatLng latlng;
   String note;
   num quantity;
+  num maxQuantityPerRecipient;
+  bool noLimit;
   String unit;
   DateTime start;
   DateTime end;
@@ -33,6 +35,8 @@ class Donation {
     this.latlng,
     this.note,
     this.quantity,
+    this.maxQuantityPerRecipient,
+    this.noLimit,
     this.unit,
     this.start,
     this.end,
@@ -50,7 +54,9 @@ class Donation {
         List<String>.from(data['categories']),
         LatLng.fromJson(data['latlng'])!,
         data['note'],
-        num.parse(data['quantity']),
+        data['quantity'],
+        data['maxQuantityPerRecipient'] ?? 0,
+        data['noLimit'] ?? false,
         data['unit'],
         DateTime.parse(data['start']).toLocal(),
         DateTime.parse(data['end']).toLocal(),
@@ -63,11 +69,8 @@ class Donation {
     num total = 0;
     recipients.forEach((_, recipient) {
       final status = RecipientStatusExtension.fromValue(recipient['status']);
-      final expireAtIsAfterNow = recipient['expireAt'] != null
-          ? recipient['expireAt'].toDate().isAfter(DateTime.now())
-          : false;
-      if (status == RecipientStatus.received ||
-          (status != RecipientStatus.rejected && expireAtIsAfterNow)) {
+      final expireAtIsAfterNow = recipient['expireAt'] != null ? recipient['expireAt'].toDate().isAfter(DateTime.now()) : false;
+      if (status == RecipientStatus.received || (status != RecipientStatus.rejected && expireAtIsAfterNow)) {
         total += recipient["quantity"];
       }
     });
@@ -78,8 +81,7 @@ class Donation {
     if (DateTime.now().isBefore(start)) {
       return Flexible(
         child: Text(
-          localeController
-              .getTranslate('donation-has-not-start-yet-text')(start),
+          localeController.getTranslate('donation-has-not-start-yet-text')(start),
           style: StyleManagement.donationDetailTextStyle,
         ),
       );
@@ -89,14 +91,12 @@ class Donation {
         text: TextSpan(
           children: [
             TextSpan(
-              text:
-                  "${localeController.getTranslate('time-remaining-title')}: ",
+              text: "${localeController.getTranslate('time-remaining-title')}: ",
               style: StyleManagement.donationDetailTextStyle,
             ),
             TextSpan(
               text: localeController.getTranslate('donation-ended-text'),
-              style: StyleManagement.notificationTitleMedium
-                  .copyWith(fontWeight: FontWeight.w600),
+              style: StyleManagement.notificationTitleMedium.copyWith(fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -110,8 +110,7 @@ class Donation {
         text: TextSpan(
           children: [
             TextSpan(
-              text:
-                  "${localeController.getTranslate('time-remaining-title')}: ",
+              text: "${localeController.getTranslate('time-remaining-title')}: ",
               style: StyleManagement.donationDetailTextStyle,
             ),
             TextSpan(
@@ -119,8 +118,7 @@ class Donation {
                 localeController.getTranslate("time-remaining-text"),
                 getDayHourMinute(seconds),
               ),
-              style: StyleManagement.notificationTitleMedium
-                  .copyWith(fontWeight: FontWeight.w600),
+              style: StyleManagement.notificationTitleMedium.copyWith(fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -132,10 +130,8 @@ class Donation {
     final rs = recipients.entries.where((element) {
       final recipient = element.value;
       final DateTime expireAt = recipient["expireAt"].toDate();
-      final RecipientStatus status =
-          RecipientStatusExtension.fromValue(recipient["status"]);
-      return (status != RecipientStatus.pending ||
-          expireAt.isAfter(DateTime.now()));
+      final RecipientStatus status = RecipientStatusExtension.fromValue(recipient["status"]);
+      return (status != RecipientStatus.pending || expireAt.isAfter(DateTime.now()));
     });
     return Map<String, Map<String, dynamic>>.fromEntries(rs);
   }

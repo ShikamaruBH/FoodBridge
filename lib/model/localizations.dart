@@ -220,8 +220,7 @@ Map<String, dynamic> appLocalizations = {
   "time-remaining-text": {
     "en": (days, hours, minutes, seconds) {
       String rs = '';
-      String pad(time, unit) =>
-          '${rs.isEmpty ? "" : ", "}${time.toString().padLeft(2, '0')} $unit${time > 1 ? "s" : ""}';
+      String pad(time, unit) => '${rs.isEmpty ? "" : ", "}${time.toString().padLeft(2, '0')} $unit${time > 1 ? "s" : ""}';
       if (days > 0) {
         rs += '${days.toString().padLeft(2, '0')} day${days > 1 ? "s" : ""}';
         return rs;
@@ -240,8 +239,7 @@ Map<String, dynamic> appLocalizations = {
     },
     "vi": (days, hours, minutes, seconds) {
       String rs = '';
-      String pad(time, unit) =>
-          '${rs.isEmpty ? "" : ", "}${time.toString().padLeft(2, '0')} $unit';
+      String pad(time, unit) => '${rs.isEmpty ? "" : ", "}${time.toString().padLeft(2, '0')} $unit';
 
       if (days > 0) {
         rs += '${days.toString().padLeft(2, '0')} ngày';
@@ -306,20 +304,15 @@ Map<String, dynamic> appLocalizations = {
   },
   "timeout-description-text": {
     "en": "Time's Up! You didn't receive the donation in time.",
-    "vi":
-        "Đã hết thời gian! Bạn đã không nhận quyên góp này đúng thời gian đã hẹn.",
+    "vi": "Đã hết thời gian! Bạn đã không nhận quyên góp này đúng thời gian đã hẹn.",
   },
   "receive-donation-timer-description-text": {
-    "en":
-        "You already registered to receive this donation, please receive the donation before the timer end.",
-    "vi":
-        "Bạn đã đăng ký nhận quyên góp này, vui lòng nhận quyên góp trước khi thời gian kết thúc.",
+    "en": "You already registered to receive this donation, please receive the donation before the timer end.",
+    "vi": "Bạn đã đăng ký nhận quyên góp này, vui lòng nhận quyên góp trước khi thời gian kết thúc.",
   },
   "donation-has-not-start-yet-text": {
-    "en": (start) =>
-        "Donations will start at ${DateFormat('H:mm a').format(start)} on ${DateFormat('MMM dd, yyyy').format(start)}",
-    "vi": (start) =>
-        "Quyên góp sẽ bắt đầu vào lúc ${DateFormat('H:mm a').format(start)} ngày ${DateFormat('MMM dd, yyyy').format(start)}",
+    "en": (start) => "Donations will start at ${DateFormat('H:mm a').format(start)} on ${DateFormat('MMM dd, yyyy').format(start)}",
+    "vi": (start) => "Quyên góp sẽ bắt đầu vào lúc ${DateFormat('H:mm a').format(start)} ngày ${DateFormat('MMM dd, yyyy').format(start)}",
   },
   "address-title": {
     "en": "Address",
@@ -472,6 +465,38 @@ Map<String, dynamic> appLocalizations = {
   "cancel-text": {
     "en": "Cancel",
     "vi": "Huỷ",
+  },
+  "unlimited-text": {
+    "en": "Unlimited",
+    "vi": "Không giới hạn",
+  },
+  "donation-ended-text": {
+    "en": "Donation ended",
+    "vi": "Quyên góp đã kết thúc",
+  },
+  "donation-ended-description": {
+    "en": "This donation has ended",
+    "vi": "Đã quá thời gian nhận quyên góp",
+  },
+  "quantity-limit-per-recipient-text": {
+    "en": "Quantity limit per recipient",
+    "vi": "Số lượng giới hạn mỗi người có thể nhận",
+  },
+  "min-value-error-text": {
+    "en": "Value must greater than zero",
+    "vi": "Giá trị phải lớn hơn 0",
+  },
+  "limit-invalid-text": {
+    "en": "Quantity limit must less than or equal to donation quantity",
+    "vi": "Giới hạn số lượng phải nhỏ hơn hoặc bằng số lượng quyên góp",
+  },
+  "max-quantity-per-recipient-title": {
+    "en": "Max quantity per recipient",
+    "vi": "Số lượng tối đa một người có thể nhận",
+  },
+  "no-limit-title": {
+    "en": "No limit",
+    "vi": "Không giới hạn",
   },
   "receive-success-text": {
     "en": "Receive success",
@@ -630,10 +655,8 @@ Map<String, dynamic> appLocalizations = {
     "vi": "Người dùng không tồn tại",
   },
   "user-not-found-description": {
-    "en":
-        "There is no user record corresponding to this identifier. The user may have been deleted.",
-    "vi":
-        "Không có bản ghi người dùng nào tương ứng với số nhận dạng này. Người dùng có thể đã bị xóa.",
+    "en": "There is no user record corresponding to this identifier. The user may have been deleted.",
+    "vi": "Không có bản ghi người dùng nào tương ứng với số nhận dạng này. Người dùng có thể đã bị xóa.",
   },
   "home-title": {
     "en": "Home",
@@ -744,22 +767,16 @@ Map<String, dynamic> appLocalizations = {
     "vi": "LƯỢT THÍCH",
   },
   "monthly-donation-text-donor": {
-    "en": (total) =>
-        "You've created $total donation${total > 1 ? 's' : ''} this month.",
+    "en": (total) => "You've created $total donation${total > 1 ? 's' : ''} this month.",
     "vi": (total) => "Bạn đã tạo $total quyên góp trong tháng này.",
   },
   "monthly-donation-text-recipient": {
-    "en": (total) =>
-        "You've received $total donation${total > 1 ? 's' : ''} this month.",
+    "en": (total) => "You've received $total donation${total > 1 ? 's' : ''} this month.",
     "vi": (total) => "Bạn đã nhận $total quyên góp trong tháng này.",
   },
   "language-setting-text": {
     "en": "Language",
     "vi": "Ngôn ngữ",
-  },
-  "donation-ended-text": {
-    "en": "Donation has ended",
-    "vi": "Đã quá thời gian nhận quyên góp",
   },
   "choose-location-title": {
     "en": "Choose location",

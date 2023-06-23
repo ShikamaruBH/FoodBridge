@@ -10,6 +10,7 @@ import 'package:food_bridge/model/loadinghandler.dart';
 import 'package:food_bridge/view/screens/login.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/languageswitch.dart';
+import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
 
@@ -100,9 +101,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                                           'forgot-password-title'),
                                       style: StyleManagement.titleTextStyle,
                                     ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
+                                    const VSpacer(),
                                     Text(
                                       localeController.getTranslate(
                                           'forgot-password-description'),
@@ -110,9 +109,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                                       style: StyleManagement
                                           .descriptionTextStyleDark,
                                     ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
+                                    const VSpacer(),
                                     FormBuilderTextField(
                                       name: 'email',
                                       decoration: const InputDecoration(
@@ -146,9 +143,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                                         ],
                                       ),
                                     ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
+                                    const VSpacer(),
                                     ElevatedButton(
                                       onPressed: () => sendEmail(context),
                                       style:
@@ -159,9 +154,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                                         style: const TextStyle(fontSize: 20),
                                       ),
                                     ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
+                                    const VSpacer(),
                                     TextButton(
                                       onPressed: () {
                                         Navigator.pop(context);

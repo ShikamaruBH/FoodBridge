@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
-import 'package:food_bridge/controller/mapcontroller.dart';
+import 'package:food_bridge/controller/widget_controller/mapcontroller.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -35,7 +35,7 @@ class ViewRouteScreen extends StatelessWidget {
               child: ChangeNotifierProvider.value(
                 value: mapController,
                 child: Consumer<MapController>(
-                  builder: (__, mapController, _) => GoogleMap(
+                  builder: (__, ___, _) => GoogleMap(
                     initialCameraPosition: CameraPosition(
                       target: mapController.currentLatLng,
                       zoom: 15,

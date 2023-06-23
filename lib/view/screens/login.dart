@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
-import 'package:food_bridge/controller/passwordtextfieldcontroller.dart';
+import 'package:food_bridge/controller/widget_controller/passwordtextfieldcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
@@ -15,6 +15,7 @@ import 'package:food_bridge/view/screens/forgotpassword.dart';
 import 'package:food_bridge/view/screens/home.dart';
 import 'package:food_bridge/view/widgets/languageswitch.dart';
 import 'package:food_bridge/view/screens/register.dart';
+import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
 
@@ -141,9 +142,7 @@ class LoginScreen extends StatelessWidget {
                                       "Food Bridge",
                                       style: StyleManagement.titleTextStyle,
                                     ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
+                                    const VSpacer(),
                                     FormBuilderTextField(
                                       name: 'email',
                                       decoration: const InputDecoration(
@@ -162,11 +161,9 @@ class LoginScreen extends StatelessWidget {
                                         ],
                                       ),
                                     ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
+                                    const VSpacer(),
                                     ChangeNotifierProvider.value(
-                                      value: PasswordTextfieldController(),
+                                      value: passwordTextFieldController,
                                       child:
                                           Consumer<PasswordTextfieldController>(
                                         builder: (_, controller, __) =>
@@ -204,9 +201,7 @@ class LoginScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
+                                    const VSpacer(),
                                     ElevatedButton(
                                       onPressed: () => login(context),
                                       style:

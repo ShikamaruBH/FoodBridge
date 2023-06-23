@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
-import 'package:food_bridge/controller/distanceslidercontroller.dart';
 import 'package:food_bridge/controller/firebasecontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/donation.dart';
@@ -102,7 +101,7 @@ class DonationController extends ChangeNotifier {
     debugPrint("Category filter: ${foodCategoryController.getChecked()}");
     debugPrint(
         "Datetime filter: ${dateTimePickerController.start.toUtc().toString()}");
-    debugPrint("Distance filter: ${DistanceSliderController().value}");
+    debugPrint("Distance filter: ${distanceSliderController.value}");
     Query query = FirebaseFirestore.instance.collection('donations').where(
           'end',
           isGreaterThanOrEqualTo:
@@ -225,7 +224,7 @@ class DonationController extends ChangeNotifier {
   bool distanceFilter(double latitude, double longitude) {
     final double km = calculateDistance(latitude, longitude) / 1000;
     debugPrint("Distance: $km Km");
-    return km <= DistanceSliderController().value;
+    return km <= distanceSliderController.value;
   }
 
   double calculateDistance(double latitude, double longitude) {

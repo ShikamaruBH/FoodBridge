@@ -3,12 +3,13 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
-import 'package:food_bridge/controller/rolebuttoncontroller.dart';
+import 'package:food_bridge/controller/widget_controller/rolebuttoncontroller.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/model/loadinghandler.dart';
 import 'package:food_bridge/view/screens/login.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/languageswitch.dart';
+import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:provider/provider.dart';
 
 class ChooseRoleScreen extends StatelessWidget {
@@ -101,9 +102,7 @@ class ChooseRoleScreen extends StatelessWidget {
                                       color: Colors.white,
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+                                  const VSpacer(),
                                   Text(
                                     localeController.getTranslate(
                                         'choose-role-description'),
@@ -113,9 +112,7 @@ class ChooseRoleScreen extends StatelessWidget {
                                       color: Colors.white,
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+                                  const VSpacer(),
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
@@ -136,9 +133,7 @@ class ChooseRoleScreen extends StatelessWidget {
                                           true)
                                     ],
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+                                  const VSpacer(),
                                   ElevatedButton(
                                     onPressed: () => next(context),
                                     style: StyleManagement.elevatedButtonStyle
@@ -193,7 +188,7 @@ class RoleSelectButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipOval(
       child: ChangeNotifierProvider.value(
-        value: RoleButtonController(),
+        value: roleButtonController,
         child: Consumer<RoleButtonController>(
           builder: (_, controller, __) => Material(
             color: getColor(controller, context), // Button color
@@ -246,16 +241,16 @@ class SelectRoleColumn extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           RoleSelectButton(imgPath, role, mirror),
-          const SizedBox(
-            height: 5,
+          const VSpacer(
+            offset: -5,
           ),
           Text(
             localeController.getTranslate(title),
             style: const TextStyle(
                 fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(
-            height: 5,
+          const VSpacer(
+            offset: -5,
           ),
           Text(
             localeController.getTranslate(desc),

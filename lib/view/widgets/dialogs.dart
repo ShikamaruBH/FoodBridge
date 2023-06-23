@@ -31,8 +31,8 @@ class LoadingDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const CircularProgressIndicator(),
-            const SizedBox(
-              height: 15,
+            const VSpacer(
+              offset: 5,
             ),
             Text(localeController.getTranslate(message ?? 'loading-text'))
           ],
@@ -231,8 +231,7 @@ class ReviewDialog extends StatelessWidget {
               itemCount: 5,
               allowHalfRating: true,
               glow: false,
-              unratedColor:
-                  ColorManagement.foodTypeCheckBoxCardIconUncheckColorDark,
+              unratedColor: ColorManagement.foodTypeCheckBoxCardIconUncheckColorDark,
               itemBuilder: (context, index) => const Padding(
                 padding: EdgeInsets.all(2),
                 child: Icon(
@@ -247,9 +246,7 @@ class ReviewDialog extends StatelessWidget {
               controller: reviewController.controller,
               maxLines: 4,
               decoration: DecoratorManagement.defaultTextFieldDecoratorDark(
-                  'write-a-review-text',
-                  StyleManagement.addressTextStyle
-                      .copyWith(color: ColorManagement.hintTextColorDark)),
+                  'write-a-review-text', StyleManagement.addressTextStyle.copyWith(color: ColorManagement.hintTextColorDark)),
               maxLength: 1000,
               style: StyleManagement.settingsItemTextStyle.copyWith(
                 color: ColorManagement.reviewTextColor,
@@ -270,8 +267,7 @@ class ReviewDialog extends StatelessWidget {
                     Navigator.pop(context, true);
                   },
                   style: StyleManagement.textButtonStyle,
-                  child: Text(
-                      localeController.getTranslate('confirm-button-title')),
+                  child: Text(localeController.getTranslate('confirm-button-title')),
                 ),
               ],
             )
@@ -320,8 +316,7 @@ class UpdateUserDetailDialog extends StatelessWidget {
                 name: 'value',
                 initialValue: value,
                 textAlign: TextAlign.center,
-                decoration:
-                    DecoratorManagement.defaultTextFieldDecoratorDark("", null),
+                decoration: DecoratorManagement.defaultTextFieldDecoratorDark("", null),
                 validator: FormBuilderValidators.compose(validators),
               ),
             ),
@@ -348,8 +343,7 @@ class UpdateUserDetailDialog extends StatelessWidget {
                     }
                   },
                   style: StyleManagement.textButtonStyle,
-                  child:
-                      Text(localeController.getTranslate('save-button-title')),
+                  child: Text(localeController.getTranslate('save-button-title')),
                 ),
               ],
             ),
@@ -440,8 +434,7 @@ class ReceiveDonationDialog extends StatelessWidget {
                     (value) {
                       final quantity = int.tryParse(value!);
                       if (quantity == null || quantity > maxQuantity) {
-                        return localeController
-                            .getTranslate("invalid-donation-quantity-text");
+                        return localeController.getTranslate("invalid-donation-quantity-text");
                       }
                       return null;
                     }
@@ -465,12 +458,10 @@ class ReceiveDonationDialog extends StatelessWidget {
                   CustomValidator.required,
                   (DateTime? value) {
                     if (value!.isAfter(end)) {
-                      return localeController
-                          .getTranslate("invalid-receive-time-after-end-text");
+                      return localeController.getTranslate("invalid-receive-time-after-end-text");
                     }
-                    if (DateTime.now().isBefore(start)) {
-                      return localeController.getTranslate(
-                          "invalid-receive-time-before-start-text");
+                    if (value.isBefore(start)) {
+                      return localeController.getTranslate("invalid-receive-time-before-start-text");
                     }
                     return null;
                   }
@@ -490,8 +481,7 @@ class ReceiveDonationDialog extends StatelessWidget {
                     style: StyleManagement.textButtonStyle,
                     child: Text(
                       localeController.getTranslate('cancel-text'),
-                      style:
-                          const TextStyle(color: ColorManagement.deleteColor),
+                      style: const TextStyle(color: ColorManagement.deleteColor),
                     ),
                   ),
                   TextButton(
@@ -541,10 +531,8 @@ class TimerDialog extends StatelessWidget {
                 children: [
                   Flexible(
                     child: Text(
-                      localeController
-                          .getTranslate("receive-time-remaining-text"),
-                      style: StyleManagement.statsTextStyle
-                          .copyWith(color: Colors.black),
+                      localeController.getTranslate("receive-time-remaining-text"),
+                      style: StyleManagement.statsTextStyle.copyWith(color: Colors.black),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -568,8 +556,7 @@ class TimerDialog extends StatelessWidget {
             Flexible(
               child: Text(
                 localeController.getTranslate("timeout-description-text"),
-                style: StyleManagement.donationDetailTextStyle
-                    .copyWith(color: ColorManagement.deleteColor),
+                style: StyleManagement.donationDetailTextStyle.copyWith(color: ColorManagement.deleteColor),
                 textAlign: TextAlign.center,
               ),
             )
@@ -585,8 +572,7 @@ class TimerDialog extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Text(
-                localeController
-                    .getTranslate("receive-donation-timer-description-text"),
+                localeController.getTranslate("receive-donation-timer-description-text"),
                 style: StyleManagement.donationDetailTextStyle,
                 textAlign: TextAlign.center,
               ),
@@ -652,8 +638,7 @@ class ConfirmReceiveDonationDialog extends StatelessWidget {
                   Flexible(
                     child: Text(
                       getDialogTitle(),
-                      style: StyleManagement.statsTextStyle
-                          .copyWith(color: Colors.black),
+                      style: StyleManagement.statsTextStyle.copyWith(color: Colors.black),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -670,19 +655,13 @@ class ConfirmReceiveDonationDialog extends StatelessWidget {
                         text: TextSpan(
                           style: StyleManagement.donationDetailTextStyle,
                           children: [
-                            TextSpan(
-                                text: localeController.getTranslate(
-                                    'confirm-received-donation-description')),
+                            TextSpan(text: localeController.getTranslate('confirm-received-donation-description')),
                             const TextSpan(
                               text: ' ',
                             ),
                             TextSpan(
                               text: title,
-                              style: StyleManagement.donationDetailTextStyle
-                                  .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary),
+                              style: StyleManagement.donationDetailTextStyle.copyWith(color: Theme.of(context).colorScheme.secondary),
                             )
                           ],
                         ),
@@ -703,12 +682,10 @@ class ConfirmReceiveDonationDialog extends StatelessWidget {
                         padding: const EdgeInsets.all(15),
                         child: Center(
                           child: Countdown(
-                            seconds:
-                                deadline.difference(DateTime.now()).inSeconds,
+                            seconds: deadline.difference(DateTime.now()).inSeconds,
                             interval: const Duration(seconds: 1),
                             onFinished: () async {
-                              Navigator.of(navigatorKey.currentState!.context)
-                                  .pop({"success": false});
+                              Navigator.of(navigatorKey.currentState!.context).pop({"success": false});
                             },
                             build: (_, seconds) => Text(
                               seconds.toInt().toString(),
@@ -731,11 +708,9 @@ class ConfirmReceiveDonationDialog extends StatelessWidget {
                 children: [
                   Flexible(
                     child: ElevatedButton(
-                      onPressed: () =>
-                          Navigator.of(context).pop({"success": false}),
+                      onPressed: () => Navigator.of(context).pop({"success": false}),
                       style: StyleManagement.elevatedButtonStyle.copyWith(
-                        backgroundColor: MaterialStatePropertyAll(
-                            Theme.of(context).colorScheme.secondary),
+                        backgroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.secondary),
                         elevation: const MaterialStatePropertyAll(4),
                       ),
                       child: Text(
@@ -753,8 +728,7 @@ class ConfirmReceiveDonationDialog extends StatelessWidget {
                           confirmReceived(donationId, recipientUid);
                         },
                         style: StyleManagement.elevatedButtonStyle.copyWith(
-                          backgroundColor: MaterialStatePropertyAll(
-                              Theme.of(context).colorScheme.secondary),
+                          backgroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.secondary),
                           elevation: const MaterialStatePropertyAll(4),
                         ),
                         child: Text(
@@ -776,8 +750,7 @@ class ConfirmReceiveDonationDialog extends StatelessWidget {
 
   getDialogTitle() {
     if (title == null) {
-      return localeController
-          .getTranslate('waiting-for-recipient-confirm-text');
+      return localeController.getTranslate('waiting-for-recipient-confirm-text');
     }
     return localeController.getTranslate('confirm-received-donation-text');
   }
@@ -828,8 +801,7 @@ class ReceiveDonationFailedDialog extends StatelessWidget {
                   Flexible(
                     child: Text(
                       localeController.getTranslate('receive-failed-text'),
-                      style: StyleManagement.statsTextStyle
-                          .copyWith(color: Colors.black),
+                      style: StyleManagement.statsTextStyle.copyWith(color: Colors.black),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -856,8 +828,7 @@ class ReceiveDonationFailedDialog extends StatelessWidget {
                 children: [
                   Flexible(
                     child: Text(
-                      localeController
-                          .getTranslate("receive-failed-description"),
+                      localeController.getTranslate("receive-failed-description"),
                       style: StyleManagement.donationDetailTextStyle,
                       textAlign: TextAlign.center,
                     ),
@@ -867,6 +838,54 @@ class ReceiveDonationFailedDialog extends StatelessWidget {
               const VSpacer(),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class DonationEndedDialog extends StatelessWidget {
+  const DonationEndedDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: Text(
+                    localeController.getTranslate('donation-ended-text'),
+                    style: StyleManagement.statsTextStyle.copyWith(color: Colors.black),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+            const VSpacer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: Text(
+                    localeController.getTranslate("donation-ended-description"),
+                    style: StyleManagement.donationDetailTextStyle,
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              ],
+            ),
+            const VSpacer(),
+          ],
         ),
       ),
     );

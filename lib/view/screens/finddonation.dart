@@ -2,12 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
-import 'package:food_bridge/controller/datetimepickercontroller.dart';
-import 'package:food_bridge/controller/distanceslidercontroller.dart';
 import 'package:food_bridge/controller/donationcontroller.dart';
-import 'package:food_bridge/controller/finddonationfiltercontroller.dart';
-import 'package:food_bridge/controller/foodtypecheckboxcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
+import 'package:food_bridge/controller/widget_controller/datetimepickercontroller.dart';
+import 'package:food_bridge/controller/widget_controller/distanceslidercontroller.dart';
+import 'package:food_bridge/controller/widget_controller/finddonationfiltercontroller.dart';
+import 'package:food_bridge/controller/widget_controller/foodtypecheckboxcontroller.dart';
 import 'package:food_bridge/model/designmanagement.dart';
 import 'package:food_bridge/model/donation.dart';
 import 'package:food_bridge/model/donationsort.dart';
@@ -463,7 +463,7 @@ class DistanceSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
-      value: DistanceSliderController(),
+      value: distanceSliderController,
       child: Consumer<DistanceSliderController>(
         builder: (_, sliderController, __) => SliderTheme(
           data: SliderTheme.of(context).copyWith(

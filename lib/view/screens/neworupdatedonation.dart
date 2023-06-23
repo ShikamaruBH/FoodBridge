@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
-import 'package:food_bridge/controller/datetimepickercontroller.dart';
 import 'package:food_bridge/controller/donationcontroller.dart';
-import 'package:food_bridge/controller/foodtypecheckboxcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
-import 'package:food_bridge/controller/mapcontroller.dart';
+import 'package:food_bridge/controller/widget_controller/datetimepickercontroller.dart';
+import 'package:food_bridge/controller/widget_controller/foodtypecheckboxcontroller.dart';
+import 'package:food_bridge/controller/widget_controller/limitcontroller.dart';
+import 'package:food_bridge/controller/widget_controller/mapcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
@@ -38,11 +39,14 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
         'note': formData['note']?.trim() ?? "",
         'categories': foodCategoryController.getChecked(),
         'title': formData['title'].trim(),
-        'quantity': formData['quantity'].trim(),
+        'quantity': num.parse(formData['quantity'].trim()),
+        'maxQuantityPerRecipient': formData['noLimit'] == true ? num.parse(formData['quantity'].trim()) : num.parse(formData['maxQuantityPerRecipient'].trim()),
+        'noLimit': formData['noLimit'],
         'unit': formData['unit'].trim(),
         'start': formData['start'].toUtc().toIso8601String(),
         'end': formData['end'].toUtc().toIso8601String(),
       };
+      debugPrint("Data: $data");
       loadingHandler(
         () => donationController.createDonation(data),
         (_) => showDialog(
@@ -73,7 +77,9 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
         'note': formData['note']?.trim() ?? "",
         'categories': foodCategoryController.getChecked(),
         'title': formData['title'].trim(),
-        'quantity': formData['quantity'].trim(),
+        'quantity': num.parse(formData['quantity'].trim()),
+        'maxQuantityPerRecipient': formData['noLimit'] == true ? num.parse(formData['quantity'].trim()) : num.parse(formData['maxQuantityPerRecipient'].trim()),
+        'noLimit': formData['noLimit'],
         'unit': formData['unit'].trim(),
         'start': formData['start'].toUtc().toIso8601String(),
         'end': formData['end'].toUtc().toIso8601String(),
@@ -150,9 +156,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
               ),
               title: Text(
                 localeController.getTranslate(
-                  donation != null
-                      ? 'edit-donation-title'
-                      : 'new-donation-title',
+                  donation != null ? 'edit-donation-title' : 'new-donation-title',
                 ),
               ),
             ),
@@ -176,20 +180,16 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                   readOnly: true,
                                   onTap: () => Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          ChooseLocationScreen(false),
+                                      builder: (context) => ChooseLocationScreen(false),
                                     ),
                                   ),
-                                  controller:
-                                      mapController.addressTextFieldController,
+                                  controller: mapController.addressTextFieldController,
                                   style: StyleManagement.addressTextStyle,
-                                  decoration: DecoratorManagement
-                                      .addressTextFieldDecorator(
+                                  decoration: DecoratorManagement.addressTextFieldDecorator(
                                     'address-hint-text',
                                     Icon(
                                       Icons.location_on_sharp,
-                                      color:
-                                          ColorManagement.descriptionColorDark,
+                                      color: ColorManagement.descriptionColorDark,
                                     ),
                                   ),
                                 ),
@@ -203,8 +203,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                               name: 'note',
                               initialValue: donation?.note ?? "",
                               style: StyleManagement.addressTextStyle,
-                              decoration:
-                                  DecoratorManagement.addressTextFieldDecorator(
+                              decoration: DecoratorManagement.addressTextFieldDecorator(
                                 'pickup-instruction-text',
                                 null,
                               ),
@@ -232,20 +231,15 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                     children: [
                                       Column(
                                         children: [
-                                          const FieldTitleWidget(
-                                              'food-type-title'),
+                                          const FieldTitleWidget('food-type-title'),
                                           Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 10),
+                                            padding: const EdgeInsets.symmetric(vertical: 10),
                                             child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: const [
                                                 FoodTypeCheckBoxWidget(
                                                   'food-type-grocery',
-                                                  Icons
-                                                      .local_grocery_store_rounded,
+                                                  Icons.local_grocery_store_rounded,
                                                 ),
                                                 FoodTypeCheckBoxWidget(
                                                   'food-type-cooked',
@@ -257,104 +251,65 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                                 ),
                                                 FoodTypeCheckBoxWidget(
                                                   'food-type-beverage',
-                                                  Icons
-                                                      .emoji_food_beverage_rounded,
+                                                  Icons.emoji_food_beverage_rounded,
                                                 ),
                                               ],
                                             ),
                                           ),
-                                          const FieldTitleWidget(
-                                              'food-title-title'),
+                                          const FieldTitleWidget('food-title-title'),
                                           Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 5),
+                                            padding: const EdgeInsets.symmetric(vertical: 5),
                                             child: FormBuilderTextField(
                                               name: 'title',
-                                              initialValue:
-                                                  donation?.title ?? "",
-                                              style: StyleManagement
-                                                  .textFieldTextStyleDark,
-                                              decoration: DecoratorManagement
-                                                  .defaultTextFieldDecoratorDark(
-                                                      "", null),
-                                              validator:
-                                                  CustomValidator.required,
+                                              initialValue: donation?.title ?? "",
+                                              style: StyleManagement.textFieldTextStyleDark,
+                                              decoration: DecoratorManagement.defaultTextFieldDecoratorDark(
+                                                "",
+                                                null,
+                                              ),
+                                              validator: CustomValidator.required,
                                             ),
                                           ),
                                           Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
+                                            mainAxisAlignment: MainAxisAlignment.end,
                                             children: [
                                               Expanded(
                                                 child: Column(
                                                   children: [
-                                                    const FieldTitleWidget(
-                                                        'food-quantity-title'),
+                                                    const FieldTitleWidget('food-quantity-title'),
                                                     Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          vertical: 5),
-                                                      child:
-                                                          FormBuilderTextField(
+                                                      padding: const EdgeInsets.symmetric(vertical: 5),
+                                                      child: FormBuilderTextField(
                                                         name: 'quantity',
-                                                        initialValue: donation
-                                                                ?.quantity
-                                                                .toString() ??
-                                                            "",
-                                                        style: StyleManagement
-                                                            .textFieldTextStyleDark,
-                                                        keyboardType:
-                                                            TextInputType
-                                                                .number,
-                                                        decoration:
-                                                            DecoratorManagement
-                                                                .defaultTextFieldDecoratorDark(
-                                                                    "", null),
-                                                        validator:
-                                                            FormBuilderValidators
-                                                                .compose([
-                                                          CustomValidator
-                                                              .required,
-                                                          CustomValidator
-                                                              .numberic,
+                                                        initialValue: donation?.quantity.toString() ?? "",
+                                                        style: StyleManagement.textFieldTextStyleDark,
+                                                        keyboardType: TextInputType.number,
+                                                        decoration: DecoratorManagement.defaultTextFieldDecoratorDark("", null),
+                                                        validator: FormBuilderValidators.compose([
+                                                          CustomValidator.required,
+                                                          CustomValidator.numberic,
+                                                          CustomValidator.positive,
                                                         ]),
                                                       ),
                                                     ),
                                                   ],
                                                 ),
                                               ),
-                                              const SizedBox(
-                                                width: 10,
-                                              ),
+                                              HSpacer(),
                                               Expanded(
                                                 child: Column(
                                                   children: [
-                                                    const FieldTitleWidget(
-                                                        'food-unit-title'),
+                                                    const FieldTitleWidget('food-unit-title'),
                                                     Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          vertical: 5),
+                                                      padding: const EdgeInsets.symmetric(vertical: 5),
                                                       child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                vertical: 5),
-                                                        child:
-                                                            FormBuilderTextField(
+                                                        padding: const EdgeInsets.symmetric(vertical: 5),
+                                                        child: FormBuilderTextField(
                                                           name: 'unit',
-                                                          initialValue:
-                                                              donation?.unit ??
-                                                                  "",
-                                                          style: StyleManagement
-                                                              .textFieldTextStyleDark,
-                                                          decoration:
-                                                              DecoratorManagement
-                                                                  .defaultTextFieldDecoratorDark(
-                                                                      "", null),
-                                                          validator:
-                                                              CustomValidator
-                                                                  .required,
+                                                          initialValue: donation?.unit ?? "",
+                                                          style: StyleManagement.textFieldTextStyleDark,
+                                                          decoration: DecoratorManagement.defaultTextFieldDecoratorDark("", null),
+                                                          validator: CustomValidator.required,
                                                         ),
                                                       ),
                                                     ),
@@ -363,56 +318,97 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                               )
                                             ],
                                           ),
+                                          const FieldTitleWidget('max-quantity-per-recipient-title'),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: ChangeNotifierProvider.value(
+                                                  value: limitController,
+                                                  child: Consumer<LimitController>(
+                                                    builder: (_, __, ___) => FormBuilderTextField(
+                                                      name: 'maxQuantityPerRecipient',
+                                                      initialValue: getQuantityLimit(),
+                                                      readOnly: !limitController.isLimited,
+                                                      style: StyleManagement.textFieldTextStyleDark,
+                                                      keyboardType: TextInputType.number,
+                                                      decoration: DecoratorManagement.defaultTextFieldDecoratorDark("", null),
+                                                      validator: FormBuilderValidators.compose([
+                                                        CustomValidator.required,
+                                                        limitController.isLimited ? CustomValidator.numberic : (_) => null,
+                                                        limitController.isLimited ? CustomValidator.positive : (_) => null,
+                                                        (value) {
+                                                          if (limitController.isLimited == false) {
+                                                            return null;
+                                                          }
+                                                          final quantityStr = _formKey.currentState!.getRawValue("quantity");
+                                                          final quantity = num.tryParse(quantityStr) ?? -1;
+                                                          final limit = num.tryParse(value ?? "0") ?? 0;
+                                                          if (limit <= quantity) {
+                                                            return null;
+                                                          }
+                                                          return localeController.getTranslate("limit-invalid-text");
+                                                        }
+                                                      ]),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              HSpacer(),
+                                              Expanded(
+                                                child: FormBuilderCheckbox(
+                                                  name: 'noLimit',
+                                                  decoration: const InputDecoration(
+                                                    contentPadding: EdgeInsets.zero,
+                                                    isDense: true,
+                                                    border: InputBorder.none,
+                                                  ),
+                                                  contentPadding: EdgeInsets.zero,
+                                                  initialValue: donation != null ? donation?.noLimit : !limitController.isLimited,
+                                                  onChanged: (value) {
+                                                    _formKey.currentState!.patchValue(
+                                                        {"maxQuantityPerRecipient": value == true ? localeController.getTranslate('unlimited-text') : "0"});
+                                                    limitController.setLimit(value);
+                                                  },
+                                                  title: Text(
+                                                    localeController.getTranslate('no-limit-title'),
+                                                    style: StyleManagement.newDonationFieldTitleTextStyle,
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
                                           ChangeNotifierProvider.value(
                                             value: dateTimePickerController,
-                                            child: Consumer<
-                                                DatetimePickerController>(
+                                            child: Consumer<DatetimePickerController>(
                                               builder: (_, ___, __) => Row(
                                                 children: [
                                                   Expanded(
                                                     child: Column(
                                                       children: [
-                                                        const FieldTitleWidget(
-                                                            'food-start-date-title'),
+                                                        const FieldTitleWidget('food-start-date-title'),
                                                         Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .symmetric(
-                                                                  vertical: 5),
-                                                          child:
-                                                              DonationDatetimePicker(
+                                                          padding: const EdgeInsets.symmetric(vertical: 5),
+                                                          child: DonationDatetimePicker(
                                                             'start',
-                                                            dateTimePickerController
-                                                                .setStart,
-                                                            dateTimePickerController
-                                                                .start,
-                                                            firstDate:
-                                                                DateTime.now(),
+                                                            dateTimePickerController.setStart,
+                                                            dateTimePickerController.start,
+                                                            firstDate: DateTime.now(),
                                                           ),
                                                         ),
                                                       ],
                                                     ),
                                                   ),
-                                                  const SizedBox(
-                                                    width: 10,
-                                                  ),
+                                                  HSpacer(),
                                                   Expanded(
                                                     child: Column(
                                                       children: [
-                                                        const FieldTitleWidget(
-                                                            'food-end-date-title'),
+                                                        const FieldTitleWidget('food-end-date-title'),
                                                         Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .symmetric(
-                                                                  vertical: 5),
-                                                          child:
-                                                              DonationDatetimePicker(
+                                                          padding: const EdgeInsets.symmetric(vertical: 5),
+                                                          child: DonationDatetimePicker(
                                                             'end',
-                                                            dateTimePickerController
-                                                                .setEnd,
-                                                            dateTimePickerController
-                                                                .start,
+                                                            dateTimePickerController.setEnd,
+                                                            dateTimePickerController.start,
                                                           ),
                                                         ),
                                                       ],
@@ -422,42 +418,24 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                               ),
                                             ),
                                           ),
-                                          const FieldTitleWidget(
-                                              'food-photo-title'),
+                                          const FieldTitleWidget('food-photo-title'),
+                                          const VSpacer(),
                                           Row(
                                             children: [
                                               ChangeNotifierProvider.value(
                                                 value: donationController,
-                                                child: Consumer<
-                                                    DonationController>(
-                                                  builder: (_, ___, __) =>
-                                                      SizedBox(
-                                                    width:
-                                                        constraints.maxWidth *
-                                                            .85,
+                                                child: Consumer<DonationController>(
+                                                  builder: (_, ___, __) => SizedBox(
+                                                    width: constraints.maxWidth * .85,
                                                     height: 100,
                                                     child: ListView.builder(
-                                                      scrollDirection:
-                                                          Axis.horizontal,
-                                                      itemCount:
-                                                          donationController
-                                                                  .images
-                                                                  .length +
-                                                              donationController
-                                                                  .urls.length +
-                                                              1,
-                                                      itemBuilder:
-                                                          (context, index) =>
-                                                              Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(right: 5),
+                                                      scrollDirection: Axis.horizontal,
+                                                      itemCount: donationController.images.length + donationController.urls.length + 1,
+                                                      itemBuilder: (context, index) => Padding(
+                                                        padding: const EdgeInsets.only(right: 5),
                                                         child: ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(9),
-                                                          child: getListTile(
-                                                              index),
+                                                          borderRadius: BorderRadius.circular(9),
+                                                          child: getListTile(index),
                                                         ),
                                                       ),
                                                     ),
@@ -470,8 +448,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
                                       ),
                                       const Spacer(),
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 10),
+                                        padding: const EdgeInsets.symmetric(vertical: 10),
                                         child: getBottomBar(donation),
                                       ),
                                     ],
@@ -510,11 +487,9 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
     return ImageListTileWidget(
       index,
       FutureBuilder(
-        future: donationController.getUrl(
-            donation!.donor, donationController.urls[index]),
+        future: donationController.getUrl(donation!.donor, donationController.urls[index]),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting ||
-              snapshot.data == null) {
+          if (snapshot.connectionState == ConnectionState.waiting || snapshot.data == null) {
             return const Center(
               child: SizedBox(
                 width: 30,
@@ -550,10 +525,7 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
       return ElevatedButton(
         onPressed: () => newDonation(),
         style: StyleManagement.elevatedButtonStyle.copyWith(
-          backgroundColor: MaterialStatePropertyAll(
-              Theme.of(navigatorKey.currentState!.context)
-                  .colorScheme
-                  .secondary),
+          backgroundColor: MaterialStatePropertyAll(Theme.of(navigatorKey.currentState!.context).colorScheme.secondary),
           elevation: const MaterialStatePropertyAll(4),
         ),
         child: Text(
@@ -567,20 +539,15 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
         Flexible(
           child: ElevatedButton(
             onPressed: () => updateDonation(),
-            style: StyleManagement.elevatedButtonStyle.copyWith(
-                backgroundColor: MaterialStatePropertyAll(
-                    Theme.of(navigatorKey.currentState!.context)
-                        .colorScheme
-                        .secondary)),
+            style: StyleManagement.elevatedButtonStyle
+                .copyWith(backgroundColor: MaterialStatePropertyAll(Theme.of(navigatorKey.currentState!.context).colorScheme.secondary)),
             child: Text(
               localeController.getTranslate('confirm-button-title'),
               style: const TextStyle(fontSize: 20),
             ),
           ),
         ),
-        const SizedBox(
-          width: 10,
-        ),
+        HSpacer(),
         Card(
           elevation: 5,
           color: ColorManagement.cardColor,
@@ -603,6 +570,13 @@ class NewOrUpdateDonationScreen extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  getQuantityLimit() {
+    if (donation != null) {
+      return donation!.noLimit ? localeController.getTranslate('unlimited-text') : donation!.maxQuantityPerRecipient.toString();
+    }
+    return "";
   }
 }
 
@@ -693,17 +667,14 @@ class NewImageButton extends StatelessWidget {
                   children: [
                     Text(
                       localeController.getTranslate('choose-image-text'),
-                      style: StyleManagement.usernameTextStyle
-                          .copyWith(color: Colors.black.withOpacity(.8)),
+                      style: StyleManagement.usernameTextStyle.copyWith(color: Colors.black.withOpacity(.8)),
                     )
                   ],
                 ),
                 Row(
                   children: [
-                    ImageSourceButton(
-                        Icons.camera_alt_rounded, "Camera", ImageSource.camera),
-                    ImageSourceButton(Icons.image_rounded, "gallery-text",
-                        ImageSource.gallery),
+                    ImageSourceButton(Icons.camera_alt_rounded, "Camera", ImageSource.camera),
+                    ImageSourceButton(Icons.image_rounded, "gallery-text", ImageSource.gallery),
                   ],
                 )
               ],
@@ -729,11 +700,9 @@ class ImageSourceButton extends StatelessWidget {
   });
 
   void pickImage(ImageSource source) async {
-    if (donationController.images.length + donationController.urls.length >=
-        maxImg) {
+    if (donationController.images.length + donationController.urls.length >= maxImg) {
       Fluttertoast.showToast(
-        msg:
-            "${localeController.getTranslate('max-number-of-image-notification')} $maxImg",
+        msg: "${localeController.getTranslate('max-number-of-image-notification')} $maxImg",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
       );
@@ -814,10 +783,7 @@ class FoodTypeCheckBoxWidget extends StatelessWidget {
                   child: Icon(
                     icon,
                     size: 48,
-                    color: foodCategoryController.status(type)
-                        ? Colors.white
-                        : ColorManagement
-                            .foodTypeCheckBoxCardIconUncheckColorDark,
+                    color: foodCategoryController.status(type) ? Colors.white : ColorManagement.foodTypeCheckBoxCardIconUncheckColorDark,
                   ),
                 ),
               ),
@@ -827,8 +793,7 @@ class FoodTypeCheckBoxWidget extends StatelessWidget {
               child: Text(
                 localeController.getTranslate(type),
                 style: StyleManagement.newDonationFieldTitleTextStyle.copyWith(
-                  color: Colors.black.withOpacity(
-                      foodCategoryController.status(type) ? .76 : .24),
+                  color: Colors.black.withOpacity(foodCategoryController.status(type) ? .76 : .24),
                 ),
               ),
             )

@@ -16,6 +16,9 @@ class CustomValidator {
     return translate('invalid-datetime-error-text');
   }
 
+  static get positive => FormBuilderValidators.min(1,
+      errorText: translate("min-value-error-text"));
+
   static minLength(value) => FormBuilderValidators.minLength(value,
       errorText: translate('min-length-error-text') + value.toString());
 

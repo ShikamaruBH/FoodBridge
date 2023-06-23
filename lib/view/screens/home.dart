@@ -65,8 +65,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     onPressed: () => Scaffold.of(context).openEndDrawer(),
-                    tooltip:
-                        MaterialLocalizations.of(context).openAppDrawerTooltip,
+                    tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
                   ),
                 ),
               ],
@@ -110,8 +109,7 @@ class HomeScreen extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.only(left: 10),
                                 child: Text(
-                                  localeController
-                                      .getTranslate('welcome-back-text'),
+                                  localeController.getTranslate('welcome-back-text'),
                                   style: StyleManagement.regularTextStyle,
                                 ),
                               )
@@ -135,12 +133,12 @@ class HomeScreen extends StatelessWidget {
 
   FloatingActionButton getFloatingButton(BuildContext context) {
     return FloatingActionButton(
-      child: Icon(authController.currentUserRole == Role.donor
-          ? Icons.add
-          : Icons.search),
+      child: Icon(authController.currentUserRole == Role.donor ? Icons.add : Icons.search),
       onPressed: () async {
         await Permission.location.request();
         dateTimePickerController.reset();
+        donationController.clearImageCache();
+        limitController.setLimit(false);
         // ignore: use_build_context_synchronously
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -305,20 +303,15 @@ class DonationHistoryWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         RichText(
-                          text: TextSpan(
-                              style: StyleManagement.usernameTextStyle
-                                  .copyWith(color: Colors.black),
-                              children: [
-                                TextSpan(
-                                  text: localeController.getTranslate(text),
-                                ),
-                                TextSpan(
-                                  text:
-                                      ' (${donationController.isLoading ? 0 : source.length})',
-                                  style: StyleManagement.notificationTitleBold
-                                      .copyWith(fontSize: 20),
-                                )
-                              ]),
+                          text: TextSpan(style: StyleManagement.usernameTextStyle.copyWith(color: Colors.black), children: [
+                            TextSpan(
+                              text: localeController.getTranslate(text),
+                            ),
+                            TextSpan(
+                              text: ' (${donationController.isLoading ? 0 : source.length})',
+                              style: StyleManagement.notificationTitleBold.copyWith(fontSize: 20),
+                            )
+                          ]),
                         ),
                       ],
                     ),
@@ -354,8 +347,7 @@ class DonationHistoryWidget extends StatelessWidget {
       return SlidableAutoCloseBehavior(
         child: ListView.builder(
           itemCount: source.length,
-          itemBuilder: (context, index) =>
-              DonationTileWidget(index, source, canDelete),
+          itemBuilder: (context, index) => DonationTileWidget(index, source, canDelete),
         ),
       );
     }
@@ -498,8 +490,7 @@ class DonationTileWidget extends StatelessWidget {
                               child: Text(
                                 donation.title,
                                 overflow: TextOverflow.ellipsis,
-                                style:
-                                    StyleManagement.historyItemTitleTextStyle,
+                                style: StyleManagement.historyItemTitleTextStyle,
                               ),
                             ),
                           ],
@@ -509,17 +500,13 @@ class DonationTileWidget extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 "Category: ${donation.categories.map((e) => localeController.getTranslate(e)).join(", ")}",
-                                style: StyleManagement
-                                    .historyItemCategoryTextStyle,
+                                style: StyleManagement.historyItemCategoryTextStyle,
                               ),
                             ),
                           ],
                         ),
                         Row(
-                          children: [
-                            Text(DateFormat('dd/MM/yyyy')
-                                .format(donation.createAt))
-                          ],
+                          children: [Text(DateFormat('dd/MM/yyyy').format(donation.createAt))],
                         ),
                       ],
                     ),
@@ -543,8 +530,7 @@ class DonationTileWidget extends StatelessWidget {
     return FutureBuilder(
       future: donationController.getUrl(donation.donor, donation.imgs.first),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting ||
-            snapshot.data == null) {
+        if (snapshot.connectionState == ConnectionState.waiting || snapshot.data == null) {
           return const Center(
             child: SizedBox(
               width: 30,
@@ -641,9 +627,7 @@ class NotificationCard extends StatelessWidget {
     UserNotification notification = notificationController.notifications[index];
     return Card(
       elevation: 1,
-      color: notification.hasRead
-          ? ColorManagement.notificationRead
-          : ColorManagement.notificationUnread,
+      color: notification.hasRead ? ColorManagement.notificationRead : ColorManagement.notificationUnread,
       shape: RoundedRectangleBorder(
         borderRadius: const BorderRadius.all(Radius.circular(5)),
         side: BorderSide(
@@ -689,9 +673,7 @@ class NotificationCard extends StatelessWidget {
 
   String getNotificationTimestamp(DateTime createAt) {
     final now = DateTime.now();
-    if (createAt.day == now.day &&
-        createAt.month == now.month &&
-        createAt.year == now.year) {
+    if (createAt.day == now.day && createAt.month == now.month && createAt.year == now.year) {
       return DateFormat("hh:mm").format(createAt);
     }
     return DateFormat("dd-MM-yyyy hh:mm").format(createAt);
@@ -721,8 +703,7 @@ class NotificationCard extends StatelessWidget {
         if (!notification.hasRead) {
           notificationController.markAsRead({"id": notification.id});
         }
-        Donation donation =
-            await donationController.fetchDonation(notification.donationId);
+        Donation donation = await donationController.fetchDonation(notification.donationId);
         mapController.setAddress(donation.latlng);
         return {"success": true};
       },
@@ -775,8 +756,7 @@ class NotificationBarWidget extends StatelessWidget {
         ),
         IconButton(
           splashRadius: 20,
-          onPressed:
-              notificationController.totalUnread > 0 ? markAllAsRead : null,
+          onPressed: notificationController.totalUnread > 0 ? markAllAsRead : null,
           icon: const Icon(
             Icons.clear_all_rounded,
             size: 34,

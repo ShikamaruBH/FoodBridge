@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
-import 'package:food_bridge/controller/passwordtextfieldcontroller.dart';
+import 'package:food_bridge/controller/widget_controller/passwordtextfieldcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/customvalidators.dart';
 import 'package:food_bridge/model/designmanagement.dart';
@@ -12,6 +12,7 @@ import 'package:food_bridge/model/loadinghandler.dart';
 import 'package:food_bridge/view/screens/login.dart';
 import 'package:food_bridge/view/widgets/dialogs.dart';
 import 'package:food_bridge/view/widgets/languageswitch.dart';
+import 'package:food_bridge/view/widgets/spacer.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
 
@@ -106,9 +107,7 @@ class RegisterScreen extends StatelessWidget {
                                           'register-button-title'),
                                       style: StyleManagement.titleTextStyle,
                                     ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
+                                    const VSpacer(),
                                     FormBuilderTextField(
                                       name: 'fullname',
                                       decoration: InputDecoration(
@@ -139,9 +138,7 @@ class RegisterScreen extends StatelessWidget {
                                       ),
                                       validator: CustomValidator.required,
                                     ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
+                                    const VSpacer(),
                                     FormBuilderTextField(
                                       name: 'email',
                                       decoration: const InputDecoration(
@@ -175,11 +172,9 @@ class RegisterScreen extends StatelessWidget {
                                         ],
                                       ),
                                     ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
+                                    const VSpacer(),
                                     ChangeNotifierProvider.value(
-                                      value: PasswordTextfieldController(),
+                                      value: passwordTextFieldController,
                                       child:
                                           Consumer<PasswordTextfieldController>(
                                         builder: (_, controller, __) =>
@@ -230,9 +225,7 @@ class RegisterScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
+                                    const VSpacer(),
                                     ChangeNotifierProvider.value(
                                       value: PasswordTextfieldController(),
                                       child:
@@ -288,9 +281,7 @@ class RegisterScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
+                                    const VSpacer(),
                                     ElevatedButton(
                                       onPressed: () => register(context),
                                       style:
@@ -301,9 +292,7 @@ class RegisterScreen extends StatelessWidget {
                                         style: const TextStyle(fontSize: 20),
                                       ),
                                     ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
+                                    const VSpacer(),
                                     TextButton(
                                       onPressed: () {
                                         Navigator.pop(context);

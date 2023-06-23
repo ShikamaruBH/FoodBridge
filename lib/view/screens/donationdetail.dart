@@ -1,13 +1,15 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:food_bridge/controller/bottombuttoncontroller.dart';
 import 'package:food_bridge/controller/controllermanagement.dart';
 import 'package:food_bridge/controller/donationcontroller.dart';
 import 'package:food_bridge/controller/localizationcontroller.dart';
-import 'package:food_bridge/controller/mapcontroller.dart';
+import 'package:food_bridge/controller/widget_controller/bottombuttoncontroller.dart';
+import 'package:food_bridge/controller/widget_controller/mapcontroller.dart';
 import 'package:food_bridge/main.dart';
 import 'package:food_bridge/model/dayhourminute.dart';
 import 'package:food_bridge/model/designmanagement.dart';
@@ -65,12 +67,9 @@ class DonationDetailScreen extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: FutureBuilder(
-                            future:
-                                userController.getDonationUserInfo(donationId),
+                            future: userController.getDonationUserInfo(donationId),
                             builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                      ConnectionState.waiting ||
-                                  snapshot.data == null) {
+                              if (snapshot.connectionState == ConnectionState.waiting || snapshot.data == null) {
                                 return Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
@@ -85,8 +84,7 @@ class DonationDetailScreen extends StatelessWidget {
                                   ],
                                 );
                               }
-                              final userInfo = AppUserInfo.fromJson(
-                                  snapshot.data!['result']);
+                              final userInfo = AppUserInfo.fromJson(snapshot.data!['result']);
                               return Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,11 +97,8 @@ class DonationDetailScreen extends StatelessWidget {
                                       onTap: () => openDonorProfile(context),
                                       child: Text(
                                         userInfo.displayName,
-                                        style: StyleManagement.menuTextStyle
-                                            .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
+                                        style: StyleManagement.menuTextStyle.copyWith(
+                                          color: Theme.of(context).colorScheme.primary,
                                         ),
                                       ),
                                     ),
@@ -137,56 +132,34 @@ class DonationDetailScreen extends StatelessWidget {
                                       child: Column(
                                         children: [
                                           Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 8),
+                                            padding: const EdgeInsets.symmetric(vertical: 8),
                                             child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.start,
                                               children: [
                                                 Flexible(
                                                   child: Text(
-                                                    donationController
-                                                        .getDonation(donationId)
-                                                        .title,
-                                                    style: StyleManagement
-                                                        .menuTextStyle
-                                                        .copyWith(fontSize: 17),
+                                                    donationController.getDonation(donationId).title,
+                                                    style: StyleManagement.menuTextStyle.copyWith(fontSize: 17),
                                                   ),
                                                 ),
                                               ],
                                             ),
                                           ),
                                           Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.start,
                                             children: [
                                               RichText(
                                                 text: TextSpan(
                                                   children: [
                                                     TextSpan(
-                                                      text:
-                                                          "${localeController.getTranslate('food-quantity-title')}: ",
-                                                      style: StyleManagement
-                                                          .donationDetailTextStyle,
+                                                      text: "${localeController.getTranslate('food-quantity-title')}: ",
+                                                      style: StyleManagement.donationDetailTextStyle,
                                                     ),
                                                     TextSpan(
-                                                      text: localeController
-                                                              .getTranslate(
-                                                                  "quantity-left-text")(
-                                                          donationController
-                                                              .getDonation(
-                                                                  donationId)
-                                                              .getQuantityLeft(),
-                                                          donationController
-                                                              .getDonation(
-                                                                  donationId)
-                                                              .unit),
-                                                      style: StyleManagement
-                                                          .notificationTitleMedium
-                                                          .copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600),
+                                                      text: localeController.getTranslate("quantity-left-text")(
+                                                          donationController.getDonation(donationId).getQuantityLeft(),
+                                                          donationController.getDonation(donationId).unit),
+                                                      style: StyleManagement.notificationTitleMedium.copyWith(fontWeight: FontWeight.w600),
                                                     ),
                                                   ],
                                                 ),
@@ -195,44 +168,51 @@ class DonationDetailScreen extends StatelessWidget {
                                           ),
                                           const VSpacer(),
                                           Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.start,
                                             children: [
-                                              donationController
-                                                  .getDonation(donationId)
-                                                  .getTimeRemaining()
+                                              RichText(
+                                                text: TextSpan(
+                                                  children: [
+                                                    TextSpan(
+                                                      text: "${localeController.getTranslate('quantity-limit-per-recipient-text')}: ",
+                                                      style: StyleManagement.donationDetailTextStyle,
+                                                    ),
+                                                    TextSpan(
+                                                      text: donationController.getDonation(donationId).noLimit
+                                                          ? localeController.getTranslate("unlimited-text")
+                                                          : donationController.getDonation(donationId).maxQuantityPerRecipient.toString(),
+                                                      style: StyleManagement.notificationTitleMedium.copyWith(fontWeight: FontWeight.w600),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
                                             ],
                                           ),
                                           const VSpacer(),
                                           Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [donationController.getDonation(donationId).getTimeRemaining()],
+                                          ),
+                                          const VSpacer(),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.start,
                                             children: [
                                               Text(
-                                                localeController.getTranslate(
-                                                        'address-title') +
-                                                    ': ',
-                                                style: StyleManagement
-                                                    .donationDetailTextStyle,
+                                                localeController.getTranslate('address-title') + ': ',
+                                                style: StyleManagement.donationDetailTextStyle,
                                               )
                                             ],
                                           ),
                                           Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.start,
                                             children: [
                                               Flexible(
-                                                child: ChangeNotifierProvider
-                                                    .value(
+                                                child: ChangeNotifierProvider.value(
                                                   value: mapController,
-                                                  child:
-                                                      Consumer<MapController>(
-                                                    builder: (_, ___, __) =>
-                                                        InkWell(
-                                                      onTap: () =>
-                                                          showRoute(context),
-                                                      child:
-                                                          getCurrentAddressTextWidget(),
+                                                  child: Consumer<MapController>(
+                                                    builder: (_, ___, __) => InkWell(
+                                                      onTap: () => showRoute(context),
+                                                      child: getCurrentAddressTextWidget(),
                                                     ),
                                                   ),
                                                 ),
@@ -241,32 +221,21 @@ class DonationDetailScreen extends StatelessWidget {
                                           ),
                                           const VSpacer(),
                                           Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.start,
                                             children: [
                                               Text(
-                                                localeController.getTranslate(
-                                                        'pickup-instruction-text') +
-                                                    ': ',
-                                                style: StyleManagement
-                                                    .donationDetailTextStyle,
+                                                localeController.getTranslate('pickup-instruction-text') + ': ',
+                                                style: StyleManagement.donationDetailTextStyle,
                                               )
                                             ],
                                           ),
                                           Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.start,
                                             children: [
                                               Flexible(
                                                 child: Text(
-                                                  donationController
-                                                      .getDonation(donationId)
-                                                      .note,
-                                                  style: StyleManagement
-                                                      .notificationTitleMedium
-                                                      .copyWith(
-                                                          fontWeight:
-                                                              FontWeight.w600),
+                                                  donationController.getDonation(donationId).note,
+                                                  style: StyleManagement.notificationTitleMedium.copyWith(fontWeight: FontWeight.w600),
                                                 ),
                                               ),
                                             ],
@@ -308,25 +277,21 @@ class DonationDetailScreen extends StatelessWidget {
     if (mapController.isLoading) {
       return Text(
         localeController.getTranslate('loading-text'),
-        style: StyleManagement.notificationTitleMedium
-            .copyWith(fontWeight: FontWeight.w600),
+        style: StyleManagement.notificationTitleMedium.copyWith(fontWeight: FontWeight.w600),
       );
     }
     return RichText(
-      text: TextSpan(
-          style: StyleManagement.notificationTitleMedium
-              .copyWith(fontWeight: FontWeight.w600),
-          children: [
-            TextSpan(text: mapController.currentAddress),
-            const TextSpan(text: ". "),
-            TextSpan(
-              text: localeController.getTranslate('show-on-map-text'),
-              style: StyleManagement.notificationTitleBold.copyWith(
-                fontWeight: FontWeight.w600,
-                decoration: TextDecoration.underline,
-              ),
-            ),
-          ]),
+      text: TextSpan(style: StyleManagement.notificationTitleMedium.copyWith(fontWeight: FontWeight.w600), children: [
+        TextSpan(text: mapController.currentAddress),
+        const TextSpan(text: ". "),
+        TextSpan(
+          text: localeController.getTranslate('show-on-map-text'),
+          style: StyleManagement.notificationTitleBold.copyWith(
+            fontWeight: FontWeight.w600,
+            decoration: TextDecoration.underline,
+          ),
+        ),
+      ]),
     );
   }
 
@@ -354,12 +319,9 @@ class DonationDetailScreen extends StatelessWidget {
       itemBuilder: (context, index, realIndex) => ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: FutureBuilder(
-          future: donationController.getUrl(
-              donationController.getDonation(donationId).donor,
-              donationController.getDonation(donationId).imgs[index]),
+          future: donationController.getUrl(donationController.getDonation(donationId).donor, donationController.getDonation(donationId).imgs[index]),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting ||
-                snapshot.data == null) {
+            if (snapshot.connectionState == ConnectionState.waiting || snapshot.data == null) {
               return const Center(
                 child: SizedBox(
                   width: 30,
@@ -454,15 +416,12 @@ class DonationDetailScreen extends StatelessWidget {
           donationId,
           recipientUid,
         );
-        final donation =
-            await donationController.fetchDonation(donationId, useCache: false);
-        final confirmDeadline =
-            donation.recipients[recipientUid]!["confirmDeadline"];
+        final donation = await donationController.fetchDonation(donationId, useCache: false);
+        final confirmDeadline = donation.recipients[recipientUid]!["confirmDeadline"];
         Map<String, dynamic> result = await showDialog(
           barrierDismissible: false,
           context: navigatorKey.currentState!.context,
-          builder: (context) =>
-              ConfirmReceiveDonationDialog(confirmDeadline.toDate()),
+          builder: (context) => ConfirmReceiveDonationDialog(confirmDeadline.toDate()),
         );
         if (!result["success"]) {
           loadingHandler(
@@ -520,8 +479,7 @@ class DonationDetailScreen extends StatelessWidget {
     );
   }
 
-  List<Widget> getBottomButton(
-      BuildContext context, BoxConstraints constraints) {
+  List<Widget> getBottomButton(BuildContext context, BoxConstraints constraints) {
     final donation = donationController.getDonation(donationId);
     switch (authController.currentUserRole) {
       case Role.donor:
@@ -562,8 +520,7 @@ class DonationDetailScreen extends StatelessWidget {
               () async {
                 var uid = FirebaseAuth.instance.currentUser!.uid;
                 if (donation.reviews.containsKey(uid)) {
-                  reviewController.rating =
-                      donation.reviews[uid]!["rating"].toDouble();
+                  reviewController.rating = donation.reviews[uid]!["rating"].toDouble();
                   reviewController.review = donation.reviews[uid]!["review"];
                 }
                 bool rs = await showDialog(
@@ -598,30 +555,36 @@ class DonationDetailScreen extends StatelessWidget {
 
   receiveButtonOnClick(BuildContext context, Donation donation) {
     final Map<String, Map<String, dynamic>> recipients = donation.recipients;
+
+    if (DateTime.now().isAfter(donation.end)) {
+      showDialog(
+        context: context,
+        builder: (context) => const DonationEndedDialog(),
+      );
+      return;
+    }
+
     final uid = FirebaseAuth.instance.currentUser!.uid;
     if (recipients.containsKey(uid)) {
-      openTimerDialog(
-          recipients[uid]!["expireAt"].toDate().difference(DateTime.now()));
+      openTimerDialog(recipients[uid]!["expireAt"].toDate().difference(DateTime.now()));
     } else {
       openReciveDonationDialog(
         context,
         donation.start,
         donation.end,
-        donation.quantity.toInt(),
+        min(donation.quantity.toInt(), donation.maxQuantityPerRecipient.toInt()),
       );
     }
   }
 
   bool alreadyReceivedDonation() {
-    final Map<String, Map<String, dynamic>> recipients =
-        donationController.getDonation(donationId).recipients;
+    final Map<String, Map<String, dynamic>> recipients = donationController.getDonation(donationId).recipients;
     final uid = FirebaseAuth.instance.currentUser!.uid;
     if (!recipients.containsKey(uid)) {
       return false;
     }
     final status = recipients[uid]!["status"];
-    return RecipientStatusExtension.fromValue(status) ==
-        RecipientStatus.received;
+    return RecipientStatusExtension.fromValue(status) == RecipientStatus.received;
   }
 
   getRecipientsButton(BoxConstraints constraints, BuildContext context) {
@@ -681,8 +644,7 @@ class DonationDetailScreen extends StatelessWidget {
   void showRoute(context) async {
     final donation = donationController.getDonation(donationId);
     Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) =>
-          ViewRouteScreen(donation.latlng.latitude, donation.latlng.longitude),
+      builder: (context) => ViewRouteScreen(donation.latlng.latitude, donation.latlng.longitude),
     ));
   }
 
@@ -735,8 +697,7 @@ class DonationDetailScreen extends StatelessWidget {
                 ),
                 Text(
                   localeController.getTranslate(title),
-                  style: StyleManagement.historyItemTitleTextStyle
-                      .copyWith(color: ColorManagement.iconColor),
+                  style: StyleManagement.historyItemTitleTextStyle.copyWith(color: ColorManagement.iconColor),
                 ),
               ],
             ),
@@ -794,8 +755,7 @@ class DonationDetailScreen extends StatelessWidget {
       bool isDonor = authController.currentUserRole == Role.donor;
       return SlidableAutoCloseBehavior(
         child: ListView.builder(
-          itemCount:
-              donationController.getDonation(donationId).getRecipients().length,
+          itemCount: donationController.getDonation(donationId).getRecipients().length,
           itemBuilder: (context, index) {
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
@@ -819,8 +779,7 @@ class DonationDetailScreen extends StatelessWidget {
     return FutureBuilder(
       future: userController.getUserInfo(donation.reviews.keys.toList()[index]),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting ||
-            snapshot.data == null) {
+        if (snapshot.connectionState == ConnectionState.waiting || snapshot.data == null) {
           if (isLoadingReviewListTile) {
             return const Text('');
           }
@@ -855,8 +814,7 @@ class DonationDetailScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           InkWell(
-                            onTap: () => openRecipientProfile(
-                                context, donation.reviews.keys.toList()[index]),
+                            onTap: () => openRecipientProfile(context, donation.reviews.keys.toList()[index]),
                             child: Text(
                               userInfo.displayName,
                               style: StyleManagement.menuTextStyle.copyWith(
@@ -869,9 +827,7 @@ class DonationDetailScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(donation.reviews.values
-                              .toList()[index]["rating"]
-                              .toString()),
+                          Text(donation.reviews.values.toList()[index]["rating"].toString()),
                           HSpacer(),
                           const Icon(
                             Icons.star,
@@ -905,8 +861,7 @@ class DonationDetailScreen extends StatelessWidget {
   slidableRecipientListTile(int index, BoxConstraints constraints) {
     final donation = donationController.getDonation(donationId);
     final recipientUid = donation.getRecipients().keys.toList()[index];
-    final status = RecipientStatusExtension.fromValue(
-        donation.recipients[recipientUid]["status"]);
+    final status = RecipientStatusExtension.fromValue(donation.recipients[recipientUid]["status"]);
     return Slidable(
       groupTag: 'recipientListTile',
       key: Key(recipientUid),
@@ -948,8 +903,7 @@ class DonationDetailScreen extends StatelessWidget {
               label: localeController.getTranslate('confirm-button-title'),
             ),
           ],
-          if (status == RecipientStatus.rejected ||
-              status == RecipientStatus.received)
+          if (status == RecipientStatus.rejected || status == RecipientStatus.received)
             SlidableAction(
               onPressed: (context) async {
                 await undoRecipient(recipientUid);
@@ -971,13 +925,11 @@ class DonationDetailScreen extends StatelessWidget {
     final recipientUid = donation.getRecipients().keys.toList()[index];
     final recipient = donation.recipients[recipientUid];
     final status = RecipientStatusExtension.fromValue(recipient['status']);
-    final duration =
-        recipient['expireAt']?.toDate()?.difference(DateTime.now());
+    final duration = recipient['expireAt']?.toDate()?.difference(DateTime.now());
     return FutureBuilder(
       future: userController.getUserInfo(recipientUid),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting ||
-            snapshot.data == null) {
+        if (snapshot.connectionState == ConnectionState.waiting || snapshot.data == null) {
           if (isLoadingRecipientListTile) {
             return const Text('');
           }
@@ -1020,8 +972,7 @@ class DonationDetailScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         InkWell(
-                          onTap: () => openRecipientProfile(context,
-                              donation.getRecipients().keys.toList()[index]),
+                          onTap: () => openRecipientProfile(context, donation.getRecipients().keys.toList()[index]),
                           child: Text(
                             userInfo.displayName,
                             style: StyleManagement.menuTextStyle.copyWith(
@@ -1038,18 +989,15 @@ class DonationDetailScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         RichText(
-                          text: TextSpan(
-                              style: StyleManagement.notificationTitleBold,
-                              children: [
-                                TextSpan(
-                                  text: localeController
-                                      .getTranslate('food-quantity-title'),
-                                ),
-                                const TextSpan(text: ': '),
-                                TextSpan(
-                                  text: recipient["quantity"].toString(),
-                                ),
-                              ]),
+                          text: TextSpan(style: StyleManagement.notificationTitleBold, children: [
+                            TextSpan(
+                              text: localeController.getTranslate('food-quantity-title'),
+                            ),
+                            const TextSpan(text: ': '),
+                            TextSpan(
+                              text: recipient["quantity"].toString(),
+                            ),
+                          ]),
                         ),
                       ],
                     ),
@@ -1069,8 +1017,7 @@ class DonationDetailScreen extends StatelessWidget {
                                 children: [
                                   TextSpan(
                                     text: getTime(seconds),
-                                    style:
-                                        StyleManagement.notificationTitleBold,
+                                    style: StyleManagement.notificationTitleBold,
                                   ),
                                 ],
                               ),
@@ -1089,14 +1036,12 @@ class DonationDetailScreen extends StatelessWidget {
                         width: constraints.maxWidth * .25,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          color: getRecipentStatusColor(
-                              donation.recipients[recipientUid]['status']),
+                          color: getRecipentStatusColor(donation.recipients[recipientUid]['status']),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(8),
                           child: Text(
-                            localeController.getTranslate(
-                                donation.recipients[recipientUid]['status']),
+                            localeController.getTranslate(donation.recipients[recipientUid]['status']),
                             textAlign: TextAlign.center,
                             style: StyleManagement.notificationTitleBold,
                           ),
@@ -1147,8 +1092,7 @@ class DonationDetailScreen extends StatelessWidget {
 
   openDonorProfile(BuildContext context) async {
     await loadingHandler(
-      () => userController
-          .getDonorInfo(donationController.getDonation(donationId).donor),
+      () => userController.getDonorInfo(donationController.getDonation(donationId).donor),
       (result) {
         DonorInfo donorInfo = DonorInfo.fromJson(result["result"]);
         donorInfo.uid = donationController.getDonation(donationId).donor;
@@ -1172,8 +1116,7 @@ class DonationDetailScreen extends StatelessWidget {
         likeButtonController.setLike(recipientInfo.getLikes());
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) =>
-                UserProfileScreen(recipientInfo: recipientInfo),
+            builder: (context) => UserProfileScreen(recipientInfo: recipientInfo),
           ),
         );
       },
