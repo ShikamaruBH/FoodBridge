@@ -498,6 +498,9 @@ class DonationDetailScreen extends StatelessWidget {
                 foodCategoryController.update(donation.categories);
                 donationController.urls = List.from(donation.imgs);
                 donationController.images.clear();
+                mapController.currentLatLng = donation.latlng;
+                mapController.setAddress(donation.latlng);
+                limitController.setLimit(donation.noLimit);
                 dateTimePickerController.setStart(donation.start);
                 dateTimePickerController.setEnd(donation.end);
                 Navigator.of(context).push(
