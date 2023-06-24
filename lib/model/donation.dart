@@ -79,11 +79,9 @@ class Donation {
 
   getTimeRemaining() {
     if (DateTime.now().isBefore(start)) {
-      return Flexible(
-        child: Text(
-          localeController.getTranslate('donation-has-not-start-yet-text')(start),
-          style: StyleManagement.donationDetailTextStyle,
-        ),
+      return Text(
+        localeController.getTranslate('donation-has-not-start-yet-text')(start),
+        style: StyleManagement.donationDetailTextStyle,
       );
     }
     if (DateTime.now().isAfter(end)) {

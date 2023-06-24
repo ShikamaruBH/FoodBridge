@@ -67,8 +67,7 @@ class FindDonationScreen extends StatelessWidget {
                                     InkWell(
                                       onTap: filterController.swap,
                                       child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Icon(
                                             getIcon(),
@@ -153,10 +152,8 @@ class FindDonationScreen extends StatelessWidget {
                               donationController.listenToFilteredDonation();
                             },
                             dateTimePickerController.start,
-                            style: StyleManagement.textFieldTextStyleLight
-                                .copyWith(fontSize: 14),
-                            decoration: DecoratorManagement
-                                .defaultTextFieldDecoratorLight,
+                            style: StyleManagement.textFieldTextStyleLight.copyWith(fontSize: 14),
+                            decoration: DecoratorManagement.defaultTextFieldDecoratorLight,
                             format: 'MMMM dd, yyyy hh:mm a',
                             prefix: Icons.calendar_month_outlined,
                           ),
@@ -216,20 +213,15 @@ class AvailableDonationWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       RichText(
-                        text: TextSpan(
-                            style: StyleManagement.usernameTextStyle
-                                .copyWith(color: Colors.black),
-                            children: [
-                              TextSpan(
-                                text: localeController.getTranslate(text),
-                              ),
-                              TextSpan(
-                                text:
-                                    ' (${donationController.isLoading ? 0 : donationController.donations.length})',
-                                style: StyleManagement.notificationTitleBold
-                                    .copyWith(fontSize: 20),
-                              )
-                            ]),
+                        text: TextSpan(style: StyleManagement.usernameTextStyle.copyWith(color: Colors.black), children: [
+                          TextSpan(
+                            text: localeController.getTranslate(text),
+                          ),
+                          TextSpan(
+                            text: ' (${donationController.isLoading ? 0 : donationController.donations.length})',
+                            style: StyleManagement.notificationTitleBold.copyWith(fontSize: 20),
+                          )
+                        ]),
                       ),
                       HSpacer(),
                       Expanded(
@@ -240,8 +232,7 @@ class AvailableDonationWidget extends StatelessWidget {
                               width: constraints.maxWidth * .3,
                               child: FormBuilderDropdown(
                                 name: "sort",
-                                decoration:
-                                    DecoratorManagement.dropdownButtonDecorator,
+                                decoration: DecoratorManagement.dropdownButtonDecorator,
                                 initialValue: donationController.currentSort,
                                 borderRadius: BorderRadius.circular(8),
                                 selectedItemBuilder: (context) => dropdownItems
@@ -277,8 +268,7 @@ class AvailableDonationWidget extends StatelessWidget {
     if (donationController.donations.isEmpty) {
       return Text(localeController.getTranslate('no-available-donation-text'));
     }
-    if (donationController.donations.isNotEmpty &&
-        !donationController.isLoading) {
+    if (donationController.donations.isNotEmpty && !donationController.isLoading) {
       return ListView.builder(
         itemCount: donationController.donations.length,
         itemBuilder: (context, index) => DonationTileWidget(index),
@@ -339,8 +329,7 @@ class DonationTileWidget extends StatelessWidget {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                        left: 10, top: 2, bottom: 2, right: 0),
+                    padding: const EdgeInsets.only(left: 10, top: 2, bottom: 2, right: 0),
                     child: SizedBox(
                       height: 85,
                       child: Column(
@@ -354,8 +343,7 @@ class DonationTileWidget extends StatelessWidget {
                                 child: Text(
                                   donation.title,
                                   overflow: TextOverflow.ellipsis,
-                                  style:
-                                      StyleManagement.historyItemTitleTextStyle,
+                                  style: StyleManagement.historyItemTitleTextStyle,
                                 ),
                               ),
                             ],
@@ -365,8 +353,7 @@ class DonationTileWidget extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   "Category: ${donation.categories.map((e) => localeController.getTranslate(e)).join(", ")}",
-                                  style: StyleManagement
-                                      .historyItemCategoryTextStyle,
+                                  style: StyleManagement.historyItemCategoryTextStyle,
                                 ),
                               ),
                             ],
@@ -375,9 +362,7 @@ class DonationTileWidget extends StatelessWidget {
                             children: [getDonationDistance(donation)],
                           ),
                           Row(
-                            children: [
-                              Flexible(child: donation.getTimeRemaining())
-                            ],
+                            children: [Flexible(child: donation.getTimeRemaining())],
                           ),
                         ],
                       ),
@@ -402,8 +387,7 @@ class DonationTileWidget extends StatelessWidget {
     return FutureBuilder(
       future: donationController.getUrl(donation.donor, donation.imgs.first),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting ||
-            snapshot.data == null) {
+        if (snapshot.connectionState == ConnectionState.waiting || snapshot.data == null) {
           return const Center(
             child: SizedBox(
               width: 30,
@@ -478,8 +462,7 @@ class DistanceSlider extends StatelessWidget {
                   max: sliderController.max,
                   divisions: sliderController.divisions,
                   activeColor: Theme.of(context).colorScheme.secondary,
-                  inactiveColor:
-                      Theme.of(context).colorScheme.secondary.withOpacity(.4),
+                  inactiveColor: Theme.of(context).colorScheme.secondary.withOpacity(.4),
                   value: sliderController.value,
                   onChanged: (value) {
                     sliderController.setValue(value);
@@ -492,8 +475,7 @@ class DistanceSlider extends StatelessWidget {
                 child: Text(
                   '${sliderController.value.toInt()} Km',
                   textAlign: TextAlign.end,
-                  style:
-                      StyleManagement.newDonationFieldTitleTextStyle.copyWith(
+                  style: StyleManagement.newDonationFieldTitleTextStyle.copyWith(
                     color: ColorManagement.titleColorLight,
                   ),
                 ),
@@ -566,10 +548,7 @@ class FoodTypeCheckBoxWidget extends StatelessWidget {
                   child: Icon(
                     icon,
                     size: 48,
-                    color: foodCategoryController.status(type)
-                        ? Colors.white
-                        : ColorManagement
-                            .foodTypeCheckBoxCardIconUncheckColorLight,
+                    color: foodCategoryController.status(type) ? Colors.white : ColorManagement.foodTypeCheckBoxCardIconUncheckColorLight,
                   ),
                 ),
               ),
@@ -579,8 +558,7 @@ class FoodTypeCheckBoxWidget extends StatelessWidget {
               child: Text(
                 localeController.getTranslate(type),
                 style: StyleManagement.newDonationFieldTitleTextStyle.copyWith(
-                  color: Colors.white.withOpacity(
-                      foodCategoryController.status(type) ? .87 : .43),
+                  color: Colors.white.withOpacity(foodCategoryController.status(type) ? .87 : .43),
                 ),
               ),
             )
