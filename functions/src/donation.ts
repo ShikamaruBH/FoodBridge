@@ -210,21 +210,22 @@ exports.receiveDonation = functions.https.onCall(async (data, context) => {
               .doc(donorUid)
               .get();
 
+          const recipient = await admin
+              .firestore()
+              .collection("users")
+              .doc(uid)
+              .get();
+
           const donationTitle = donation.get("title");
 
           t.set(notificationRef, {
-            from: donor.get("displayName"),
+            from: recipient.get("displayName"),
             donation: donationTitle,
             donationId: donation.id,
             createAt: new Date(),
             hasRead: false,
           });
 
-          const recipient = await admin
-              .firestore()
-              .collection("users")
-              .doc(uid)
-              .get();
 
           const payload = {
             data: {
