@@ -125,6 +125,10 @@ Map<String, dynamic> appLocalizations = {
     "en": "Can not receive before donation start",
     "vi": "Không thể nhận trước khi quyên góp bắt đầu",
   },
+  "invalid-receive-time-before-now-text": {
+    "en": "Can not receive before present",
+    "vi": "Thời gian nhận phải từ hiện tại trở đi",
+  },
   "reject-recipient-success-text": {
     "en": "Reject success",
     "vi": "Từ chối thành công",

@@ -463,6 +463,9 @@ class ReceiveDonationDialog extends StatelessWidget {
                     if (value.isBefore(start)) {
                       return localeController.getTranslate("invalid-receive-time-before-start-text");
                     }
+                    if (value.isBefore(DateTime.now())) {
+                      return localeController.getTranslate('invalid-receive-time-before-now-text');
+                    }
                     return null;
                   }
                 ]),
